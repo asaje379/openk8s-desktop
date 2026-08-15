@@ -63,6 +63,12 @@ export const fr: Translation = {
         testFail: "Échec de la connexion",
         addError: "Échec de l'ajout du cluster",
         removeError: "Échec de la suppression du cluster",
+        importTitle: "Importer des clusters locaux",
+        importDescription: "Contextes Kubernetes trouvés dans vos fichiers kubeconfig locaux.",
+        import: "Importer",
+        importSuccess: "Cluster importé",
+        localFound: "{{count}} cluster(s) trouvé(s) dans votre kubeconfig local",
+        loadLocal: "Importer",
     },
     error: {
         title: "Une erreur est survenue",

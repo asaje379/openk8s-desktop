@@ -61,6 +61,12 @@ export const en = {
         testFail: 'Connection failed',
         addError: 'Failed to add cluster',
         removeError: 'Failed to remove cluster',
+        importTitle: 'Import local clusters',
+        importDescription: 'Kubernetes contexts found in your local kubeconfig files.',
+        import: 'Import',
+        importSuccess: 'Cluster imported',
+        localFound: '{{count}} cluster(s) found in your local kubeconfig',
+        loadLocal: 'Load',
     },
     error: {
         title: 'Something went wrong',

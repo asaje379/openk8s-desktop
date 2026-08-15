@@ -81,6 +81,7 @@ export namespace cluster {
 	    cluster: string;
 	    user: string;
 	    namespace?: string;
+	    server: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new KubeContext(source);
@@ -92,6 +93,7 @@ export namespace cluster {
 	        this.cluster = source["cluster"];
 	        this.user = source["user"];
 	        this.namespace = source["namespace"];
+	        this.server = source["server"];
 	    }
 	}
 	export class KubeconfigInfo {
@@ -104,6 +106,40 @@ export namespace cluster {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.currentContext = source["currentContext"];
+	        this.contexts = this.convertValues(source["contexts"], KubeContext);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class LocalKubeconfig {
+	    path: string;
+	    currentContext: string;
+	    contexts: KubeContext[];
+	
+	    static createFrom(source: any = {}) {
+	        return new LocalKubeconfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.path = source["path"];
 	        this.currentContext = source["currentContext"];
 	        this.contexts = this.convertValues(source["contexts"], KubeContext);
 	    }

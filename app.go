@@ -87,6 +87,16 @@ func (a *App) TestKubeconfig(kubeconfig string, contextName string) (cluster.Con
 	return a.clusters.TestKubeconfig(kubeconfig, contextName)
 }
 
+// ListLocalKubeconfigs returns the kubeconfigs discovered on the machine.
+func (a *App) ListLocalKubeconfigs() ([]cluster.LocalKubeconfig, error) {
+	return a.clusters.ListLocalKubeconfigs()
+}
+
+// ImportLocalCluster imports a local kubeconfig context as a cluster.
+func (a *App) ImportLocalCluster(path string, contextName string, name string) (cluster.Cluster, error) {
+	return a.clusters.ImportLocalCluster(path, contextName, name)
+}
+
 // openStores returns the persistent stores, falling back to in-memory storage
 // if SQLite cannot be opened.
 func openStores() (cluster.ClusterStore, cluster.CredentialStore) {

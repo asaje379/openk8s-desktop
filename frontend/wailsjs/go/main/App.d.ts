@@ -10,7 +10,11 @@ export function GetVersion():Promise<Record<string, string>>;
 
 export function Health():Promise<string>;
 
+export function ImportLocalCluster(arg1:string,arg2:string,arg3:string):Promise<cluster.Cluster>;
+
 export function ListClusters():Promise<Array<cluster.Cluster>>;
+
+export function ListLocalKubeconfigs():Promise<Array<cluster.LocalKubeconfig>>;
 
 export function RemoveCluster(arg1:string):Promise<void>;
 

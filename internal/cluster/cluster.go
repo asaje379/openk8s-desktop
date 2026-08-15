@@ -22,6 +22,7 @@ type KubeContext struct {
 	Cluster   string `json:"cluster"`
 	User      string `json:"user"`
 	Namespace string `json:"namespace,omitempty"`
+	Server    string `json:"server"`
 }
 
 // AddClusterInput is the input required to register a cluster.
@@ -41,6 +42,13 @@ type ConnectionStatus struct {
 
 // KubeconfigInfo is the result of validating a kubeconfig without saving it.
 type KubeconfigInfo struct {
+	CurrentContext string        `json:"currentContext"`
+	Contexts       []KubeContext `json:"contexts"`
+}
+
+// LocalKubeconfig is a discovered kubeconfig file on the machine.
+type LocalKubeconfig struct {
+	Path           string        `json:"path"`
 	CurrentContext string        `json:"currentContext"`
 	Contexts       []KubeContext `json:"contexts"`
 }
@@ -70,6 +78,8 @@ type ClusterManager interface {
 	SwitchContext(id string, contextName string) error
 	ValidateKubeconfig(kubeconfig string) (KubeconfigInfo, error)
 	TestKubeconfig(kubeconfig string, contextName string) (ConnectionStatus, error)
+	ListLocalKubeconfigs() ([]LocalKubeconfig, error)
+	ImportLocalCluster(path string, contextName string, name string) (Cluster, error)
 }
 
 // ClientFactory builds a Kubernetes client from a kubeconfig and context.

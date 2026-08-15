@@ -18,8 +18,16 @@ export function Health() {
   return window['go']['main']['App']['Health']();
 }
 
+export function ImportLocalCluster(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ImportLocalCluster'](arg1, arg2, arg3);
+}
+
 export function ListClusters() {
   return window['go']['main']['App']['ListClusters']();
+}
+
+export function ListLocalKubeconfigs() {
+  return window['go']['main']['App']['ListLocalKubeconfigs']();
 }
 
 export function RemoveCluster(arg1) {

@@ -1,13 +1,20 @@
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Plus} from 'lucide-react'
+import {Download, Plus} from 'lucide-react'
 import {Button} from '@/components/ui/button'
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
 import {Badge} from '@/components/ui/badge'
 import {TestConnection} from '@/lib/wails'
 import type {Cluster, ConnectionStatus} from '@/lib/wails'
-import {useClusters, useContexts, useRemoveCluster, useSwitchContext} from './use-clusters'
+import {
+    useClusters,
+    useContexts,
+    useLocalKubeconfigs,
+    useRemoveCluster,
+    useSwitchContext,
+} from './use-clusters'
 import {AddClusterDialog} from './add-cluster-dialog'
+import {ImportLocalClustersDialog, type LocalContextItem} from './import-local-clusters-dialog'
 
 const selectClassName =
     'flex h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
@@ -101,8 +108,23 @@ function ClusterCard({cluster}: {cluster: Cluster}) {
 export function ClustersPage() {
     const {t} = useTranslation()
     const {data: clusters, isLoading, isError, refetch} = useClusters()
+    const {data: localKubeconfigs} = useLocalKubeconfigs()
     const list = clusters ?? []
     const [open, setOpen] = useState(false)
+    const [importOpen, setImportOpen] = useState(false)
+
+    const newContexts = useMemo<LocalContextItem[]>(() => {
+        const imported = new Set((clusters ?? []).map((c) => `${c.server}|${c.currentContext}`))
+        const result: LocalContextItem[] = []
+        for (const kc of localKubeconfigs ?? []) {
+            for (const context of kc.contexts ?? []) {
+                if (!imported.has(`${context.server}|${context.name}`)) {
+                    result.push({path: kc.path, context})
+                }
+            }
+        }
+        return result
+    }, [localKubeconfigs, clusters])
 
     return (
         <div className="flex h-full flex-col gap-6 p-8">
@@ -116,6 +138,18 @@ export function ClustersPage() {
                     {t('clusters.addCluster')}
                 </Button>
             </div>
+
+            {newContexts.length > 0 && (
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3">
+                    <div className="flex items-center gap-2 text-sm">
+                        <Download className="size-4 text-muted-foreground"/>
+                        {t('clusters.localFound', {count: newContexts.length})}
+                    </div>
+                    <Button size="sm" variant="outline" onClick={() => setImportOpen(true)}>
+                        {t('clusters.loadLocal')}
+                    </Button>
+                </div>
+            )}
 
             {isLoading ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -148,6 +182,11 @@ export function ClustersPage() {
             )}
 
             <AddClusterDialog open={open} onOpenChange={setOpen}/>
+            <ImportLocalClustersDialog
+                open={importOpen}
+                onOpenChange={setImportOpen}
+                contexts={newContexts}
+            />
         </div>
     )
 }

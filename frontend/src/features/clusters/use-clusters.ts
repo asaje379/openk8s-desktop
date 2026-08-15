@@ -1,11 +1,26 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {AddCluster, GetContexts, ListClusters, RemoveCluster, SwitchContext} from '@/lib/wails'
+import {
+    AddCluster,
+    GetContexts,
+    ImportLocalCluster,
+    ListClusters,
+    ListLocalKubeconfigs,
+    RemoveCluster,
+    SwitchContext,
+} from '@/lib/wails'
 import type {AddClusterInput} from '@/lib/wails'
 
 export function useClusters() {
     return useQuery({
         queryKey: ['clusters'],
         queryFn: () => ListClusters(),
+    })
+}
+
+export function useLocalKubeconfigs() {
+    return useQuery({
+        queryKey: ['local-kubeconfigs'],
+        queryFn: () => ListLocalKubeconfigs(),
     })
 }
 
@@ -22,6 +37,17 @@ export function useAddCluster() {
     return useMutation({
         mutationFn: (input: AddClusterInput) => AddCluster(input),
         onSuccess: () => queryClient.invalidateQueries({queryKey: ['clusters']}),
+    })
+}
+
+export function useImportLocalCluster() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({path, context, name}: {path: string; context: string; name: string}) =>
+            ImportLocalCluster(path, context, name),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['clusters']})
+        },
     })
 }
 

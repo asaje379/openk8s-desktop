@@ -3,7 +3,9 @@ export {
     GetContexts,
     GetVersion,
     Health,
+    ImportLocalCluster,
     ListClusters,
+    ListLocalKubeconfigs,
     RemoveCluster,
     SwitchContext,
     TestConnection,
@@ -18,3 +20,4 @@ export type KubeContext = cluster.KubeContext
 export type AddClusterInput = cluster.AddClusterInput
 export type ConnectionStatus = cluster.ConnectionStatus
 export type KubeconfigInfo = cluster.KubeconfigInfo
+export type LocalKubeconfig = cluster.LocalKubeconfig

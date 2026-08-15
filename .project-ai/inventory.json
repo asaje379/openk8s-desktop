@@ -17,7 +17,8 @@
     "frontend/src/components/language-toggle.tsx",
     "frontend/src/features/dashboard/dashboard-page.tsx",
     "frontend/src/features/clusters/clusters-page.tsx",
-    "frontend/src/features/clusters/add-cluster-dialog.tsx"
+    "frontend/src/features/clusters/add-cluster-dialog.tsx",
+    "frontend/src/features/clusters/import-local-clusters-dialog.tsx"
   ],
   "hooks": [
     "frontend/src/components/providers/theme-provider.tsx (useTheme)",

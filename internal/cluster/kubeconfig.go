@@ -35,11 +35,16 @@ func ContextsFromConfig(cfg *clientcmdapi.Config) []KubeContext {
 	contexts := make([]KubeContext, 0, len(names))
 	for _, name := range names {
 		ctx := cfg.Contexts[name]
+		server := ""
+		if cl, ok := cfg.Clusters[ctx.Cluster]; ok {
+			server = cl.Server
+		}
 		contexts = append(contexts, KubeContext{
 			Name:      name,
 			Cluster:   ctx.Cluster,
 			User:      ctx.AuthInfo,
 			Namespace: ctx.Namespace,
+			Server:    server,
 		})
 	}
 	return contexts
