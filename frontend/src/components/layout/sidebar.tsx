@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import {NavLink} from 'react-router'
 import {useTranslation} from 'react-i18next'
+import {BrandLogo} from '@/components/brand-logo'
 import {cn} from '@/lib/utils'
 
 interface NavItem {
@@ -42,9 +43,7 @@ export function Sidebar() {
     return (
         <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-card">
             <div className="flex h-14 items-center gap-3 border-b border-border px-4">
-                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#326ce5] to-[#0b56cf] text-white shadow-sm">
-                    <Boxes className="size-5"/>
-                </div>
+                <BrandLogo size="sm"/>
                 <div className="min-w-0 leading-tight">
                     <div className="truncate text-sm font-semibold">{t('common.appName')}</div>
                 </div>
