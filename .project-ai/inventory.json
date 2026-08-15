@@ -1,8 +1,30 @@
 {
-  "components": [],
-  "hooks": [],
-  "services": [],
-  "helpers": [],
-  "routes": [],
+  "components": [
+    "frontend/src/components/layout/app-layout.tsx",
+    "frontend/src/components/layout/sidebar.tsx",
+    "frontend/src/components/layout/topbar.tsx",
+    "frontend/src/components/ui/button.tsx",
+    "frontend/src/components/placeholder-page.tsx",
+    "frontend/src/components/providers/theme-provider.tsx",
+    "frontend/src/components/theme-toggle.tsx",
+    "frontend/src/components/language-toggle.tsx",
+    "frontend/src/features/dashboard/dashboard-page.tsx",
+    "frontend/src/features/clusters/clusters-page.tsx"
+  ],
+  "hooks": [
+    "frontend/src/components/providers/theme-provider.tsx (useTheme)",
+    "frontend/src/stores/app-store.ts (useAppStore)"
+  ],
+  "services": [
+    "frontend/src/lib/wails.ts",
+    "frontend/src/lib/query-client.ts",
+    "frontend/src/lib/i18n.ts"
+  ],
+  "helpers": [
+    "frontend/src/lib/utils.ts (cn)"
+  ],
+  "routes": [
+    "frontend/src/routes/index.tsx"
+  ],
   "generatedBy": "@asaje/skills"
 }

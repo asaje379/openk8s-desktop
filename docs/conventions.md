@@ -30,6 +30,11 @@
 - Import : alias `@/` → `src/`.
 - Tests : co-localisés (`*.test.tsx`) ; Vitest.
 
+## Thème & i18n
+
+- Thème : stratégie `class` (`.dark` sur `<html>`), états `light`/`dark`/`system` via `useTheme()` (React Context, `components/providers/theme-provider.tsx`). Couleurs via variables CSS (`:root`/`.dark`) + `@theme inline` ; toute couleur doit avoir sa variante `.dark`.
+- i18n : `i18next` + `react-i18next`. Traductions dans `src/locales/{en,fr}.ts` (namespace `translation`) ; toute chaîne UI passe par `useTranslation()`. La langue et le thème sont persistés en `localStorage`.
+
 ## Tests
 
 - **Backend** : `go test ./...` ; mocks via `k8s.io/client-go/kubernetes/fake` pour les handlers sans cluster réel.

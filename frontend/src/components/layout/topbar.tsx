@@ -1,6 +1,10 @@
+import {useTranslation} from 'react-i18next'
 import {useAppStore} from '@/stores/app-store'
+import {LanguageToggle} from '@/components/language-toggle'
+import {ThemeToggle} from '@/components/theme-toggle'
 
 export function Topbar() {
+    const {t} = useTranslation()
     const activeClusterId = useAppStore((s) => s.activeClusterId)
     const currentContext = useAppStore((s) => s.currentContext)
     const activeNamespace = useAppStore((s) => s.activeNamespace)
@@ -10,15 +14,26 @@ export function Topbar() {
             <div className="text-sm text-muted-foreground">
                 {currentContext ? (
                     <span>
-                        Context: <span className="font-medium text-foreground">{currentContext}</span>
+                        {t('topbar.context')}:{' '}
+                        <span className="font-medium text-foreground">{currentContext}</span>
                     </span>
                 ) : (
-                    <span>No active context</span>
+                    <span>{t('topbar.noActiveContext')}</span>
                 )}
             </div>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                {activeClusterId && <span>Cluster: {activeClusterId}</span>}
-                {activeNamespace && <span>Namespace: {activeNamespace}</span>}
+                {activeClusterId && (
+                    <span>
+                        {t('topbar.cluster')}: {activeClusterId}
+                    </span>
+                )}
+                {activeNamespace && (
+                    <span>
+                        {t('topbar.namespace')}: {activeNamespace}
+                    </span>
+                )}
+                <LanguageToggle/>
+                <ThemeToggle/>
             </div>
         </header>
     )

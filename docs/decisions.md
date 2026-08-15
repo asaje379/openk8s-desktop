@@ -78,3 +78,21 @@
 - **Décision** : requêtes via les bindings Wails ; flux (watch, logs, terminal) via `runtime.EventsEmit` / `EventsOn`.
 - **Justification** : modèle natif Wails ; les skills `rest-api`/`graphql` sont donc non applicables.
 - **Conséquences** : tous les appels frontend passent par `wailsjs/go/…` ; pas de CORS/auth HTTP ; le streaming binaire passe par les événements.
+
+## ADR-010 — Thème clair/sombre via stratégie `class` + variables CSS
+
+- **Date** : 2026-08-15
+- **Contexte** : offrir un mode clair commutable en plus du mode sombre par défaut.
+- **Options** : stratégie Tailwind `media` (OS uniquement), stratégie `class` (bascule JS), CSS variables.
+- **Décision** : stratégie `class` (`.dark` sur `<html>`), trois états `light`/`dark`/`system`, `ThemeProvider` (React Context), préférence persistée en `localStorage`, script inline anti-FOUC dans `index.html`.
+- **Justification** : la stratégie `class` permet un toggle manuel (recommandé par `tailwind-design-system`) ; les tokens couleurs sont déjà définis en variables CSS (`:root`/`.dark`) mappées via `@theme inline`.
+- **Conséquences** : toute nouvelle couleur doit être définie en variable CSS + variante `.dark` ; le thème initial suit l'OS puis le choix utilisateur.
+
+## ADR-011 — Internationalisation en/fr via i18next
+
+- **Date** : 2026-08-15
+- **Contexte** : support de la traduction en/fr dans le frontend.
+- **Options** : i18next + react-i18next, bibliothèque custom, react-intl.
+- **Décision** : `i18next` + `react-i18next` + `i18next-browser-languagedetector`.
+- **Justification** : standard de facto, riche en fonctionnalités (pluriels, interpolation, lazy loading), détection de langue (`navigator` + `localStorage`) adaptée au webview Wails.
+- **Conséquences** : traductions centralisées dans `frontend/src/locales/{en,fr}.ts` (namespace `translation`) ; toute chaîne visible doit passer par `useTranslation()` ; la langue est persistée en `localStorage`.

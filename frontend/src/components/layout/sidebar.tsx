@@ -12,35 +12,38 @@ import {
     type LucideIcon,
 } from 'lucide-react'
 import {NavLink} from 'react-router'
+import {useTranslation} from 'react-i18next'
 import {cn} from '@/lib/utils'
 
 interface NavItem {
     to: string
-    label: string
+    labelKey: string
     icon: LucideIcon
 }
 
 const navItems: NavItem[] = [
-    {to: '/', label: 'Dashboard', icon: LayoutDashboard},
-    {to: '/clusters', label: 'Clusters', icon: Boxes},
-    {to: '/namespaces', label: 'Namespaces', icon: Layers},
-    {to: '/workloads', label: 'Workloads', icon: Container},
-    {to: '/pods', label: 'Pods', icon: Box},
-    {to: '/services', label: 'Services', icon: Network},
-    {to: '/ingress', label: 'Ingress', icon: Route},
-    {to: '/configmaps', label: 'ConfigMaps', icon: FileText},
-    {to: '/secrets', label: 'Secrets', icon: KeyRound},
-    {to: '/events', label: 'Events', icon: Bell},
+    {to: '/', labelKey: 'sidebar.dashboard', icon: LayoutDashboard},
+    {to: '/clusters', labelKey: 'sidebar.clusters', icon: Boxes},
+    {to: '/namespaces', labelKey: 'sidebar.namespaces', icon: Layers},
+    {to: '/workloads', labelKey: 'sidebar.workloads', icon: Container},
+    {to: '/pods', labelKey: 'sidebar.pods', icon: Box},
+    {to: '/services', labelKey: 'sidebar.services', icon: Network},
+    {to: '/ingress', labelKey: 'sidebar.ingress', icon: Route},
+    {to: '/configmaps', labelKey: 'sidebar.configmaps', icon: FileText},
+    {to: '/secrets', labelKey: 'sidebar.secrets', icon: KeyRound},
+    {to: '/events', labelKey: 'sidebar.events', icon: Bell},
 ]
 
 export function Sidebar() {
+    const {t} = useTranslation()
+
     return (
         <aside className="flex w-56 shrink-0 flex-col border-r border-border bg-card">
             <div className="flex h-14 items-center border-b border-border px-4 text-sm font-semibold">
-                openk8s-desktop
+                {t('common.appName')}
             </div>
             <nav className="flex-1 space-y-1 overflow-y-auto p-2">
-                {navItems.map(({to, label, icon: Icon}) => (
+                {navItems.map(({to, labelKey, icon: Icon}) => (
                     <NavLink
                         key={to}
                         to={to}
@@ -55,7 +58,7 @@ export function Sidebar() {
                         }
                     >
                         <Icon className="size-4"/>
-                        {label}
+                        {t(labelKey)}
                     </NavLink>
                 ))}
             </nav>
