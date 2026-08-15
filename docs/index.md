@@ -1,51 +1,56 @@
 # Project Index — openk8s-desktop
 
-> Application desktop (alternative à Lens) pour se connecter et administrer plusieurs clusters Kubernetes.
+> Application desktop (alternative à Lens) pour se connecter et administrer plusieurs clusters Kubernetes. **Local-first**.
 
 ## Stack
 
-- **Desktop** : Wails v2 (backend Go embarqué)
-- **Backend** : Go + client-go, SQLite (`modernc.org/sqlite`)
-- **Frontend** : React + TypeScript + Vite, Tailwind CSS, shadcn/ui, TanStack Query, Zustand, react-router, CodeMirror 6, xterm.js
+- **Desktop** : Wails v2.14 (backend Go embarqué dans le binaire)
+- **Backend** : Go + client-go (`k8s.io/client-go` v0.36), SQLite (`modernc.org/sqlite`)
+- **Frontend** : React 19 + TypeScript + Vite, Tailwind CSS v4, shadcn/ui, TanStack Query, Zustand, react-router v8, CodeMirror 6, xterm.js, i18next
 
-## Architecture
+## Architecture (résumé)
 
-- Wails desktop : backend Go embarqué dans le binaire, frontend React.
-- Deux flux : **bindings** (requête/réponse) et **EventsEmit** (watch, logs, terminal).
-- Multi-cluster : chaque appel bindé reçoit un `clusterID` ; clients mis en cache dans `ClusterManager`.
-- Local-first, secrets jamais loggés/affichés, RBAC respecté.
+- **Deux flux de données** : *bindings Wails* (requête/réponse) et *`runtime.EventsEmit`* (streaming : logs, terminal, port-forward).
+- **Backend** : `ClusterManager` (seul créateur de clients) + packages `k8s`, `exec`, `logs`, `portforward`, `storage`.
+- **Frontend** : feature-based, TanStack Query (état serveur) + Zustand (état global minimal : cluster actif + namespace), tables TanStack Table v8.
 
-Voir [architecture.md](./architecture.md) et [decisions.md](./decisions.md).
+Détail : [architecture.md](./architecture.md), [decisions.md](./decisions.md).
 
-## Prérequis
+## État
 
-- Go (>= 1.22, recommandé 1.23+)
-- Node.js + pnpm
-- Wails v2
-- Linux : `libwebkit2gtk-4.1-dev`, `libgtk-3-dev`
-- Docker + kind (tests d'intégration Kubernetes)
+Étapes 1–4 du MVP implémentées (connexion, exploration, expérience pod, détail deployment + scale + logs agrégés + port-forward). Prochaine étape : **5 — Metrics** (CPU/mémoire via `metrics.k8s.io`).
 
-## Commandes clés
+## Quickstart
 
-- `wails dev` — développement (frontend + backend + hot reload)
-- `wails build` — build de production
+```bash
+wails dev
+```
+
+Prérequis et détails : voir [development.md](./development.md).
+
+## Commandes
+
+- `wails dev` — développement
+- `wails build` — build (binaire dans `build/bin/`)
+- `wails generate module` — régénérer les bindings TS
 - `go test ./...` — tests backend
-- `pnpm test` — tests frontend (Vitest)
-- `pnpm lint` / `pnpm typecheck` — qualité frontend
-- `kind create cluster` — cluster de test
+- `cd frontend && pnpm build` — build frontend
 
 ## Structure
 
 ```
 main.go, app.go, wails.json
-internal/            # Go : cluster, k8s, exec, storage, api
-frontend/src/        # React : app, components, features, stores, hooks, lib, types, routes
-docs/                # documentation + ADR
-tests/               # tests e2e / intégration
+internal/            # Go : cluster, k8s, exec, logs, portforward, storage
+frontend/src/        # React : components, features, hooks, stores, lib, locales, routes
+docs/                # architecture, ADR, conventions, guides (kubernetes, security, development)
 ```
 
-## Conventions essentielles
+## Guides
 
-- Go idiomatique, interfaces seulement si utiles, DI par constructeur, `context.Context` partout.
-- Frontend : feature-based, TanStack Query pour l'état serveur, Zustand minimal.
-- Voir [conventions.md](./conventions.md).
+- [architecture.md](./architecture.md) — architecture détaillée
+- [kubernetes.md](./kubernetes.md) — gestion kubeconfig/RBAC/namespaces
+- [security.md](./security.md) — principes de sécurité
+- [development.md](./development.md) — workflow de développement
+- [conventions.md](./conventions.md) — conventions de code
+- [decisions.md](./decisions.md) — ADR
+- [glossary.md](./glossary.md) — glossaire

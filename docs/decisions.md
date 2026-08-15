@@ -104,3 +104,32 @@
 - **Décision** : adopter la palette Stitch (fond navy `#0b1326`, Kubernetes blue `#326ce5`/`#b2c5ff`, émeraude `#4edea3`, ambre `#ffb95f`, rose `#ffb4ab`) mappée sur les tokens shadcn (Tailwind v4 CSS variables) en modes clair/sombre ; typo **Inter** (UI) + **JetBrains Mono** (code/données techniques) auto-hébergées via `@fontsource` ; badges pill semi-transparents (`bg-<color>/15 text-<color> border-<color>/30`) ; sidebar avec indicateur actif bleu (barre gauche + fond translucide).
 - **Justification** : cohérence avec la proposition Stitch (validée par l'utilisateur), palette « Corporate/Modern » adaptée au monitoring longue durée, conformité `tailwind-design-system` (tokens en variables CSS, variantes dark, contraste WCAG).
 - **Conséquences** : nouvelles variables `--success`/`--warning` (+ `success-foreground`/`warning-foreground`) ; police `font-sans` par défaut, `font-mono` pour les données techniques ; toute nouvelle couleur doit passer par un token.
+
+## ADR-013 — Streaming via `runtime.EventsEmit` (logs, exec, port-forward)
+
+- **Date** : 2026-08-15
+- **Contexte** : logs en temps réel, terminal interactif et port-forward nécessitent un flux bidirectionnel continu, non adapté aux bindings requête/réponse.
+- **Décision** : les bindings `Start*` renvoient un **id de session** ; le backend émet des événements (`logs:data/error/end`, `exec:output/error/end`, `portforward:ready/error/end`) ; le frontend contrôle via `Stop*`/`Write*`/`Resize*`. Chaque manager gère `map[id]context.CancelFunc`.
+- **Justification** : modèle natif Wails pour le push ; cancellation propre via `context.WithCancel`.
+- **Conséquences** : les flux n'ont **pas** de timeout global (`rest.Config.Timeout` retiré) ; `EventsOn` (Wails 2.14) retourne une fonction de désinscription.
+
+## ADR-014 — Logs agrégés d'un Deployment (multi-pods)
+
+- **Date** : 2026-08-15
+- **Contexte** : voir les logs de tous les pods d'un deployment en un seul flux (comme `kubectl logs deployment/foo`).
+- **Décision** : `LogsManager.StartMulti` (un stream par pod, lignes préfixées `[pod] `, un seul `logs:end` quand tous sont terminés) + binding `StartDeploymentLogStream` qui résout les pods via le sélecteur du deployment.
+- **Conséquences** : page de détail Deployment (Overview/Pods/Logs/Events/YAML) ; le `LogViewer` accepte `pod` **ou** `deployment`.
+
+## ADR-015 — Code-splitting (lazy loading)
+
+- **Date** : 2026-08-15
+- **Contexte** : le bundle initial approchait 1.44 MB (xterm + CodeMirror).
+- **Décision** : routes lazy (`React.lazy` + `Suspense`) + `TerminalView`/`YamlViewer` lazy au niveau des onglets.
+- **Conséquences** : bundle principal ~579 KB ; xterm (~332 KB) et CodeMirror (~422 KB) chargés à l'ouverture de l'onglet correspondant.
+
+## ADR-016 — Gestion manuelle des namespaces (RBAC restreint)
+
+- **Date** : 2026-08-15
+- **Contexte** : certains clusters n'autorisent que l'accès namespace-scopé (listes cluster-scope interdites : `nodes`, `namespaces`, listes « all namespaces »).
+- **Décision** : namespaces **sauvegardés par cluster** (SQLite) ajoutés manuellement (comme dans Lens) ; sélecteur de namespace global dans la topbar ; défaut = premier namespace sauvegardé ; erreurs `Forbidden` affichées inline (« Accès refusé ») et non en toast.
+- **Conséquences** : `ClusterManager` expose `ListSavedNamespaces`/`AddNamespace`/`RemoveNamespace` ; les requêtes de liste ont `retry: false` côté frontend.

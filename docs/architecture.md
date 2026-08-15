@@ -4,10 +4,9 @@
 
 ## Stack
 
-- **Desktop** : Wails v2 (backend Go embarqué dans le binaire)
-- **Backend** : Go + client-go (`k8s.io/client-go`), SQLite (`modernc.org/sqlite`)
-- **Frontend** : React + TypeScript + Vite, Tailwind CSS, shadcn/ui, TanStack Query, Zustand, react-router, CodeMirror 6 (éditeur YAML), xterm.js (terminal)
-- **Local-first** : aucune donnée Kubernetes ne quitte la machine de l'utilisateur. Pas de serveur HTTP externe.
+- **Desktop** : Wails v2.14 (backend Go embarqué dans le binaire)
+- **Backend** : Go + client-go, SQLite (`modernc.org/sqlite`, pure Go, sans CGO)
+- **Frontend** : React 19 + TypeScript + Vite, Tailwind CSS v4, shadcn/ui, TanStack Query, Zustand, react-router v8, CodeMirror 6, xterm.js, i18next
 
 ## Vue d'ensemble
 
@@ -17,106 +16,63 @@
 │                         Wails                               │
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │                 React + TypeScript                    │  │
-│  │  Dashboard / Clusters / Namespaces / Workloads        │  │
-│  │  Pods / Services / Ingress / ConfigMaps / Secrets     │  │
-│  │  Logs / Terminal / Events / Metrics                   │  │
+│  │  Dashboard / Clusters / Nodes / Namespaces            │  │
+│  │  Workloads / Pods / Services / Ingress                │  │
+│  │  Logs / Terminal / Port-forward / Events / YAML       │  │
 │  └──────────────────────────┬────────────────────────────┘  │
 │                             │ bindings (req/resp)           │
 │                             │ + runtime.EventsEmit (push)   │
 │                             ▼                               │
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │                       Go Backend                      │  │
-│  │  ClusterManager · KubeconfigManager · Kubernetes      │  │
-│  │  ResourceManager · LogsManager · ExecManager          │  │
-│  │  MetricsManager · EventsManager · WatchManager        │  │
-│  │  Storage (SQLite) · CredentialStore                   │  │
+│  │  ClusterManager · k8s · logs · exec · portforward     │  │
+│  │  storage (SQLite)                                     │  │
 │  └──────────────────────────┬────────────────────────────┘  │
 └─────────────────────────────┼───────────────────────────────┘
                               ▼
                     Kubernetes API Server
 ```
 
-## Structure du projet
+## Deux flux de données
 
-```
-openk8s-desktop/
-├── main.go                  # point d'entrée Wails + composition root (DI manuelle)
-├── app.go                   # struct App = surface de binding Wails (méthodes fines)
-├── wails.json               # configuration Wails
-├── go.mod / go.sum
-├── internal/
-│   ├── cluster/             # cluster.go, manager.go, kubeconfig.go, context.go
-│   ├── k8s/                 # client.go, discovery.go, resources.go, watch.go,
-│   │                        # pods.go, workloads.go, services.go, ingress.go,
-│   │                        # metrics.go, events.go, logs.go
-│   ├── exec/                # session.go (exec interactif + resize)
-│   ├── storage/             # sqlite.go, credential_store.go
-│   └── api/                 # dto.go, events.go (noms d'événements)
-├── frontend/
-│   ├── src/
-│   │   ├── app/             # router, layout
-│   │   ├── components/
-│   │   │   ├── ui/          # shadcn/ui
-│   │   │   ├── layout/      # sidebar, topbar
-│   │   │   ├── tables/      # DataTable (TanStack Table)
-│   │   │   ├── yaml/        # CodeMirror viewer/editor
-│   │   │   ├── logs/        # viewer streaming
-│   │   │   └── terminal/    # xterm.js
-│   │   ├── features/        # clusters, namespaces, workloads, pods, services,
-│   │   │                    # ingress, configmaps, secrets, events, metrics
-│   │   ├── stores/          # Zustand (léger)
-│   │   ├── hooks/           # useWailsEvent, wrappers TanStack Query
-│   │   ├── lib/             # bindings générés, event bus
-│   │   ├── types/           # types générés depuis les DTO Go
-│   │   └── routes/
-├── docs/
-└── tests/
-```
+1. **Request/response (bindings Wails)** : méthodes Go exposées (`ListPods`, `GetDeployment`, …) → `frontend/wailsjs/go/main/App`. Les types Go (avec tags JSON) génèrent des types TS (`frontend/wailsjs/go/models.ts`).
+2. **Streaming (push via `runtime.EventsEmit`)** : logs (`logs:data/error/end`), terminal (`exec:output/error/end`), port-forward (`portforward:ready/error/end`). Le frontend s'abonne via `EventsOn` (qui retourne une fonction de désinscription).
 
-## Backend Go — responsabilités
+## Backend Go — packages
 
-| Module | Responsabilité |
+| Package | Responsabilité |
 |---|---|
-| `internal/cluster` | `ClusterManager` : liste/ajout/suppression des connexions, test de connexion, gestion des contexts, création et mise en cache des `*kubernetes.Clientset`. Seul point de création des clients (garantit l'isolation multi-cluster). |
-| `internal/k8s` | Wrappers client-go : accès typé (pods, workloads, services, ingress), accès générique via `dynamic.Interface` + `discovery` (GVR/Kind/Namespaced), métriques (`metrics.k8s.io`), événements, logs. |
-| `internal/k8s/watch.go` | `WatchManager` : traduit `watch.Interface` → `runtime.EventsEmit("k8s:changed", …)` avec gestion `resourceVersion`, timeout, reconnexion backoff. |
-| `internal/exec` | Sessions exec interactives (stdin/stdout/stderr, resize, fermeture propre). |
-| `internal/storage` | Interface `Store` (clusters, préférences) + interface `CredentialStore` (kubeconfig) → implémentation SQLite aujourd'hui, keychain natif plus tard. |
-| `internal/api` | DTOs Go (JSON) + noms d'événements. Source de vérité pour les types TS générés par `wails generate module`. |
+| `internal/cluster` | `ClusterManager` : cycle de vie des connexions (add/remove/test/switch/validate), import de kubeconfigs locaux, namespaces sauvegardés, cache des clients en mémoire (`sync.RWMutex`). **Seul créateur** de `kubernetes.Interface` et `*rest.Config`. |
+| `internal/k8s` | Wrappers client-go : DTOs compacts (`types.go`) + fonctions de liste/détail/scale (namespaces, nodes, pods, workloads, services, ingress, events, deployment). Timeout de 30s sur les requêtes ponctuelles via `withTimeout`. |
+| `internal/logs` | `LogsManager` : streaming de logs (1 pod ou **multi-pods agrégés** pour les deployments, lignes préfixées `[pod] `). |
+| `internal/exec` | `ExecManager` : sessions exec interactives SPDY (stdin/stdout/stderr, resize). |
+| `internal/portforward` | `PortForwardManager` : port-forward SPDY (local→pod). |
+| `internal/storage` | `SQLiteStore` (implémente `ClusterStore` + `CredentialStore`) + `MemoryStore` (tests/fallback). |
 
-### Principes Go
+### Pattern streaming (logs/exec/port-forward)
 
-- Go idiomatique, **pas de sur-engineering** : interfaces uniquement quand elles apportent une vraie valeur (ex. `ClusterManager`, `CredentialStore`).
-- Dependency injection par constructeur, wiring manuel dans `main.go` (composition root).
-- `context.Context` + cancellation partout (requêtes, watch, exec, logs).
-- Erreurs explicites et typées ; redaction des secrets dans les logs.
-- Multi-cluster : chaque méthode bindée reçoit un `clusterID` explicite ; clients stockés sous `sync.RWMutex` dans `ClusterManager`.
+Chaque manager gère des sessions concurrentes (`map[id]context.CancelFunc`) :
+1. le frontend appelle un binding `Start*` → renvoie un **id de session** ;
+2. le backend lance une goroutine et **émet** des événements (`EventsEmit`) ;
+3. le frontend contrôle via `Stop*`/`Write*`/`Resize*` (annulation par `context.WithCancel`).
 
-## Frontend React — responsabilités
+Les flux (logs follow, exec, port-forward) n'ont **pas** de timeout global (contrairement aux requêtes ponctuelles).
 
-- **TanStack Query** = source de vérité des données serveur (requêtes → bindings Wails). Jamais de duplication dans un store global.
-- **Zustand (léger)** : uniquement `activeClusterID`, `activeNamespace`, `currentContext`.
-- **DataTable** (TanStack Table) : listes triables/filtrables (namespace, status, node, recherche).
-- **Watch** : les événements `k8s:changed` alimentent `queryClient.setQueryData` / `invalidateQueries`.
-- **Terminal** : xterm.js relié à la session exec Go via un événement duplex dédié.
-- **Logs** : composant streaming (follow, timestamps, recherche, download) branché sur `EventsEmit`.
+## Frontend React
 
-## Flux de données
+- **Feature-based** : `features/{clusters,nodes,namespaces,workloads,pods,services,ingress}`.
+- **État serveur** : TanStack Query (`hooks/use-k8s.ts`, query keys hiérarchiques `['k8s', clusterId, …]`).
+- **État global minimal** : Zustand (`activeCluster`, `activeNamespace`) persisté en `localStorage`.
+- **Composants partagés** : `tables/data-table` (TanStack Table v8), `logs/log-viewer`, `terminal/terminal-view`, `yaml/yaml-viewer` (CodeMirror), `portforward/port-forward`, shadcn/ui.
+- **Code-splitting** : routes lazy + `TerminalView`/`YamlViewer` lazy (xterm/CodeMirror chargés à la demande).
 
-Deux canaux distincts :
+## Gestion d'erreurs
 
-1. **Request/response** (bindings Wails) : `App.GetNamespaces(clusterID)`, `App.GetPods(clusterID, ns)`, … → `wailsjs/go/main/App`.
-2. **Streaming push** (`runtime.EventsEmit` + `EventsOn`) : Watch (`k8s:changed`), logs, terminal. Le binaire long n'est pas adapté aux bindings classiques.
+- **Render crash** → `ErrorBoundary` (page d'erreur + retour accueil).
+- **Erreurs de mutations (actions)** → toast global (`MutationCache.onError`).
+- **Erreurs de queries (chargement)** → état inline (`ResourcePage`) avec message `Forbidden` friendly + retry.
 
-```
-Kubernetes Watch → WatchManager (Go) → EventsEmit("k8s:changed")
-    → React EventsOn → TanStack Query setQueryData → UI
-```
+## Multi-cluster & RBAC
 
-## Stockage & sécurité
-
-- **SQLite** (`modernc.org/sqlite`, pure Go, sans CGO) : clusters, contexte sélectionné, préférences, favoris.
-- **CredentialStore** : interface isolée pour le kubeconfig, remplaçable par le keychain/credential store natif (ADR-008).
-- Ne jamais logger ni afficher : tokens, certificats privés, client keys, credentials, valeurs de Secrets.
-- Secrets : valeurs masquées par défaut ; `Reveal value` explicite avec avertissement.
-- RBAC du cluster respecté ; erreurs `Forbidden` transformées en message compréhensible.
+- Chaque binding reçoit un `clusterID` explicite ; le `ClusterManager` résout le bon client (pas de mélange entre clusters).
+- **RBAC restreint supporté** : l'utilisateur ajoute manuellement les namespaces accessibles (page Namespaces + sélecteur global dans la topbar) ; les listes cluster-scope interdites affichent proprement « Accès refusé ».

@@ -1,7 +1,17 @@
 {
   "skills": [
     { "name": "@octs/project-awareness", "status": "executed", "at": "2026-08-15T10:00:00.000Z" },
-    { "name": "@octs/feature-planner", "status": "executed", "at": "2026-08-15T10:00:00.000Z" }
+    { "name": "@octs/feature-planner", "status": "executed", "at": "2026-08-15T10:00:00.000Z" },
+    { "name": "@octs/clean-architecture", "status": "executed", "at": "2026-08-15T12:00:00.000Z" },
+    { "name": "@octs/tailwind-design-system", "status": "executed", "at": "2026-08-15T12:00:00.000Z" },
+    { "name": "@octs/admin-dashboard", "status": "executed", "at": "2026-08-15T12:00:00.000Z" },
+    { "name": "@octs/async-state", "status": "executed", "at": "2026-08-15T12:00:00.000Z" },
+    { "name": "@octs/react-best-practices", "status": "executed", "at": "2026-08-15T12:00:00.000Z" },
+    { "name": "@octs/resilience", "status": "executed", "at": "2026-08-15T12:00:00.000Z" },
+    { "name": "@octs/bug-investigator", "status": "executed", "at": "2026-08-15T12:00:00.000Z" },
+    { "name": "@octs/backend-verification", "status": "executed", "at": "2026-08-15T12:00:00.000Z" },
+    { "name": "@octs/frontend-verification", "status": "executed", "at": "2026-08-15T12:00:00.000Z" },
+    { "name": "@octs/unit-testing", "status": "executed", "at": "2026-08-15T12:00:00.000Z" }
   ],
   "installedAt": "2026-08-15T09:05:40.930Z",
   "generatedBy": "@asaje/skills"

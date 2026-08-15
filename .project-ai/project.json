@@ -1,17 +1,17 @@
 {
   "name": "openk8s-desktop",
-  "description": "Application desktop (alternative à Lens) pour se connecter et administrer plusieurs clusters Kubernetes. Stack : Wails + Go + client-go (backend) / React + TypeScript + Tailwind + shadcn/ui (frontend).",
+  "description": "App desktop local-first (alternative à Lens) : multi-cluster Kubernetes. Stack Wails + Go + client-go (backend) / React + TS + Tailwind + shadcn/ui (frontend). Étapes 1-4 du MVP : connexion kubeconfig (collé/local), exploration des ressources, expérience pod (détail, logs streaming, terminal, port-forward, events, YAML), détail deployment (scale + logs agrégés).",
   "stack": {
-    "frontend": "React + TypeScript + Tailwind CSS + shadcn/ui",
-    "backend": "Go + Wails + client-go",
+    "frontend": "React 19 + TypeScript + Vite + Tailwind CSS v4 + shadcn/ui + TanStack Query + Zustand + react-router v8 + CodeMirror 6 + xterm.js + i18next",
+    "backend": "Go + Wails v2.14 + client-go v0.36",
     "database": "SQLite (modernc.org/sqlite)",
     "orm": ""
   },
   "packageManager": "pnpm",
-  "architecture": "Wails desktop (backend Go embarqué + frontend React)",
+  "architecture": "Wails desktop (backend Go embarqué + frontend React). Deux flux : bindings (req/resp) + runtime.EventsEmit (streaming logs/terminal/port-forward).",
   "tools": {
-    "quality": "ESLint + Prettier (frontend) ; go vet + gofmt (backend)",
-    "testing": "Vitest (frontend) ; go test (backend) ; Playwright (e2e)",
+    "quality": "gofmt + go vet (backend) ; tsc (frontend)",
+    "testing": "go test ./... (fake clientset) ; pnpm build (frontend)",
     "ci": ""
   },
   "conventions": [],
