@@ -98,6 +98,7 @@ docs/                            # architecture, conventions, décisions (ADR)
 
 ## Limitations connues
 
-- MVP en cours : la connexion/exploration Kubernetes (Étape 2) n'est pas encore implémentée ; l'UI actuelle est un squelette fonctionnel (layout + routing + bindings de base).
+- MVP en cours : **Étape 2 (connexion Kubernetes) implémentée** — import kubeconfig (collé), validation, test de connexion, multi-cluster, switch de contexte, stockage SQLite. L'exploration des ressources (namespaces, workloads, pods, …) arrive à l'étape 3.
 - L'édition YAML, le terminal, les métriques et le Watch arrivent aux étapes suivantes.
+- Le kubeconfig est stocké en clair dans SQLite pour le MVP (abstraction `CredentialStore` prête pour le keychain natif).
 - Le lancement graphique nécessite un serveur d'affichage (X11/Wayland) ; le build `wails build` est la vérification CI en environnement headless.

@@ -4,16 +4,24 @@
     "frontend/src/components/layout/sidebar.tsx",
     "frontend/src/components/layout/topbar.tsx",
     "frontend/src/components/ui/button.tsx",
+    "frontend/src/components/ui/dialog.tsx",
+    "frontend/src/components/ui/input.tsx",
+    "frontend/src/components/ui/textarea.tsx",
+    "frontend/src/components/ui/label.tsx",
+    "frontend/src/components/ui/badge.tsx",
+    "frontend/src/components/ui/card.tsx",
     "frontend/src/components/placeholder-page.tsx",
     "frontend/src/components/providers/theme-provider.tsx",
     "frontend/src/components/theme-toggle.tsx",
     "frontend/src/components/language-toggle.tsx",
     "frontend/src/features/dashboard/dashboard-page.tsx",
-    "frontend/src/features/clusters/clusters-page.tsx"
+    "frontend/src/features/clusters/clusters-page.tsx",
+    "frontend/src/features/clusters/add-cluster-dialog.tsx"
   ],
   "hooks": [
     "frontend/src/components/providers/theme-provider.tsx (useTheme)",
-    "frontend/src/stores/app-store.ts (useAppStore)"
+    "frontend/src/stores/app-store.ts (useAppStore)",
+    "frontend/src/features/clusters/use-clusters.ts (useClusters, useContexts, useAddCluster, useRemoveCluster, useSwitchContext)"
   ],
   "services": [
     "frontend/src/lib/wails.ts",
