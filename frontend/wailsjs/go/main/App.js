@@ -10,8 +10,36 @@ export function AddNamespace(arg1, arg2) {
   return window['go']['main']['App']['AddNamespace'](arg1, arg2);
 }
 
+export function ApplyConfigMap(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['ApplyConfigMap'](arg1, arg2, arg3, arg4);
+}
+
+export function ApplySecret(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['ApplySecret'](arg1, arg2, arg3, arg4);
+}
+
 export function CloseExec(arg1) {
   return window['go']['main']['App']['CloseExec'](arg1);
+}
+
+export function DeleteConfigMap(arg1, arg2, arg3) {
+  return window['go']['main']['App']['DeleteConfigMap'](arg1, arg2, arg3);
+}
+
+export function DeleteSecret(arg1, arg2, arg3) {
+  return window['go']['main']['App']['DeleteSecret'](arg1, arg2, arg3);
+}
+
+export function GetClusterMetrics(arg1) {
+  return window['go']['main']['App']['GetClusterMetrics'](arg1);
+}
+
+export function GetConfigMap(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GetConfigMap'](arg1, arg2, arg3);
+}
+
+export function GetConfigMapYAML(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GetConfigMapYAML'](arg1, arg2, arg3);
 }
 
 export function GetContexts(arg1) {
@@ -34,6 +62,14 @@ export function GetPodYAML(arg1, arg2, arg3) {
   return window['go']['main']['App']['GetPodYAML'](arg1, arg2, arg3);
 }
 
+export function GetSecret(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GetSecret'](arg1, arg2, arg3);
+}
+
+export function GetSecretYAML(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GetSecretYAML'](arg1, arg2, arg3);
+}
+
 export function GetVersion() {
   return window['go']['main']['App']['GetVersion']();
 }
@@ -48,6 +84,10 @@ export function ImportLocalCluster(arg1, arg2, arg3) {
 
 export function ListClusters() {
   return window['go']['main']['App']['ListClusters']();
+}
+
+export function ListConfigMaps(arg1, arg2) {
+  return window['go']['main']['App']['ListConfigMaps'](arg1, arg2);
 }
 
 export function ListCronJobs(arg1, arg2) {
@@ -86,8 +126,16 @@ export function ListNamespaces(arg1) {
   return window['go']['main']['App']['ListNamespaces'](arg1);
 }
 
+export function ListNodeMetrics(arg1) {
+  return window['go']['main']['App']['ListNodeMetrics'](arg1);
+}
+
 export function ListNodes(arg1) {
   return window['go']['main']['App']['ListNodes'](arg1);
+}
+
+export function ListPodMetrics(arg1, arg2) {
+  return window['go']['main']['App']['ListPodMetrics'](arg1, arg2);
 }
 
 export function ListPods(arg1, arg2) {
@@ -96,6 +144,10 @@ export function ListPods(arg1, arg2) {
 
 export function ListSavedNamespaces(arg1) {
   return window['go']['main']['App']['ListSavedNamespaces'](arg1);
+}
+
+export function ListSecrets(arg1, arg2) {
+  return window['go']['main']['App']['ListSecrets'](arg1, arg2);
 }
 
 export function ListServices(arg1, arg2) {
@@ -126,6 +178,10 @@ export function ScaleDeployment(arg1, arg2, arg3, arg4) {
   return window['go']['main']['App']['ScaleDeployment'](arg1, arg2, arg3, arg4);
 }
 
+export function SearchResources(arg1, arg2, arg3) {
+  return window['go']['main']['App']['SearchResources'](arg1, arg2, arg3);
+}
+
 export function StartDeploymentLogStream(arg1, arg2, arg3, arg4, arg5, arg6) {
   return window['go']['main']['App']['StartDeploymentLogStream'](arg1, arg2, arg3, arg4, arg5, arg6);
 }
@@ -142,12 +198,20 @@ export function StartPortForward(arg1, arg2, arg3, arg4, arg5) {
   return window['go']['main']['App']['StartPortForward'](arg1, arg2, arg3, arg4, arg5);
 }
 
+export function StartWatch(arg1, arg2, arg3) {
+  return window['go']['main']['App']['StartWatch'](arg1, arg2, arg3);
+}
+
 export function StopLogStream(arg1) {
   return window['go']['main']['App']['StopLogStream'](arg1);
 }
 
 export function StopPortForward(arg1) {
   return window['go']['main']['App']['StopPortForward'](arg1);
+}
+
+export function StopWatch(arg1) {
+  return window['go']['main']['App']['StopWatch'](arg1);
 }
 
 export function SwitchContext(arg1, arg2) {

@@ -167,6 +167,70 @@ export namespace cluster {
 
 export namespace k8s {
 	
+	export class ClusterMetrics {
+	    cpuUsed: string;
+	    cpuTotal: string;
+	    memoryUsed: string;
+	    memoryTotal: string;
+	    cpuUsedMillis: number;
+	    cpuTotalMillis: number;
+	    memoryUsedBytes: number;
+	    memoryTotalBytes: number;
+	    totalsAvailable: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new ClusterMetrics(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.cpuUsed = source["cpuUsed"];
+	        this.cpuTotal = source["cpuTotal"];
+	        this.memoryUsed = source["memoryUsed"];
+	        this.memoryTotal = source["memoryTotal"];
+	        this.cpuUsedMillis = source["cpuUsedMillis"];
+	        this.cpuTotalMillis = source["cpuTotalMillis"];
+	        this.memoryUsedBytes = source["memoryUsedBytes"];
+	        this.memoryTotalBytes = source["memoryTotalBytes"];
+	        this.totalsAvailable = source["totalsAvailable"];
+	    }
+	}
+	export class ConfigMapDetail {
+	    name: string;
+	    namespace: string;
+	    data: Record<string, string>;
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ConfigMapDetail(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.data = source["data"];
+	        this.age = source["age"];
+	    }
+	}
+	export class ConfigMapInfo {
+	    name: string;
+	    namespace: string;
+	    keys: string[];
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ConfigMapInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.keys = source["keys"];
+	        this.age = source["age"];
+	    }
+	}
 	export class ContainerInfo {
 	    name: string;
 	    image: string;
@@ -343,6 +407,34 @@ export namespace k8s {
 	        this.age = source["age"];
 	    }
 	}
+	export class NodeMetrics {
+	    name: string;
+	    cpuUsed: string;
+	    cpuTotal: string;
+	    memoryUsed: string;
+	    memoryTotal: string;
+	    cpuUsedMillis: number;
+	    cpuTotalMillis: number;
+	    memoryUsedBytes: number;
+	    memoryTotalBytes: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new NodeMetrics(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.cpuUsed = source["cpuUsed"];
+	        this.cpuTotal = source["cpuTotal"];
+	        this.memoryUsed = source["memoryUsed"];
+	        this.memoryTotal = source["memoryTotal"];
+	        this.cpuUsedMillis = source["cpuUsedMillis"];
+	        this.cpuTotalMillis = source["cpuTotalMillis"];
+	        this.memoryUsedBytes = source["memoryUsedBytes"];
+	        this.memoryTotalBytes = source["memoryTotalBytes"];
+	    }
+	}
 	export class PodDetail {
 	    name: string;
 	    namespace: string;
@@ -412,6 +504,80 @@ export namespace k8s {
 	        this.restarts = source["restarts"];
 	        this.node = source["node"];
 	        this.ip = source["ip"];
+	        this.age = source["age"];
+	    }
+	}
+	export class PodMetrics {
+	    name: string;
+	    namespace: string;
+	    cpu: string;
+	    memory: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new PodMetrics(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.cpu = source["cpu"];
+	        this.memory = source["memory"];
+	    }
+	}
+	export class SearchResult {
+	    kind: string;
+	    name: string;
+	    namespace: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SearchResult(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.kind = source["kind"];
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	    }
+	}
+	export class SecretDetail {
+	    name: string;
+	    namespace: string;
+	    type: string;
+	    data: Record<string, string>;
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SecretDetail(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.type = source["type"];
+	        this.data = source["data"];
+	        this.age = source["age"];
+	    }
+	}
+	export class SecretInfo {
+	    name: string;
+	    namespace: string;
+	    type: string;
+	    keys: string[];
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SecretInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.type = source["type"];
+	        this.keys = source["keys"];
 	        this.age = source["age"];
 	    }
 	}

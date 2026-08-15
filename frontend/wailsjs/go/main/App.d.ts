@@ -7,7 +7,21 @@ export function AddCluster(arg1:cluster.AddClusterInput):Promise<cluster.Cluster
 
 export function AddNamespace(arg1:string,arg2:string):Promise<Array<string>>;
 
+export function ApplyConfigMap(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+
+export function ApplySecret(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+
 export function CloseExec(arg1:string):Promise<void>;
+
+export function DeleteConfigMap(arg1:string,arg2:string,arg3:string):Promise<void>;
+
+export function DeleteSecret(arg1:string,arg2:string,arg3:string):Promise<void>;
+
+export function GetClusterMetrics(arg1:string):Promise<k8s.ClusterMetrics>;
+
+export function GetConfigMap(arg1:string,arg2:string,arg3:string):Promise<k8s.ConfigMapDetail>;
+
+export function GetConfigMapYAML(arg1:string,arg2:string,arg3:string):Promise<string>;
 
 export function GetContexts(arg1:string):Promise<Array<cluster.KubeContext>>;
 
@@ -19,6 +33,10 @@ export function GetPod(arg1:string,arg2:string,arg3:string):Promise<k8s.PodDetai
 
 export function GetPodYAML(arg1:string,arg2:string,arg3:string):Promise<string>;
 
+export function GetSecret(arg1:string,arg2:string,arg3:string):Promise<k8s.SecretDetail>;
+
+export function GetSecretYAML(arg1:string,arg2:string,arg3:string):Promise<string>;
+
 export function GetVersion():Promise<Record<string, string>>;
 
 export function Health():Promise<string>;
@@ -26,6 +44,8 @@ export function Health():Promise<string>;
 export function ImportLocalCluster(arg1:string,arg2:string,arg3:string):Promise<cluster.Cluster>;
 
 export function ListClusters():Promise<Array<cluster.Cluster>>;
+
+export function ListConfigMaps(arg1:string,arg2:string):Promise<Array<k8s.ConfigMapInfo>>;
 
 export function ListCronJobs(arg1:string,arg2:string):Promise<Array<k8s.CronJobInfo>>;
 
@@ -45,11 +65,17 @@ export function ListLocalKubeconfigs():Promise<Array<cluster.LocalKubeconfig>>;
 
 export function ListNamespaces(arg1:string):Promise<Array<k8s.NamespaceInfo>>;
 
+export function ListNodeMetrics(arg1:string):Promise<Array<k8s.NodeMetrics>>;
+
 export function ListNodes(arg1:string):Promise<Array<k8s.NodeInfo>>;
+
+export function ListPodMetrics(arg1:string,arg2:string):Promise<Array<k8s.PodMetrics>>;
 
 export function ListPods(arg1:string,arg2:string):Promise<Array<k8s.PodInfo>>;
 
 export function ListSavedNamespaces(arg1:string):Promise<Array<string>>;
+
+export function ListSecrets(arg1:string,arg2:string):Promise<Array<k8s.SecretInfo>>;
 
 export function ListServices(arg1:string,arg2:string):Promise<Array<k8s.ServiceInfo>>;
 
@@ -65,6 +91,8 @@ export function ResizeExec(arg1:string,arg2:number,arg3:number):Promise<void>;
 
 export function ScaleDeployment(arg1:string,arg2:string,arg3:string,arg4:number):Promise<void>;
 
+export function SearchResources(arg1:string,arg2:string,arg3:string):Promise<Array<k8s.SearchResult>>;
+
 export function StartDeploymentLogStream(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number,arg6:boolean):Promise<string>;
 
 export function StartExec(arg1:string,arg2:string,arg3:string,arg4:string,arg5:string):Promise<string>;
@@ -73,9 +101,13 @@ export function StartLogStream(arg1:string,arg2:string,arg3:string,arg4:string,a
 
 export function StartPortForward(arg1:string,arg2:string,arg3:string,arg4:number,arg5:number):Promise<string>;
 
+export function StartWatch(arg1:string,arg2:string,arg3:string):Promise<string>;
+
 export function StopLogStream(arg1:string):Promise<void>;
 
 export function StopPortForward(arg1:string):Promise<void>;
+
+export function StopWatch(arg1:string):Promise<void>;
 
 export function SwitchContext(arg1:string,arg2:string):Promise<void>;
 

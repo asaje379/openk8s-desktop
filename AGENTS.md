@@ -10,9 +10,9 @@ App desktop **local-first** (alternative à Lens) pour administrer plusieurs clu
 
 ## État
 
-MVP **étapes 1 à 4** implémentées et commitées : connexion kubeconfig (collé + détection `~/.kube/config`/`$KUBECONFIG`), multi-cluster, exploration (nodes, namespaces manuels RBAC, workloads, pods, services, ingress), expérience pod (détail, logs streaming, terminal, port-forward, events, YAML), détail deployment (scale + logs agrégés).
+MVP **étapes 1 à 8** implémentées : connexion kubeconfig (collé + détection `~/.kube/config`/`$KUBECONFIG`), multi-cluster, exploration (nodes, namespaces manuels RBAC, workloads, pods, services, ingress, configmaps, secrets, events), expérience pod (détail, logs streaming, terminal, port-forward, events, YAML), détail deployment (scale + logs agrégés), **métriques CPU/mémoire** (Metrics Server, dégradation gracieuse), **ConfigMaps/Secrets** (liste, détail, édition YAML + apply/delete, valeurs Secrets masquées), **watch temps réel** (list + re-list débouncée, `WatchProvider` → cache Query), **recherche globale** (Ctrl+K).
 
-**Prochaine tâche : étape 5 — Metrics CPU/mémoire** (voir `.prompts/next-step.md` et `.prompts/master-prompt` §13).
+**Reste pour finaliser le MVP** : polish UX (états vides/loading, erreurs, packaging). Voir `.prompts/master-prompt` §8 (polish) et §32 (critères).
 
 ## Commandes
 

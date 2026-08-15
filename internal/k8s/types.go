@@ -88,6 +88,41 @@ type IngressInfo struct {
 	Age       string   `json:"age"`
 }
 
+// ConfigMapInfo is a compact view of a ConfigMap.
+type ConfigMapInfo struct {
+	Name      string   `json:"name"`
+	Namespace string   `json:"namespace"`
+	Keys      []string `json:"keys"`
+	Age       string   `json:"age"`
+}
+
+// ConfigMapDetail is a ConfigMap with its data entries.
+type ConfigMapDetail struct {
+	Name      string            `json:"name"`
+	Namespace string            `json:"namespace"`
+	Data      map[string]string `json:"data"`
+	Age       string            `json:"age"`
+}
+
+// SecretInfo is a compact view of a Secret (values never exposed here).
+type SecretInfo struct {
+	Name      string   `json:"name"`
+	Namespace string   `json:"namespace"`
+	Type      string   `json:"type"`
+	Keys      []string `json:"keys"`
+	Age       string   `json:"age"`
+}
+
+// SecretDetail is a Secret with its data entries. Values are masked by the
+// frontend until explicitly revealed.
+type SecretDetail struct {
+	Name      string            `json:"name"`
+	Namespace string            `json:"namespace"`
+	Type      string            `json:"type"`
+	Data      map[string]string `json:"data"`
+	Age       string            `json:"age"`
+}
+
 // ContainerInfo is a compact view of a container within a pod.
 type ContainerInfo struct {
 	Name         string `json:"name"`
@@ -122,6 +157,13 @@ type EventInfo struct {
 	Age       string `json:"age"`
 }
 
+// SearchResult is a single match from a global search.
+type SearchResult struct {
+	Kind      string `json:"kind"`
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+}
+
 // DeploymentDetail is a compact view of a Deployment for the detail page.
 type DeploymentDetail struct {
 	Name       string            `json:"name"`
@@ -133,6 +175,43 @@ type DeploymentDetail struct {
 	Selector   map[string]string `json:"selector"`
 	Containers []string          `json:"containers"`
 	Age        string            `json:"age"`
+}
+
+// NodeMetrics is the CPU/memory usage of a single node (used vs allocatable).
+type NodeMetrics struct {
+	Name             string `json:"name"`
+	CPUUsed          string `json:"cpuUsed"`
+	CPUTotal         string `json:"cpuTotal"`
+	MemoryUsed       string `json:"memoryUsed"`
+	MemoryTotal      string `json:"memoryTotal"`
+	CPUUsedMillis    int64  `json:"cpuUsedMillis"`
+	CPUTotalMillis   int64  `json:"cpuTotalMillis"`
+	MemoryUsedBytes  int64  `json:"memoryUsedBytes"`
+	MemoryTotalBytes int64  `json:"memoryTotalBytes"`
+}
+
+// PodMetrics is the CPU/memory usage of a single pod.
+type PodMetrics struct {
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+	CPU       string `json:"cpu"`
+	Memory    string `json:"memory"`
+}
+
+// ClusterMetrics is the aggregated CPU/memory usage across all nodes.
+type ClusterMetrics struct {
+	CPUUsed          string `json:"cpuUsed"`
+	CPUTotal         string `json:"cpuTotal"`
+	MemoryUsed       string `json:"memoryUsed"`
+	MemoryTotal      string `json:"memoryTotal"`
+	CPUUsedMillis    int64  `json:"cpuUsedMillis"`
+	CPUTotalMillis   int64  `json:"cpuTotalMillis"`
+	MemoryUsedBytes  int64  `json:"memoryUsedBytes"`
+	MemoryTotalBytes int64  `json:"memoryTotalBytes"`
+	// TotalsAvailable is false when only "used" values could be computed
+	// (e.g. node metrics are forbidden at cluster scope, so pod metrics
+	// across accessible namespaces were used instead).
+	TotalsAvailable bool `json:"totalsAvailable"`
 }
 
 // formatAge returns a human-readable duration since the given timestamp.

@@ -1,11 +1,21 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {
     AddNamespace,
+    ApplyConfigMap,
+    ApplySecret,
+    DeleteConfigMap,
+    DeleteSecret,
+    GetClusterMetrics,
+    GetConfigMap,
+    GetConfigMapYAML,
     GetDeployment,
     GetDeploymentYAML,
     GetPod,
     GetPodYAML,
+    GetSecret,
+    GetSecretYAML,
     ListCronJobs,
+    ListConfigMaps,
     ListDaemonSets,
     ListDeploymentPods,
     ListDeployments,
@@ -13,9 +23,12 @@ import {
     ListIngresses,
     ListJobs,
     ListNamespaces,
+    ListNodeMetrics,
     ListNodes,
+    ListPodMetrics,
     ListPods,
     ListSavedNamespaces,
+    ListSecrets,
     ListServices,
     ListStatefulSets,
     RemoveNamespace,
@@ -35,6 +48,33 @@ export function useNodes(clusterId: string | null) {
     return useQuery({
         queryKey: ['k8s', clusterId, 'nodes'],
         queryFn: () => ListNodes(clusterId as string),
+        enabled: !!clusterId,
+        retry: false,
+    })
+}
+
+export function useNodeMetrics(clusterId: string | null) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'node-metrics'],
+        queryFn: () => ListNodeMetrics(clusterId as string),
+        enabled: !!clusterId,
+        retry: false,
+    })
+}
+
+export function usePodMetrics(clusterId: string | null, namespace: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'pod-metrics', namespace],
+        queryFn: () => ListPodMetrics(clusterId as string, namespace),
+        enabled: !!clusterId && !!namespace,
+        retry: false,
+    })
+}
+
+export function useClusterMetrics(clusterId: string | null) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'cluster-metrics'],
+        queryFn: () => GetClusterMetrics(clusterId as string),
         enabled: !!clusterId,
         retry: false,
     })
@@ -211,6 +251,126 @@ export function useScaleDeployment() {
         onSuccess: (_data, {clusterId, namespace, name}) => {
             queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'deployment', namespace, name]})
             queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
+        },
+    })
+}
+
+export function useConfigMaps(clusterId: string | null, namespace: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'configmaps', namespace],
+        queryFn: () => ListConfigMaps(clusterId as string, namespace),
+        enabled: !!clusterId && !!namespace,
+        retry: false,
+    })
+}
+
+export function useConfigMap(clusterId: string | null, namespace: string, name: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'configmap', namespace, name],
+        queryFn: () => GetConfigMap(clusterId as string, namespace, name),
+        enabled: !!clusterId && !!namespace && !!name,
+        retry: false,
+    })
+}
+
+export function useConfigMapYAML(clusterId: string | null, namespace: string, name: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'configmap-yaml', namespace, name],
+        queryFn: () => GetConfigMapYAML(clusterId as string, namespace, name),
+        enabled: !!clusterId && !!namespace && !!name,
+        retry: false,
+    })
+}
+
+export function useApplyConfigMap() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({
+            clusterId,
+            namespace,
+            name,
+            yaml,
+        }: {
+            clusterId: string
+            namespace: string
+            name: string
+            yaml: string
+        }) => ApplyConfigMap(clusterId, namespace, name, yaml),
+        onSuccess: (_data, {clusterId, namespace, name}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'configmap', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'configmap-yaml', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'configmaps']})
+        },
+    })
+}
+
+export function useDeleteConfigMap() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) =>
+            DeleteConfigMap(clusterId, namespace, name),
+        onSuccess: (_data, {clusterId}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'configmaps']})
+        },
+    })
+}
+
+export function useSecrets(clusterId: string | null, namespace: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'secrets', namespace],
+        queryFn: () => ListSecrets(clusterId as string, namespace),
+        enabled: !!clusterId && !!namespace,
+        retry: false,
+    })
+}
+
+export function useSecret(clusterId: string | null, namespace: string, name: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'secret', namespace, name],
+        queryFn: () => GetSecret(clusterId as string, namespace, name),
+        enabled: !!clusterId && !!namespace && !!name,
+        retry: false,
+    })
+}
+
+export function useSecretYAML(clusterId: string | null, namespace: string, name: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'secret-yaml', namespace, name],
+        queryFn: () => GetSecretYAML(clusterId as string, namespace, name),
+        enabled: !!clusterId && !!namespace && !!name,
+        retry: false,
+    })
+}
+
+export function useApplySecret() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({
+            clusterId,
+            namespace,
+            name,
+            yaml,
+        }: {
+            clusterId: string
+            namespace: string
+            name: string
+            yaml: string
+        }) => ApplySecret(clusterId, namespace, name, yaml),
+        onSuccess: (_data, {clusterId, namespace, name}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'secret', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'secret-yaml', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'secrets']})
+        },
+    })
+}
+
+export function useDeleteSecret() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) =>
+            DeleteSecret(clusterId, namespace, name),
+        onSuccess: (_data, {clusterId}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'secrets']})
         },
     })
 }

@@ -36,17 +36,18 @@
 ## Deux flux de données
 
 1. **Request/response (bindings Wails)** : méthodes Go exposées (`ListPods`, `GetDeployment`, …) → `frontend/wailsjs/go/main/App`. Les types Go (avec tags JSON) génèrent des types TS (`frontend/wailsjs/go/models.ts`).
-2. **Streaming (push via `runtime.EventsEmit`)** : logs (`logs:data/error/end`), terminal (`exec:output/error/end`), port-forward (`portforward:ready/error/end`). Le frontend s'abonne via `EventsOn` (qui retourne une fonction de désinscription).
+2. **Streaming (push via `runtime.EventsEmit`)** : logs (`logs:data/error/end`), terminal (`exec:output/error/end`), port-forward (`portforward:ready/error/end`), watch (`watch:data/error/end`). Le frontend s'abonne via `EventsOn` (qui retourne une fonction de désinscription).
 
 ## Backend Go — packages
 
 | Package | Responsabilité |
 |---|---|
 | `internal/cluster` | `ClusterManager` : cycle de vie des connexions (add/remove/test/switch/validate), import de kubeconfigs locaux, namespaces sauvegardés, cache des clients en mémoire (`sync.RWMutex`). **Seul créateur** de `kubernetes.Interface` et `*rest.Config`. |
-| `internal/k8s` | Wrappers client-go : DTOs compacts (`types.go`) + fonctions de liste/détail/scale (namespaces, nodes, pods, workloads, services, ingress, events, deployment). Timeout de 30s sur les requêtes ponctuelles via `withTimeout`. |
+| `internal/k8s` | Wrappers client-go : DTOs compacts (`types.go`) + fonctions de liste/détail/scale (namespaces, nodes, pods, workloads, services, ingress, events, deployment, configmaps, secrets) + **métriques** (`metrics.go`, via `k8s.io/metrics`). Timeout de 30s sur les requêtes ponctuelles via `withTimeout`. |
 | `internal/logs` | `LogsManager` : streaming de logs (1 pod ou **multi-pods agrégés** pour les deployments, lignes préfixées `[pod] `). |
 | `internal/exec` | `ExecManager` : sessions exec interactives SPDY (stdin/stdout/stderr, resize). |
 | `internal/portforward` | `PortForwardManager` : port-forward SPDY (local→pod). |
+| `internal/watch` | `WatchManager` : watch de ressources (list initiale + re-list débouncée sur chaque événement), émet `watch:data/error/end`. |
 | `internal/storage` | `SQLiteStore` (implémente `ClusterStore` + `CredentialStore`) + `MemoryStore` (tests/fallback). |
 
 ### Pattern streaming (logs/exec/port-forward)
@@ -60,11 +61,12 @@ Les flux (logs follow, exec, port-forward) n'ont **pas** de timeout global (cont
 
 ## Frontend React
 
-- **Feature-based** : `features/{clusters,nodes,namespaces,workloads,pods,services,ingress}`.
+- **Feature-based** : `features/{clusters,nodes,namespaces,workloads,pods,services,ingress,configmaps,secrets,events,metrics}`.
 - **État serveur** : TanStack Query (`hooks/use-k8s.ts`, query keys hiérarchiques `['k8s', clusterId, …]`).
-- **État global minimal** : Zustand (`activeCluster`, `activeNamespace`) persisté en `localStorage`.
-- **Composants partagés** : `tables/data-table` (TanStack Table v8), `logs/log-viewer`, `terminal/terminal-view`, `yaml/yaml-viewer` (CodeMirror), `portforward/port-forward`, shadcn/ui.
-- **Code-splitting** : routes lazy + `TerminalView`/`YamlViewer` lazy (xterm/CodeMirror chargés à la demande).
+- **État global minimal** : Zustand (`activeCluster`, `activeNamespace` persistés ; `searchOpen` pour la palette) .
+- **Composants partagés** : `tables/data-table` (TanStack Table v8), `logs/log-viewer`, `terminal/terminal-view`, `yaml/yaml-viewer` (CodeMirror), `yaml/yaml-editor` (édition + apply), `portforward/port-forward`, `search/command-palette` (Ctrl+K), shadcn/ui.
+- **Code-splitting** : routes lazy + `TerminalView`/`YamlViewer`/`YamlEditor` lazy (xterm/CodeMirror chargés à la demande).
+- **Temps réel** : `WatchProvider` (monté dans `AppLayout`) démarre des watchs par cluster/namespace actif et alimente le cache TanStack Query (`setQueryData`) sur chaque `watch:data`.
 
 ## Gestion d'erreurs
 

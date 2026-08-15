@@ -15,6 +15,7 @@ import (
 	"openk8s-desktop/internal/logs"
 	"openk8s-desktop/internal/portforward"
 	"openk8s-desktop/internal/storage"
+	"openk8s-desktop/internal/watch"
 )
 
 // App struct
@@ -24,6 +25,7 @@ type App struct {
 	logs        *logs.Manager
 	exec        *exec.Manager
 	portforward *portforward.Manager
+	watch       *watch.Manager
 }
 
 // NewApp creates a new App application struct
@@ -35,6 +37,7 @@ func NewApp() *App {
 		logs:        logs.NewManager(),
 		exec:        exec.NewManager(),
 		portforward: portforward.NewManager(),
+		watch:       watch.NewManager(),
 	}
 }
 
@@ -201,6 +204,153 @@ func (a *App) ListIngresses(clusterID string, namespace string) ([]k8s.IngressIn
 	return k8s.ListIngresses(a.ctxOrDefault(), client, namespace)
 }
 
+// ListNodeMetrics returns the CPU/memory usage of every node in a cluster.
+func (a *App) ListNodeMetrics(clusterID string) ([]k8s.NodeMetrics, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	restCfg, err := a.clusters.RESTConfig(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	metricsClient, err := k8s.NewMetricsClient(restCfg)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListNodeMetrics(a.ctxOrDefault(), client, metricsClient)
+}
+
+// ListPodMetrics returns the CPU/memory usage of every pod in a namespace.
+func (a *App) ListPodMetrics(clusterID string, namespace string) ([]k8s.PodMetrics, error) {
+	restCfg, err := a.clusters.RESTConfig(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	metricsClient, err := k8s.NewMetricsClient(restCfg)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListPodMetrics(a.ctxOrDefault(), metricsClient, namespace)
+}
+
+// GetClusterMetrics returns the aggregated CPU/memory usage of a cluster.
+func (a *App) GetClusterMetrics(clusterID string) (*k8s.ClusterMetrics, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	restCfg, err := a.clusters.RESTConfig(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	metricsClient, err := k8s.NewMetricsClient(restCfg)
+	if err != nil {
+		return nil, err
+	}
+	namespaces, _ := a.clusters.ListSavedNamespaces(clusterID)
+	return k8s.GetClusterMetrics(a.ctxOrDefault(), client, metricsClient, namespaces)
+}
+
+// ListConfigMaps returns the configmaps of a cluster.
+func (a *App) ListConfigMaps(clusterID string, namespace string) ([]k8s.ConfigMapInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListConfigMaps(a.ctxOrDefault(), client, namespace)
+}
+
+// GetConfigMap returns the detail of a configmap.
+func (a *App) GetConfigMap(clusterID string, namespace string, name string) (*k8s.ConfigMapDetail, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.GetConfigMap(a.ctxOrDefault(), client, namespace, name)
+}
+
+// GetConfigMapYAML returns the YAML of a configmap.
+func (a *App) GetConfigMapYAML(clusterID string, namespace string, name string) (string, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return "", err
+	}
+	return k8s.GetConfigMapYAML(a.ctxOrDefault(), client, namespace, name)
+}
+
+// ApplyConfigMap creates or updates a configmap from a YAML manifest.
+func (a *App) ApplyConfigMap(clusterID string, namespace string, name string, yaml string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.ApplyConfigMap(a.ctxOrDefault(), client, namespace, name, yaml)
+}
+
+// DeleteConfigMap deletes a configmap.
+func (a *App) DeleteConfigMap(clusterID string, namespace string, name string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.DeleteConfigMap(a.ctxOrDefault(), client, namespace, name)
+}
+
+// ListSecrets returns the secrets of a cluster.
+func (a *App) ListSecrets(clusterID string, namespace string) ([]k8s.SecretInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListSecrets(a.ctxOrDefault(), client, namespace)
+}
+
+// GetSecret returns the detail of a secret.
+func (a *App) GetSecret(clusterID string, namespace string, name string) (*k8s.SecretDetail, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.GetSecret(a.ctxOrDefault(), client, namespace, name)
+}
+
+// GetSecretYAML returns the YAML of a secret.
+func (a *App) GetSecretYAML(clusterID string, namespace string, name string) (string, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return "", err
+	}
+	return k8s.GetSecretYAML(a.ctxOrDefault(), client, namespace, name)
+}
+
+// ApplySecret creates or updates a secret from a YAML manifest.
+func (a *App) ApplySecret(clusterID string, namespace string, name string, yaml string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.ApplySecret(a.ctxOrDefault(), client, namespace, name, yaml)
+}
+
+// DeleteSecret deletes a secret.
+func (a *App) DeleteSecret(clusterID string, namespace string, name string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.DeleteSecret(a.ctxOrDefault(), client, namespace, name)
+}
+
+// SearchResources searches resources by name across a cluster.
+func (a *App) SearchResources(clusterID string, namespace string, query string) ([]k8s.SearchResult, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.SearchResources(a.ctxOrDefault(), client, namespace, query)
+}
+
 // ListSavedNamespaces returns the manually-added namespaces for a cluster.
 func (a *App) ListSavedNamespaces(clusterID string) ([]string, error) {
 	return a.clusters.ListSavedNamespaces(clusterID)
@@ -362,6 +512,22 @@ func (a *App) StartPortForward(clusterID string, namespace string, pod string, l
 // StopPortForward stops a port-forward.
 func (a *App) StopPortForward(forwardID string) {
 	a.portforward.Stop(forwardID)
+}
+
+// StartWatch begins watching a resource and returns a watch id.
+func (a *App) StartWatch(clusterID string, resource string, namespace string) (string, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return "", err
+	}
+	return a.watch.Start(a.ctxOrDefault(), client, resource, namespace, func(event string, data any) {
+		runtime.EventsEmit(a.ctx, event, data)
+	})
+}
+
+// StopWatch stops a watch session.
+func (a *App) StopWatch(watchID string) {
+	a.watch.Stop(watchID)
 }
 
 // OpenExternal opens a URL in the system browser.

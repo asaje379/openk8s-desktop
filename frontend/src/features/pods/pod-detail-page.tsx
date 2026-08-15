@@ -8,9 +8,11 @@ import {Badge} from '@/components/ui/badge'
 import {LogViewer} from '@/components/logs/log-viewer'
 import {PortForward} from '@/components/portforward/port-forward'
 import {useAppStore} from '@/stores/app-store'
-import {useEvents, usePod, usePodYAML} from '@/hooks/use-k8s'
+import {useEvents, usePod, usePodMetrics, usePodYAML} from '@/hooks/use-k8s'
 import {podStatusVariant} from '@/lib/status'
 import {cn} from '@/lib/utils'
+import {MetricsUnavailable} from '@/features/metrics/metrics-unavailable'
+import {isMetricsUnavailableError} from '@/lib/errors'
 import type {ContainerInfo, EventInfo, PodDetail} from '@/lib/wails'
 
 const TerminalView = lazy(() =>
@@ -20,7 +22,7 @@ const YamlViewer = lazy(() =>
     import('@/components/yaml/yaml-viewer').then((m) => ({default: m.YamlViewer}))
 )
 
-type Tab = 'overview' | 'containers' | 'logs' | 'terminal' | 'events' | 'yaml' | 'portforward'
+type Tab = 'overview' | 'containers' | 'logs' | 'terminal' | 'events' | 'yaml' | 'portforward' | 'metrics'
 
 const TABS: {value: Tab; labelKey: string}[] = [
     {value: 'overview', labelKey: 'pod.overview'},
@@ -28,6 +30,7 @@ const TABS: {value: Tab; labelKey: string}[] = [
     {value: 'logs', labelKey: 'pod.logs'},
     {value: 'terminal', labelKey: 'pod.terminal'},
     {value: 'events', labelKey: 'pod.events'},
+    {value: 'metrics', labelKey: 'pod.metrics'},
     {value: 'yaml', labelKey: 'pod.yaml'},
     {value: 'portforward', labelKey: 'pod.portForward'},
 ]
@@ -120,6 +123,33 @@ function YamlTab({clusterId, namespace, name}: {clusterId: string; namespace: st
     )
 }
 
+function MetricsTab({clusterId, namespace, podName}: {clusterId: string; namespace: string; podName: string}) {
+    const {t} = useTranslation()
+    const {data = [], isLoading, error} = usePodMetrics(clusterId, namespace)
+
+    if (isLoading) return <div className="h-40 animate-pulse rounded-md bg-muted"/>
+    if (error) {
+        if (isMetricsUnavailableError(error)) return <MetricsUnavailable/>
+        return <p className="text-sm text-destructive">{String(error)}</p>
+    }
+
+    const metric = data.find((m) => m.name === podName)
+    const rows = [
+        [t('metrics.cpu'), metric?.cpu ?? '—'],
+        [t('metrics.memory'), metric?.memory ?? '—'],
+    ]
+    return (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {rows.map(([label, value]) => (
+                <div key={label} className="rounded-lg border border-border bg-card p-4">
+                    <div className="text-xs text-muted-foreground">{label}</div>
+                    <div className="mt-1 font-mono text-lg font-semibold text-foreground">{value}</div>
+                </div>
+            ))}
+        </div>
+    )
+}
+
 export function PodDetailPage() {
     const {t} = useTranslation()
     const {namespace = '', name = ''} = useParams()
@@ -193,6 +223,9 @@ export function PodDetailPage() {
                     )}
                     {tab === 'events' && (
                         <EventsTab clusterId={clusterId as string} namespace={namespace} podName={name}/>
+                    )}
+                    {tab === 'metrics' && (
+                        <MetricsTab clusterId={clusterId as string} namespace={namespace} podName={name}/>
                     )}
                     {tab === 'yaml' && (
                         <YamlTab clusterId={clusterId as string} namespace={namespace} name={name}/>

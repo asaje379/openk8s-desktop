@@ -1,16 +1,26 @@
 export {
     AddCluster,
     AddNamespace,
+    ApplyConfigMap,
+    ApplySecret,
     CloseExec,
+    DeleteConfigMap,
+    DeleteSecret,
+    GetClusterMetrics,
+    GetConfigMap,
+    GetConfigMapYAML,
     GetContexts,
     GetDeployment,
     GetDeploymentYAML,
     GetPod,
     GetPodYAML,
+    GetSecret,
+    GetSecretYAML,
     GetVersion,
     Health,
     ImportLocalCluster,
     ListClusters,
+    ListConfigMaps,
     ListCronJobs,
     ListDaemonSets,
     ListDeploymentPods,
@@ -20,9 +30,12 @@ export {
     ListJobs,
     ListLocalKubeconfigs,
     ListNamespaces,
+    ListNodeMetrics,
     ListNodes,
+    ListPodMetrics,
     ListPods,
     ListSavedNamespaces,
+    ListSecrets,
     ListServices,
     ListStatefulSets,
     OpenExternal,
@@ -30,12 +43,15 @@ export {
     RemoveNamespace,
     ResizeExec,
     ScaleDeployment,
+    SearchResources,
     StartExec,
     StartLogStream,
     StartDeploymentLogStream,
     StartPortForward,
+    StartWatch,
     StopLogStream,
     StopPortForward,
+    StopWatch,
     SwitchContext,
     TestConnection,
     TestKubeconfig,
@@ -65,5 +81,13 @@ export type ContainerInfo = k8s.ContainerInfo
 export type PodDetail = k8s.PodDetail
 export type EventInfo = k8s.EventInfo
 export type DeploymentDetail = k8s.DeploymentDetail
+export type NodeMetrics = k8s.NodeMetrics
+export type PodMetrics = k8s.PodMetrics
+export type ClusterMetrics = k8s.ClusterMetrics
+export type ConfigMapInfo = k8s.ConfigMapInfo
+export type ConfigMapDetail = k8s.ConfigMapDetail
+export type SecretInfo = k8s.SecretInfo
+export type SecretDetail = k8s.SecretDetail
+export type SearchResult = k8s.SearchResult
 
 export {EventsOff, EventsOn} from '../../wailsjs/runtime/runtime'

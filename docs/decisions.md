@@ -133,3 +133,37 @@
 - **Contexte** : certains clusters n'autorisent que l'accès namespace-scopé (listes cluster-scope interdites : `nodes`, `namespaces`, listes « all namespaces »).
 - **Décision** : namespaces **sauvegardés par cluster** (SQLite) ajoutés manuellement (comme dans Lens) ; sélecteur de namespace global dans la topbar ; défaut = premier namespace sauvegardé ; erreurs `Forbidden` affichées inline (« Accès refusé ») et non en toast.
 - **Conséquences** : `ClusterManager` expose `ListSavedNamespaces`/`AddNamespace`/`RemoveNamespace` ; les requêtes de liste ont `retry: false` côté frontend.
+
+## ADR-017 — Métriques via le clientset typé `k8s.io/metrics`
+
+- **Date** : 2026-08-15
+- **Contexte** : afficher CPU/mémoire (cluster, nodes, pods) via l'API `metrics.k8s.io` (Metrics Server), avec dégradation gracieuse si le serveur est absent.
+- **Options** : clientset typé `k8s.io/metrics` (`metricsv1beta1`) ; client `dynamic.Interface` sur `metrics.k8s.io/v1beta1` ; parsing manuel des `unstructured`.
+- **Décision** : clientset typé `k8s.io/metrics` (dépendance alignée sur client-go v0.36.3), construit à partir d'un `*rest.Config` dédié via `ClusterManager.RESTConfig(id)`.
+- **Justification** : typage fort (pas de parsing `unstructured`/`Quantity` manuel), API idiomatique client-go, tests via le fake `metricsfake.NewSimpleClientset`.
+- **Conséquences** : nouvelle dépendance `k8s.io/metrics` ; les totaux (Allocatable) viennent de `node.Status.Allocatable` via le clientset core ; erreur « could not find the requested resource » traitée côté frontend comme « Metrics unavailable » (pas d'erreur fatale) ; DTOs avec valeurs affichables + valeurs numériques (millicores/octets) pour les barres de progression. **Dégradation RBAC** : si `nodemetrics.metrics.k8s.io` est interdit au scope cluster, `GetClusterMetrics` retombe sur l'agrégation des `pods.metrics.k8s.io` des namespaces sauvegardés (used seul, `totalsAvailable=false`).
+
+## ADR-018 — ConfigMaps/Secrets : édition YAML + apply (upsert)
+
+- **Date** : 2026-08-15
+- **Contexte** : étapes 6 — lister/détailler ConfigMaps et Secrets, éditer via YAML, appliquer et supprimer.
+- **Décision** : clientset typé (pas de dynamic client) ; `Get*YAML` renvoie l'objet sérialisé (sans `ManagedFields`), l'éditeur CodeMirror (`yaml-editor`) le modifie, `Apply*` décode le YAML, force `namespace`/`name` depuis l'URL, puis **upsert** (Update si présent avec `ResourceVersion`, sinon Create). Suppression via `Delete*` + `window.confirm`. Les valeurs de Secret restent masquées côté frontend (révélation explicite via `window.confirm`).
+- **Justification** : cohérent avec les wrappers typés existants ; pas de dépendance au dynamic client pour l'instant (CRD = étape ultérieure) ; la sécurité des Secrets est imposée côté frontend par défaut.
+- **Conséquences** : l'édition YAML d'un Secret manipule des valeurs base64 (comme `kubectl`) ; pas de diff/validation préalable (la validation est l'erreur de décodage YAML) ; pas de `stringData` lors de l'édition (seule la section `data` est générée).
+
+## ADR-019 — Watch Kubernetes : list + re-list débouncée
+
+- **Date** : 2026-08-15
+- **Contexte** : étape 7 — mettre à jour l'UI en temps réel (watch) sans boucle de requêtes excessive.
+- **Options** : informers/sharedIndexInformer ; deltas appliqués côté frontend ; re-list complète débouncée.
+- **Décision** : `WatchManager` (`internal/watch`) qui, pour une ressource (pods, nodes, namespaces, workloads, services, ingress, configmaps, secrets, events…), émet un **snapshot complet** (réutilise les `List*` du package `k8s`) à l'ouverture, ouvre un `Watch`, et **re-liste** (débouncé 300 ms, backoff exponentiel ≤ 30 s) à chaque changement. Le frontend (`WatchProvider`) alimente le cache TanStack Query via `setQueryData`.
+- **Justification** : réutilise les DTOs et `List*` existants (pas de conversion par delta), robuste face aux erreurs/timeouts (re-list + re-watch auto), pas de « boucle de requêtes » (débounce), code générique via un registre `resource → list/watch`.
+- **Conséquences** : les watchs sont démarrés/arrêtés par `WatchProvider` selon le cluster/namespace actif ; les erreurs de watch sont silencieuses (l'état reste fourni par les queries) ; resync auto après fermeture du watch (timeout API 5 min).
+
+## ADR-020 — Recherche globale (Ctrl+K) + page Events
+
+- **Date** : 2026-08-15
+- **Contexte** : étape 8 (polish) — recherche globale par nom (§23) et page Events (§14, dernier placeholder restant).
+- **Décision** : binding `SearchResources` (recherche sous-chaîne insensible à la casse sur les ressources accessibles, en réutilisant les `List*` existants, les ressources interdites sont ignorées) + palette de commandes frontend (raccourci `Ctrl/Cmd+K`, état `searchOpen` en Zustand, query débouncée par TanStack Query avec `staleTime: 0`). Page Events = `DataTable` réutilisée, alimentée par `useEvents` + watch `events`.
+- **Justification** : recherche réutilisant les DTOs existants (pas de nouveau parcours d'API), palette légère sans dépendance externe, page Events réutilise le pattern `ResourcePage`/`DataTable`.
+- **Conséquences** : `SearchResources` fait ~10 `List` à chaque frappe (acceptable car activé uniquement palette ouverte, ≥ 2 caractères) ; navigation des résultats vers les pages détail existantes (services/ingress/nodes → liste).

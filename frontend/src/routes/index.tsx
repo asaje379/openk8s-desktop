@@ -40,8 +40,22 @@ const ServicesPage = lazy(() =>
 const IngressPage = lazy(() =>
     import('@/features/ingress/ingress-page').then((m) => ({default: m.IngressPage}))
 )
-const PlaceholderPage = lazy(() =>
-    import('@/components/placeholder-page').then((m) => ({default: m.PlaceholderPage}))
+const ConfigMapsPage = lazy(() =>
+    import('@/features/configmaps/configmaps-page').then((m) => ({default: m.ConfigMapsPage}))
+)
+const ConfigMapDetailPage = lazy(() =>
+    import('@/features/configmaps/configmap-detail-page').then((m) => ({
+        default: m.ConfigMapDetailPage,
+    }))
+)
+const SecretsPage = lazy(() =>
+    import('@/features/secrets/secrets-page').then((m) => ({default: m.SecretsPage}))
+)
+const SecretDetailPage = lazy(() =>
+    import('@/features/secrets/secret-detail-page').then((m) => ({default: m.SecretDetailPage}))
+)
+const EventsPage = lazy(() =>
+    import('@/features/events/events-page').then((m) => ({default: m.EventsPage}))
 )
 
 export const router = createHashRouter([
@@ -63,9 +77,11 @@ export const router = createHashRouter([
             {path: 'pods/:namespace/:name', element: page(<PodDetailPage/>)},
             {path: 'services', element: page(<ServicesPage/>)},
             {path: 'ingress', element: page(<IngressPage/>)},
-            {path: 'configmaps', element: page(<PlaceholderPage titleKey="sidebar.configmaps"/> )},
-            {path: 'secrets', element: page(<PlaceholderPage titleKey="sidebar.secrets"/> )},
-            {path: 'events', element: page(<PlaceholderPage titleKey="sidebar.events"/> )},
+            {path: 'configmaps', element: page(<ConfigMapsPage/>)},
+            {path: 'configmaps/:namespace/:name', element: page(<ConfigMapDetailPage/>)},
+            {path: 'secrets', element: page(<SecretsPage/>)},
+            {path: 'secrets/:namespace/:name', element: page(<SecretDetailPage/>)},
+            {path: 'events', element: page(<EventsPage/>)},
         ],
     },
 ])
