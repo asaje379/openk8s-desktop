@@ -211,6 +211,34 @@ export namespace k8s {
 	        this.age = source["age"];
 	    }
 	}
+	export class DeploymentDetail {
+	    name: string;
+	    namespace: string;
+	    desired: number;
+	    ready: number;
+	    available: number;
+	    image: string;
+	    selector: Record<string, string>;
+	    containers: string[];
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DeploymentDetail(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.desired = source["desired"];
+	        this.ready = source["ready"];
+	        this.available = source["available"];
+	        this.image = source["image"];
+	        this.selector = source["selector"];
+	        this.containers = source["containers"];
+	        this.age = source["age"];
+	    }
+	}
 	export class EventInfo {
 	    type: string;
 	    reason: string;

@@ -3,6 +3,8 @@ export {
     AddNamespace,
     CloseExec,
     GetContexts,
+    GetDeployment,
+    GetDeploymentYAML,
     GetPod,
     GetPodYAML,
     GetVersion,
@@ -11,6 +13,7 @@ export {
     ListClusters,
     ListCronJobs,
     ListDaemonSets,
+    ListDeploymentPods,
     ListDeployments,
     ListEvents,
     ListIngresses,
@@ -28,6 +31,7 @@ export {
     ResizeExec,
     StartExec,
     StartLogStream,
+    StartDeploymentLogStream,
     StartPortForward,
     StopLogStream,
     StopPortForward,
@@ -59,5 +63,6 @@ export type IngressInfo = k8s.IngressInfo
 export type ContainerInfo = k8s.ContainerInfo
 export type PodDetail = k8s.PodDetail
 export type EventInfo = k8s.EventInfo
+export type DeploymentDetail = k8s.DeploymentDetail
 
 export {EventsOff, EventsOn} from '../../wailsjs/runtime/runtime'

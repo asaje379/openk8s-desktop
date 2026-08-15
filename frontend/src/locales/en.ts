@@ -131,6 +131,8 @@ export const en = {
         reason: 'Reason',
         count: 'Count',
         message: 'Message',
+        replicas: 'Replicas',
+        selector: 'Selector',
     },
     pod: {
         overview: 'Overview',

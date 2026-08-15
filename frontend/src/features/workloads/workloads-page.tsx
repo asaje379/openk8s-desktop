@@ -1,5 +1,6 @@
 import {useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
+import {Link} from 'react-router'
 import {useQuery} from '@tanstack/react-query'
 import type {ColumnDef} from '@tanstack/react-table'
 import {DataTable} from '@/components/tables/data-table'
@@ -68,9 +69,17 @@ export function WorkloadsPage() {
             {
                 accessorKey: 'name',
                 header: t('resources.name'),
-                cell: ({row}) => (
-                    <span className="font-mono text-[13px]">{row.original.name}</span>
-                ),
+                cell: ({row}) =>
+                    row.original.kind === 'Deployment' ? (
+                        <Link
+                            to={`/workloads/deployments/${row.original.namespace}/${row.original.name}`}
+                            className="font-mono text-[13px] text-primary hover:underline"
+                        >
+                            {row.original.name}
+                        </Link>
+                    ) : (
+                        <span className="font-mono text-[13px]">{row.original.name}</span>
+                    ),
             },
             {accessorKey: 'namespace', header: t('resources.namespace')},
             {accessorKey: 'desired', header: t('resources.desired')},

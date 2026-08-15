@@ -12,6 +12,29 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+// podInfo builds a compact PodInfo from a pod.
+func podInfo(p corev1.Pod) PodInfo {
+	ready, total := 0, 0
+	var restarts int32
+	for _, c := range p.Status.ContainerStatuses {
+		total++
+		if c.Ready {
+			ready++
+		}
+		restarts += c.RestartCount
+	}
+	return PodInfo{
+		Name:      p.Name,
+		Namespace: p.Namespace,
+		Status:    string(p.Status.Phase),
+		Ready:     fmt.Sprintf("%d/%d", ready, total),
+		Restarts:  restarts,
+		Node:      p.Spec.NodeName,
+		IP:        p.Status.PodIP,
+		Age:       formatAge(p.CreationTimestamp),
+	}
+}
+
 // ListPods returns the pods of a cluster (optionally filtered by namespace).
 func ListPods(ctx context.Context, client kubernetes.Interface, namespace string) ([]PodInfo, error) {
 	ctx, cancel := withTimeout(ctx)
@@ -23,25 +46,7 @@ func ListPods(ctx context.Context, client kubernetes.Interface, namespace string
 	}
 	result := make([]PodInfo, 0, len(list.Items))
 	for _, p := range list.Items {
-		ready, total := 0, 0
-		var restarts int32
-		for _, c := range p.Status.ContainerStatuses {
-			total++
-			if c.Ready {
-				ready++
-			}
-			restarts += c.RestartCount
-		}
-		result = append(result, PodInfo{
-			Name:      p.Name,
-			Namespace: p.Namespace,
-			Status:    string(p.Status.Phase),
-			Ready:     fmt.Sprintf("%d/%d", ready, total),
-			Restarts:  restarts,
-			Node:      p.Spec.NodeName,
-			IP:        p.Status.PodIP,
-			Age:       formatAge(p.CreationTimestamp),
-		})
+		result = append(result, podInfo(p))
 	}
 	sort.Slice(result, func(i, j int) bool { return result[i].Name < result[j].Name })
 	return result, nil

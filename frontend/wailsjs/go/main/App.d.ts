@@ -11,6 +11,10 @@ export function CloseExec(arg1:string):Promise<void>;
 
 export function GetContexts(arg1:string):Promise<Array<cluster.KubeContext>>;
 
+export function GetDeployment(arg1:string,arg2:string,arg3:string):Promise<k8s.DeploymentDetail>;
+
+export function GetDeploymentYAML(arg1:string,arg2:string,arg3:string):Promise<string>;
+
 export function GetPod(arg1:string,arg2:string,arg3:string):Promise<k8s.PodDetail>;
 
 export function GetPodYAML(arg1:string,arg2:string,arg3:string):Promise<string>;
@@ -26,6 +30,8 @@ export function ListClusters():Promise<Array<cluster.Cluster>>;
 export function ListCronJobs(arg1:string,arg2:string):Promise<Array<k8s.CronJobInfo>>;
 
 export function ListDaemonSets(arg1:string,arg2:string):Promise<Array<k8s.WorkloadInfo>>;
+
+export function ListDeploymentPods(arg1:string,arg2:string,arg3:string):Promise<Array<k8s.PodInfo>>;
 
 export function ListDeployments(arg1:string,arg2:string):Promise<Array<k8s.WorkloadInfo>>;
 
@@ -56,6 +62,8 @@ export function RemoveCluster(arg1:string):Promise<void>;
 export function RemoveNamespace(arg1:string,arg2:string):Promise<Array<string>>;
 
 export function ResizeExec(arg1:string,arg2:number,arg3:number):Promise<void>;
+
+export function StartDeploymentLogStream(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number,arg6:boolean):Promise<string>;
 
 export function StartExec(arg1:string,arg2:string,arg3:string,arg4:string,arg5:string):Promise<string>;
 

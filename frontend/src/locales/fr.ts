@@ -133,6 +133,8 @@ export const fr: Translation = {
         reason: "Raison",
         count: "Nombre",
         message: "Message",
+        replicas: "Réplicas",
+        selector: "Sélecteur",
     },
     pod: {
         overview: "Vue d'ensemble",

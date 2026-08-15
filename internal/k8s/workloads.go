@@ -8,7 +8,9 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
+	"sigs.k8s.io/yaml"
 )
 
 func firstImage(containers []corev1.Container) string {
@@ -138,6 +140,79 @@ func ListJobs(ctx context.Context, client kubernetes.Interface, namespace string
 			Duration:    duration,
 			Age:         formatAge(j.CreationTimestamp),
 		})
+	}
+	sort.Slice(result, func(i, j int) bool { return result[i].Name < result[j].Name })
+	return result, nil
+}
+
+// GetDeployment returns a compact detail view of a Deployment.
+func GetDeployment(ctx context.Context, client kubernetes.Interface, namespace string, name string) (*DeploymentDetail, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
+	d, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	desired := int32(0)
+	if d.Spec.Replicas != nil {
+		desired = *d.Spec.Replicas
+	}
+
+	containers := make([]string, 0, len(d.Spec.Template.Spec.Containers))
+	for _, c := range d.Spec.Template.Spec.Containers {
+		containers = append(containers, c.Name)
+	}
+
+	return &DeploymentDetail{
+		Name:       d.Name,
+		Namespace:  d.Namespace,
+		Desired:    desired,
+		Ready:      d.Status.ReadyReplicas,
+		Available:  d.Status.AvailableReplicas,
+		Image:      firstImage(d.Spec.Template.Spec.Containers),
+		Selector:   d.Spec.Selector.MatchLabels,
+		Containers: containers,
+		Age:        formatAge(d.CreationTimestamp),
+	}, nil
+}
+
+// GetDeploymentYAML returns a Deployment serialized as YAML.
+func GetDeploymentYAML(ctx context.Context, client kubernetes.Interface, namespace string, name string) (string, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
+	d, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
+	if err != nil {
+		return "", err
+	}
+	d.ManagedFields = nil
+	data, err := yaml.Marshal(d)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+// ListDeploymentPods returns the pods matching a Deployment's selector.
+func ListDeploymentPods(ctx context.Context, client kubernetes.Interface, namespace string, name string) ([]PodInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
+	d, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+	selector := labels.Set(d.Spec.Selector.MatchLabels).String()
+
+	list, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{LabelSelector: selector})
+	if err != nil {
+		return nil, err
+	}
+	result := make([]PodInfo, 0, len(list.Items))
+	for _, p := range list.Items {
+		result = append(result, podInfo(p))
 	}
 	sort.Slice(result, func(i, j int) bool { return result[i].Name < result[j].Name })
 	return result, nil

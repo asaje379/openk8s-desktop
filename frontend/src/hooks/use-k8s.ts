@@ -1,10 +1,13 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {
     AddNamespace,
+    GetDeployment,
+    GetDeploymentYAML,
     GetPod,
     GetPodYAML,
     ListCronJobs,
     ListDaemonSets,
+    ListDeploymentPods,
     ListDeployments,
     ListEvents,
     ListIngresses,
@@ -159,6 +162,33 @@ export function useEvents(clusterId: string | null, namespace: string) {
         queryKey: ['k8s', clusterId, 'events', namespace],
         queryFn: () => ListEvents(clusterId as string, namespace),
         enabled: !!clusterId && !!namespace,
+        retry: false,
+    })
+}
+
+export function useDeployment(clusterId: string | null, namespace: string, name: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'deployment', namespace, name],
+        queryFn: () => GetDeployment(clusterId as string, namespace, name),
+        enabled: !!clusterId && !!namespace && !!name,
+        retry: false,
+    })
+}
+
+export function useDeploymentYAML(clusterId: string | null, namespace: string, name: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'deployment-yaml', namespace, name],
+        queryFn: () => GetDeploymentYAML(clusterId as string, namespace, name),
+        enabled: !!clusterId && !!namespace && !!name,
+        retry: false,
+    })
+}
+
+export function useDeploymentPods(clusterId: string | null, namespace: string, name: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'deployment-pods', namespace, name],
+        queryFn: () => ListDeploymentPods(clusterId as string, namespace, name),
+        enabled: !!clusterId && !!namespace && !!name,
         retry: false,
     })
 }

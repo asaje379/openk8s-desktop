@@ -3,6 +3,7 @@ package logs
 import (
 	"context"
 	"io"
+	"strings"
 	"sync"
 
 	"github.com/google/uuid"
@@ -24,7 +25,7 @@ func NewManager() *Manager {
 	return &Manager{streams: make(map[string]context.CancelFunc)}
 }
 
-// Start begins streaming logs for a pod/container and returns a stream id.
+// Start begins streaming logs for a single pod/container.
 func (m *Manager) Start(
 	ctx context.Context,
 	client kubernetes.Interface,
@@ -35,6 +36,35 @@ func (m *Manager) Start(
 	follow bool,
 	emit Emitter,
 ) string {
+	return m.startMulti(ctx, client, namespace, []string{pod}, container, tailLines, follow, false, emit)
+}
+
+// StartMulti begins streaming logs from multiple pods, prefixing each line
+// with the pod name.
+func (m *Manager) StartMulti(
+	ctx context.Context,
+	client kubernetes.Interface,
+	namespace string,
+	pods []string,
+	container string,
+	tailLines int64,
+	follow bool,
+	emit Emitter,
+) string {
+	return m.startMulti(ctx, client, namespace, pods, container, tailLines, follow, true, emit)
+}
+
+func (m *Manager) startMulti(
+	ctx context.Context,
+	client kubernetes.Interface,
+	namespace string,
+	pods []string,
+	container string,
+	tailLines int64,
+	follow bool,
+	prefixPods bool,
+	emit Emitter,
+) string {
 	id := uuid.NewString()
 	streamCtx, cancel := context.WithCancel(ctx)
 
@@ -42,13 +72,21 @@ func (m *Manager) Start(
 	m.streams[id] = cancel
 	m.mu.Unlock()
 
+	var wg sync.WaitGroup
+	for _, pod := range pods {
+		wg.Add(1)
+		go func(podName string) {
+			defer wg.Done()
+			m.streamPod(streamCtx, id, client, namespace, podName, container, tailLines, follow, prefixPods, emit)
+		}(pod)
+	}
+
 	go func() {
-		defer func() {
-			m.mu.Lock()
-			delete(m.streams, id)
-			m.mu.Unlock()
-		}()
-		m.stream(streamCtx, id, client, namespace, pod, container, tailLines, follow, emit)
+		wg.Wait()
+		m.mu.Lock()
+		delete(m.streams, id)
+		m.mu.Unlock()
+		emit("logs:end", map[string]any{"streamId": id})
 	}()
 
 	return id
@@ -64,7 +102,7 @@ func (m *Manager) Stop(id string) {
 	}
 }
 
-func (m *Manager) stream(
+func (m *Manager) streamPod(
 	ctx context.Context,
 	id string,
 	client kubernetes.Interface,
@@ -73,6 +111,7 @@ func (m *Manager) stream(
 	container string,
 	tailLines int64,
 	follow bool,
+	prefixPods bool,
 	emit Emitter,
 ) {
 	opts := &corev1.PodLogOptions{Container: container, Follow: follow}
@@ -91,14 +130,21 @@ func (m *Manager) stream(
 	for {
 		n, err := stream.Read(buf)
 		if n > 0 {
-			emit("logs:data", map[string]any{"streamId": id, "data": string(buf[:n])})
+			data := string(buf[:n])
+			if prefixPods {
+				data = prefixLines(pod, data)
+			}
+			emit("logs:data", map[string]any{"streamId": id, "data": data})
 		}
 		if err != nil {
 			if err != io.EOF {
 				emit("logs:error", map[string]any{"streamId": id, "message": err.Error()})
 			}
-			emit("logs:end", map[string]any{"streamId": id})
 			return
 		}
 	}
+}
+
+func prefixLines(pod string, data string) string {
+	return "[" + pod + "] " + strings.ReplaceAll(data, "\n", "\n["+pod+"] ")
 }

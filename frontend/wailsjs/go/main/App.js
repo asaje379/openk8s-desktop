@@ -18,6 +18,14 @@ export function GetContexts(arg1) {
   return window['go']['main']['App']['GetContexts'](arg1);
 }
 
+export function GetDeployment(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GetDeployment'](arg1, arg2, arg3);
+}
+
+export function GetDeploymentYAML(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GetDeploymentYAML'](arg1, arg2, arg3);
+}
+
 export function GetPod(arg1, arg2, arg3) {
   return window['go']['main']['App']['GetPod'](arg1, arg2, arg3);
 }
@@ -48,6 +56,10 @@ export function ListCronJobs(arg1, arg2) {
 
 export function ListDaemonSets(arg1, arg2) {
   return window['go']['main']['App']['ListDaemonSets'](arg1, arg2);
+}
+
+export function ListDeploymentPods(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ListDeploymentPods'](arg1, arg2, arg3);
 }
 
 export function ListDeployments(arg1, arg2) {
@@ -108,6 +120,10 @@ export function RemoveNamespace(arg1, arg2) {
 
 export function ResizeExec(arg1, arg2, arg3) {
   return window['go']['main']['App']['ResizeExec'](arg1, arg2, arg3);
+}
+
+export function StartDeploymentLogStream(arg1, arg2, arg3, arg4, arg5, arg6) {
+  return window['go']['main']['App']['StartDeploymentLogStream'](arg1, arg2, arg3, arg4, arg5, arg6);
 }
 
 export function StartExec(arg1, arg2, arg3, arg4, arg5) {

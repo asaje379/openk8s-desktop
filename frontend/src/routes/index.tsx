@@ -7,6 +7,7 @@ import {ClustersPage} from '@/features/clusters/clusters-page'
 import {NamespacesPage} from '@/features/namespaces/namespaces-page'
 import {NodesPage} from '@/features/nodes/nodes-page'
 import {WorkloadsPage} from '@/features/workloads/workloads-page'
+import {DeploymentDetailPage} from '@/features/workloads/deployment-detail-page'
 import {PodsPage} from '@/features/pods/pods-page'
 import {PodDetailPage} from '@/features/pods/pod-detail-page'
 import {ServicesPage} from '@/features/services/services-page'
@@ -26,6 +27,7 @@ export const router = createHashRouter([
             {path: 'nodes', element: <NodesPage/>},
             {path: 'namespaces', element: <NamespacesPage/>},
             {path: 'workloads', element: <WorkloadsPage/>},
+            {path: 'workloads/deployments/:namespace/:name', element: <DeploymentDetailPage/>},
             {path: 'pods', element: <PodsPage/>},
             {path: 'pods/:namespace/:name', element: <PodDetailPage/>},
             {path: 'services', element: <ServicesPage/>},

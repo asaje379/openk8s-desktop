@@ -4,6 +4,7 @@ import {toast} from 'sonner'
 import {Clipboard, Download, Eraser, Search} from 'lucide-react'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
+import {Checkbox} from '@/components/ui/checkbox'
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select'
 import {
     DropdownMenu,
@@ -12,16 +13,17 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip'
-import {EventsOn, StartLogStream, StopLogStream} from '@/lib/wails'
+import {EventsOn, StartDeploymentLogStream, StartLogStream, StopLogStream} from '@/lib/wails'
 
 interface LogViewerProps {
     clusterId: string
     namespace: string
-    pod: string
+    pod?: string
+    deployment?: string
     containers: string[]
 }
 
-export function LogViewer({clusterId, namespace, pod, containers}: LogViewerProps) {
+export function LogViewer({clusterId, namespace, pod, deployment, containers}: LogViewerProps) {
     const {t} = useTranslation()
     const [container, setContainer] = useState(containers[0] ?? '')
     const [follow, setFollow] = useState(true)
@@ -54,7 +56,14 @@ export function LogViewer({clusterId, namespace, pod, containers}: LogViewerProp
         setError(null)
         setStreaming(true)
 
-        StartLogStream(clusterId, namespace, pod, container, tailLines, follow).then((sid) => {
+        const start = () => {
+            if (pod) return StartLogStream(clusterId, namespace, pod, container, tailLines, follow)
+            if (deployment)
+                return StartDeploymentLogStream(clusterId, namespace, deployment, container, tailLines, follow)
+            return Promise.reject(new Error('no log source'))
+        }
+
+        start().then((sid) => {
             if (cancelled) {
                 StopLogStream(sid)
                 return
@@ -69,7 +78,7 @@ export function LogViewer({clusterId, namespace, pod, containers}: LogViewerProp
             offEnd()
             if (streamId) StopLogStream(streamId)
         }
-    }, [clusterId, namespace, pod, container, follow, tailLines])
+    }, [clusterId, namespace, pod, deployment, container, follow, tailLines])
 
     useEffect(() => {
         if (follow && scrollRef.current) {
@@ -109,7 +118,7 @@ export function LogViewer({clusterId, namespace, pod, containers}: LogViewerProp
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = `${pod}-${container || 'logs'}.log`
+        a.download = `${pod || deployment || 'logs'}-${container || 'logs'}.log`
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
@@ -131,12 +140,8 @@ export function LogViewer({clusterId, namespace, pod, containers}: LogViewerProp
                         ))}
                     </SelectContent>
                 </Select>
-                <label className="flex items-center gap-1.5 text-sm">
-                    <input
-                        type="checkbox"
-                        checked={follow}
-                        onChange={(e) => setFollow(e.target.checked)}
-                    />
+                <label className="flex cursor-pointer items-center gap-2 text-sm">
+                    <Checkbox checked={follow} onCheckedChange={(c) => setFollow(!!c)}/>
                     {t('pod.follow')}
                 </label>
                 <label className="flex items-center gap-1.5 text-sm">

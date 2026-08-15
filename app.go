@@ -259,6 +259,52 @@ func (a *App) StopLogStream(streamID string) {
 	a.logs.Stop(streamID)
 }
 
+// GetDeployment returns the detail of a deployment.
+func (a *App) GetDeployment(clusterID string, namespace string, name string) (*k8s.DeploymentDetail, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.GetDeployment(a.ctxOrDefault(), client, namespace, name)
+}
+
+// GetDeploymentYAML returns the YAML of a deployment.
+func (a *App) GetDeploymentYAML(clusterID string, namespace string, name string) (string, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return "", err
+	}
+	return k8s.GetDeploymentYAML(a.ctxOrDefault(), client, namespace, name)
+}
+
+// ListDeploymentPods returns the pods of a deployment.
+func (a *App) ListDeploymentPods(clusterID string, namespace string, name string) ([]k8s.PodInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListDeploymentPods(a.ctxOrDefault(), client, namespace, name)
+}
+
+// StartDeploymentLogStream streams aggregated logs for all pods of a deployment.
+func (a *App) StartDeploymentLogStream(clusterID string, namespace string, deployment string, container string, tailLines int64, follow bool) (string, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return "", err
+	}
+	pods, err := k8s.ListDeploymentPods(a.ctxOrDefault(), client, namespace, deployment)
+	if err != nil {
+		return "", err
+	}
+	podNames := make([]string, 0, len(pods))
+	for _, p := range pods {
+		podNames = append(podNames, p.Name)
+	}
+	return a.logs.StartMulti(a.ctxOrDefault(), client, namespace, podNames, container, tailLines, follow, func(event string, data any) {
+		runtime.EventsEmit(a.ctx, event, data)
+	}), nil
+}
+
 // StartExec opens an interactive exec session and returns a session id.
 func (a *App) StartExec(clusterID string, namespace string, pod string, container string, command string) (string, error) {
 	client, err := a.clusters.Client(clusterID)

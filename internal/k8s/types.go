@@ -122,6 +122,19 @@ type EventInfo struct {
 	Age       string `json:"age"`
 }
 
+// DeploymentDetail is a compact view of a Deployment for the detail page.
+type DeploymentDetail struct {
+	Name       string            `json:"name"`
+	Namespace  string            `json:"namespace"`
+	Desired    int32             `json:"desired"`
+	Ready      int32             `json:"ready"`
+	Available  int32             `json:"available"`
+	Image      string            `json:"image"`
+	Selector   map[string]string `json:"selector"`
+	Containers []string          `json:"containers"`
+	Age        string            `json:"age"`
+}
+
 // formatAge returns a human-readable duration since the given timestamp.
 func formatAge(t metav1.Time) string {
 	d := time.Since(t.Time)
