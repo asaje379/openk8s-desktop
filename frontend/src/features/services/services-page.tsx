@@ -1,4 +1,4 @@
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import type {ColumnDef} from '@tanstack/react-table'
 import {DataTable} from '@/components/tables/data-table'
@@ -7,14 +7,14 @@ import {NoCluster} from '@/components/no-cluster'
 import {NamespaceSelect} from '@/components/namespace-select'
 import {Badge} from '@/components/ui/badge'
 import {useAppStore} from '@/stores/app-store'
-import {useServices} from '@/hooks/use-k8s'
+import {useNamespaceFilter, useServices} from '@/hooks/use-k8s'
 import type {ServiceInfo} from '@/lib/wails'
 
 export function ServicesPage() {
     const {t} = useTranslation()
     const activeCluster = useAppStore((s) => s.activeCluster)
-    const [namespace, setNamespace] = useState('')
-    const {data = [], isLoading} = useServices(activeCluster?.id ?? null, namespace)
+    const [namespace, setNamespace] = useNamespaceFilter(activeCluster?.id ?? null)
+    const {data = [], isLoading, error, refetch} = useServices(activeCluster?.id ?? null, namespace)
 
     const columns = useMemo<ColumnDef<ServiceInfo>[]>(
         () => [
@@ -39,6 +39,8 @@ export function ServicesPage() {
         <ResourcePage
             title={t('sidebar.services')}
             isLoading={isLoading}
+            error={error}
+            onRetry={() => void refetch()}
             actions={<NamespaceSelect value={namespace} onChange={setNamespace}/>}
         >
             <DataTable columns={columns} data={data ?? []}/>

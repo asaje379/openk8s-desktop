@@ -1,17 +1,14 @@
-import {MutationCache, QueryCache, QueryClient} from '@tanstack/react-query'
+import {MutationCache, QueryClient} from '@tanstack/react-query'
 import {toast} from 'sonner'
 
 function toMessage(error: unknown): string {
     return error instanceof Error ? error.message : String(error)
 }
 
-const onError = (error: unknown) => {
-    toast.error(toMessage(error))
-}
-
 export const queryClient = new QueryClient({
-    queryCache: new QueryCache({onError}),
-    mutationCache: new MutationCache({onError}),
+    mutationCache: new MutationCache({
+        onError: (error) => toast.error(toMessage(error)),
+    }),
     defaultOptions: {
         queries: {
             staleTime: 30_000,

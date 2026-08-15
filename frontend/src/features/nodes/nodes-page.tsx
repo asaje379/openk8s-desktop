@@ -12,7 +12,7 @@ import type {NodeInfo} from '@/lib/wails'
 export function NodesPage() {
     const {t} = useTranslation()
     const activeCluster = useAppStore((s) => s.activeCluster)
-    const {data = [], isLoading} = useNodes(activeCluster?.id ?? null)
+    const {data = [], isLoading, error, refetch} = useNodes(activeCluster?.id ?? null)
 
     const columns = useMemo<ColumnDef<NodeInfo>[]>(
         () => [
@@ -40,7 +40,7 @@ export function NodesPage() {
     if (!activeCluster) return <NoCluster/>
 
     return (
-        <ResourcePage title={t('sidebar.nodes')} isLoading={isLoading}>
+        <ResourcePage title={t('sidebar.nodes')} isLoading={isLoading} error={error} onRetry={() => void refetch()}>
             <DataTable columns={columns} data={data ?? []}/>
         </ResourcePage>
     )

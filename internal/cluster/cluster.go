@@ -59,6 +59,9 @@ type ClusterStore interface {
 	GetCluster(id string) (Cluster, error)
 	SaveCluster(c Cluster) error
 	DeleteCluster(id string) error
+	ListSavedNamespaces(clusterID string) ([]string, error)
+	SaveNamespace(clusterID string, namespace string) error
+	DeleteNamespace(clusterID string, namespace string) error
 }
 
 // CredentialStore persists sensitive kubeconfig material.
@@ -81,6 +84,9 @@ type ClusterManager interface {
 	ListLocalKubeconfigs() ([]LocalKubeconfig, error)
 	ImportLocalCluster(path string, contextName string, name string) (Cluster, error)
 	Client(id string) (kubernetes.Interface, error)
+	ListSavedNamespaces(clusterID string) ([]string, error)
+	AddNamespace(clusterID string, namespace string) ([]string, error)
+	RemoveNamespace(clusterID string, namespace string) ([]string, error)
 }
 
 // ClientFactory builds a Kubernetes client from a kubeconfig and context.

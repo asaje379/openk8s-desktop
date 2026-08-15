@@ -1,5 +1,6 @@
 export {
     AddCluster,
+    AddNamespace,
     GetContexts,
     GetVersion,
     Health,
@@ -14,9 +15,11 @@ export {
     ListNamespaces,
     ListNodes,
     ListPods,
+    ListSavedNamespaces,
     ListServices,
     ListStatefulSets,
     RemoveCluster,
+    RemoveNamespace,
     SwitchContext,
     TestConnection,
     TestKubeconfig,

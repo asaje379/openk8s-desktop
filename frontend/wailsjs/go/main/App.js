@@ -6,6 +6,10 @@ export function AddCluster(arg1) {
   return window['go']['main']['App']['AddCluster'](arg1);
 }
 
+export function AddNamespace(arg1, arg2) {
+  return window['go']['main']['App']['AddNamespace'](arg1, arg2);
+}
+
 export function GetContexts(arg1) {
   return window['go']['main']['App']['GetContexts'](arg1);
 }
@@ -62,6 +66,10 @@ export function ListPods(arg1, arg2) {
   return window['go']['main']['App']['ListPods'](arg1, arg2);
 }
 
+export function ListSavedNamespaces(arg1) {
+  return window['go']['main']['App']['ListSavedNamespaces'](arg1);
+}
+
 export function ListServices(arg1, arg2) {
   return window['go']['main']['App']['ListServices'](arg1, arg2);
 }
@@ -72,6 +80,10 @@ export function ListStatefulSets(arg1, arg2) {
 
 export function RemoveCluster(arg1) {
   return window['go']['main']['App']['RemoveCluster'](arg1);
+}
+
+export function RemoveNamespace(arg1, arg2) {
+  return window['go']['main']['App']['RemoveNamespace'](arg1, arg2);
 }
 
 export function SwitchContext(arg1, arg2) {

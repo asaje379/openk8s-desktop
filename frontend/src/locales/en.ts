@@ -117,6 +117,14 @@ export const en = {
         noCluster: 'No cluster selected',
         noClusterDescription: 'Select a cluster on the Clusters page to explore its resources.',
         goToClusters: 'Go to Clusters',
+        addNamespace: 'Add namespace',
+        addNamespaceDescription: 'Add a namespace you have access to, and explore its resources.',
+        add: 'Add',
+        forbidden: 'Access denied',
+        forbiddenDescription:
+            'Your Kubernetes identity does not have permission to access this resource. Try selecting a specific namespace.',
+        loadError: 'Failed to load resources',
+        addNamespaceHint: 'Add the namespaces you have access to. Their resources will be listed here.',
     },
     placeholder: {
         description: 'This section will be implemented in a later step of the MVP.',

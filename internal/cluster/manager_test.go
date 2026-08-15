@@ -242,3 +242,37 @@ func TestTestKubeconfig_Success(t *testing.T) {
 		t.Fatalf("expected connected, got %+v", status)
 	}
 }
+
+func TestNamespaces_AddListRemove(t *testing.T) {
+	m := newTestManager(t, okFactory(t))
+	c, err := m.AddCluster(cluster.AddClusterInput{Kubeconfig: testKubeconfig})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	list, err := m.AddNamespace(c.ID, "my-app")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(list) != 1 || list[0] != "my-app" {
+		t.Fatalf("unexpected list after add: %v", list)
+	}
+
+	m.AddNamespace(c.ID, "other")
+
+	list, err = m.ListSavedNamespaces(c.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(list) != 2 {
+		t.Fatalf("expected 2 namespaces, got %d", len(list))
+	}
+
+	list, err = m.RemoveNamespace(c.ID, "my-app")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(list) != 1 || list[0] != "other" {
+		t.Fatalf("unexpected list after remove: %v", list)
+	}
+}

@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -203,6 +204,31 @@ func (m *Manager) TestKubeconfig(kubeconfig string, contextName string) (Connect
 // Client returns the cached (or newly built) Kubernetes client for a cluster.
 func (m *Manager) Client(id string) (kubernetes.Interface, error) {
 	return m.client(id)
+}
+
+// ListSavedNamespaces returns the manually-added namespaces for a cluster.
+func (m *Manager) ListSavedNamespaces(clusterID string) ([]string, error) {
+	return m.store.ListSavedNamespaces(clusterID)
+}
+
+// AddNamespace adds a namespace to the saved list for a cluster.
+func (m *Manager) AddNamespace(clusterID string, namespace string) ([]string, error) {
+	namespace = strings.TrimSpace(namespace)
+	if namespace == "" {
+		return nil, fmt.Errorf("namespace name is empty")
+	}
+	if err := m.store.SaveNamespace(clusterID, namespace); err != nil {
+		return nil, fmt.Errorf("save namespace: %w", err)
+	}
+	return m.store.ListSavedNamespaces(clusterID)
+}
+
+// RemoveNamespace removes a namespace from the saved list for a cluster.
+func (m *Manager) RemoveNamespace(clusterID string, namespace string) ([]string, error) {
+	if err := m.store.DeleteNamespace(clusterID, namespace); err != nil {
+		return nil, fmt.Errorf("delete namespace: %w", err)
+	}
+	return m.store.ListSavedNamespaces(clusterID)
 }
 
 func (m *Manager) client(id string) (kubernetes.Interface, error) {

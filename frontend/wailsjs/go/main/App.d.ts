@@ -5,6 +5,8 @@ import {k8s} from '../models';
 
 export function AddCluster(arg1:cluster.AddClusterInput):Promise<cluster.Cluster>;
 
+export function AddNamespace(arg1:string,arg2:string):Promise<Array<string>>;
+
 export function GetContexts(arg1:string):Promise<Array<cluster.KubeContext>>;
 
 export function GetVersion():Promise<Record<string, string>>;
@@ -33,11 +35,15 @@ export function ListNodes(arg1:string):Promise<Array<k8s.NodeInfo>>;
 
 export function ListPods(arg1:string,arg2:string):Promise<Array<k8s.PodInfo>>;
 
+export function ListSavedNamespaces(arg1:string):Promise<Array<string>>;
+
 export function ListServices(arg1:string,arg2:string):Promise<Array<k8s.ServiceInfo>>;
 
 export function ListStatefulSets(arg1:string,arg2:string):Promise<Array<k8s.WorkloadInfo>>;
 
 export function RemoveCluster(arg1:string):Promise<void>;
+
+export function RemoveNamespace(arg1:string,arg2:string):Promise<Array<string>>;
 
 export function SwitchContext(arg1:string,arg2:string):Promise<void>;
 

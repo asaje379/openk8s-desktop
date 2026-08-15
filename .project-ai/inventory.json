@@ -15,6 +15,7 @@
     "frontend/src/components/resource-page.tsx",
     "frontend/src/components/no-cluster.tsx",
     "frontend/src/components/namespace-select.tsx",
+    "frontend/src/components/add-namespace-dialog.tsx",
     "frontend/src/components/placeholder-page.tsx",
     "frontend/src/components/error-boundary.tsx",
     "frontend/src/components/providers/theme-provider.tsx",
@@ -43,7 +44,8 @@
     "frontend/src/lib/i18n.ts"
   ],
   "helpers": [
-    "frontend/src/lib/utils.ts (cn)"
+    "frontend/src/lib/utils.ts (cn)",
+    "frontend/src/lib/errors.ts (isForbiddenError)"
   ],
   "routes": [
     "frontend/src/routes/index.tsx"

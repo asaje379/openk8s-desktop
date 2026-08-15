@@ -51,6 +51,11 @@ CREATE TABLE IF NOT EXISTS clusters (
 CREATE TABLE IF NOT EXISTS kubeconfigs (
     cluster_id TEXT PRIMARY KEY,
     kubeconfig TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS cluster_namespaces (
+    cluster_id TEXT NOT NULL,
+    namespace  TEXT NOT NULL,
+    PRIMARY KEY (cluster_id, namespace)
 );`
 	_, err := db.Exec(schema)
 	return err
@@ -133,5 +138,36 @@ func (s *SQLiteStore) GetKubeconfig(id string) (string, error) {
 
 func (s *SQLiteStore) DeleteKubeconfig(id string) error {
 	_, err := s.db.Exec(`DELETE FROM kubeconfigs WHERE cluster_id = ?`, id)
+	return err
+}
+
+func (s *SQLiteStore) ListSavedNamespaces(clusterID string) ([]string, error) {
+	rows, err := s.db.Query(`SELECT namespace FROM cluster_namespaces WHERE cluster_id = ? ORDER BY namespace`, clusterID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	namespaces := make([]string, 0)
+	for rows.Next() {
+		var ns string
+		if err := rows.Scan(&ns); err != nil {
+			return nil, err
+		}
+		namespaces = append(namespaces, ns)
+	}
+	return namespaces, rows.Err()
+}
+
+func (s *SQLiteStore) SaveNamespace(clusterID string, namespace string) error {
+	_, err := s.db.Exec(
+		`INSERT INTO cluster_namespaces (cluster_id, namespace) VALUES (?, ?)
+		 ON CONFLICT(cluster_id, namespace) DO NOTHING`,
+		clusterID, namespace)
+	return err
+}
+
+func (s *SQLiteStore) DeleteNamespace(clusterID string, namespace string) error {
+	_, err := s.db.Exec(`DELETE FROM cluster_namespaces WHERE cluster_id = ? AND namespace = ?`, clusterID, namespace)
 	return err
 }

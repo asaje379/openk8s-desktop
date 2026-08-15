@@ -7,6 +7,7 @@ import {ResourcePage} from '@/components/resource-page'
 import {NoCluster} from '@/components/no-cluster'
 import {NamespaceSelect} from '@/components/namespace-select'
 import {useAppStore} from '@/stores/app-store'
+import {useNamespaceFilter} from '@/hooks/use-k8s'
 import {
     ListCronJobs,
     ListDaemonSets,
@@ -52,13 +53,14 @@ export function WorkloadsPage() {
     const {t} = useTranslation()
     const activeCluster = useAppStore((s) => s.activeCluster)
     const [kind, setKind] = useState<WorkloadKind>('deployments')
-    const [namespace, setNamespace] = useState('')
+    const [namespace, setNamespace] = useNamespaceFilter(activeCluster?.id ?? null)
 
     const clusterId = activeCluster?.id ?? null
-    const {data, isLoading} = useQuery({
+    const {data, isLoading, error, refetch} = useQuery({
         queryKey: ['k8s', clusterId, 'workloads', kind, namespace],
         queryFn: () => fetchWorkloads(kind, clusterId as string, namespace),
         enabled: !!clusterId,
+        retry: false,
     })
 
     const workloadColumns = useMemo<ColumnDef<WorkloadInfo>[]>(
@@ -109,6 +111,8 @@ export function WorkloadsPage() {
         <ResourcePage
             title={t('sidebar.workloads')}
             isLoading={isLoading}
+            error={error}
+            onRetry={() => void refetch()}
             actions={
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1 rounded-md border border-border p-1">

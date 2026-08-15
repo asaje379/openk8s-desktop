@@ -119,6 +119,14 @@ export const fr: Translation = {
         noCluster: "Aucun cluster sélectionné",
         noClusterDescription: "Sélectionnez un cluster sur la page Clusters pour explorer ses ressources.",
         goToClusters: "Aller aux Clusters",
+        addNamespace: "Ajouter un namespace",
+        addNamespaceDescription: "Ajoutez un namespace auquel vous avez accès pour explorer ses ressources.",
+        add: "Ajouter",
+        forbidden: "Accès refusé",
+        forbiddenDescription:
+            "Votre identité Kubernetes n'a pas la permission d'accéder à cette ressource. Essayez de sélectionner un namespace spécifique.",
+        loadError: "Échec du chargement des ressources",
+        addNamespaceHint: "Ajoutez les namespaces auxquels vous avez accès. Leurs ressources seront listées ici.",
     },
     placeholder: {
         description: "Cette section sera implémentée dans une étape ultérieure du MVP.",

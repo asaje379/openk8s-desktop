@@ -188,6 +188,21 @@ func (a *App) ListIngresses(clusterID string, namespace string) ([]k8s.IngressIn
 	return k8s.ListIngresses(a.ctxOrDefault(), client, namespace)
 }
 
+// ListSavedNamespaces returns the manually-added namespaces for a cluster.
+func (a *App) ListSavedNamespaces(clusterID string) ([]string, error) {
+	return a.clusters.ListSavedNamespaces(clusterID)
+}
+
+// AddNamespace adds a namespace to the saved list for a cluster.
+func (a *App) AddNamespace(clusterID string, namespace string) ([]string, error) {
+	return a.clusters.AddNamespace(clusterID, namespace)
+}
+
+// RemoveNamespace removes a namespace from the saved list for a cluster.
+func (a *App) RemoveNamespace(clusterID string, namespace string) ([]string, error) {
+	return a.clusters.RemoveNamespace(clusterID, namespace)
+}
+
 // ctxOrDefault returns the app context or a background context if not started.
 func (a *App) ctxOrDefault() context.Context {
 	if a.ctx != nil {
