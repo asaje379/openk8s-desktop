@@ -49,6 +49,8 @@ export function ListServices(arg1:string,arg2:string):Promise<Array<k8s.ServiceI
 
 export function ListStatefulSets(arg1:string,arg2:string):Promise<Array<k8s.WorkloadInfo>>;
 
+export function OpenExternal(arg1:string):Promise<void>;
+
 export function RemoveCluster(arg1:string):Promise<void>;
 
 export function RemoveNamespace(arg1:string,arg2:string):Promise<Array<string>>;

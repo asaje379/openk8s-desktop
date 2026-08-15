@@ -154,6 +154,8 @@ export const en = {
         remotePort: 'Pod port',
         startForward: 'Start',
         stopForward: 'Stop',
+        openInBrowser: 'Open in browser',
+        copySuccess: 'Logs copied to clipboard',
     },
     placeholder: {
         description: 'This section will be implemented in a later step of the MVP.',

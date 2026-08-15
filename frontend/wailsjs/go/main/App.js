@@ -94,6 +94,10 @@ export function ListStatefulSets(arg1, arg2) {
   return window['go']['main']['App']['ListStatefulSets'](arg1, arg2);
 }
 
+export function OpenExternal(arg1) {
+  return window['go']['main']['App']['OpenExternal'](arg1);
+}
+
 export function RemoveCluster(arg1) {
   return window['go']['main']['App']['RemoveCluster'](arg1);
 }

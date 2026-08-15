@@ -156,6 +156,8 @@ export const fr: Translation = {
         remotePort: "Port du pod",
         startForward: "Démarrer",
         stopForward: "Arrêter",
+        openInBrowser: "Ouvrir dans le navigateur",
+        copySuccess: "Logs copiés dans le presse-papiers",
     },
     placeholder: {
         description: "Cette section sera implémentée dans une étape ultérieure du MVP.",

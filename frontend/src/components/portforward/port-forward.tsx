@@ -1,9 +1,10 @@
 import {useEffect, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
+import {ExternalLink} from 'lucide-react'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
-import {EventsOn, StartPortForward, StopPortForward} from '@/lib/wails'
+import {EventsOn, OpenExternal, StartPortForward, StopPortForward} from '@/lib/wails'
 
 interface PortForwardProps {
     clusterId: string
@@ -101,9 +102,19 @@ export function PortForward({clusterId, namespace, pod}: PortForwardProps) {
                 )}
             </div>
             {ready && (
-                <p className="text-sm text-success">
-                    http://localhost:{localPort} → {pod}:{remotePort}
-                </p>
+                <div className="flex flex-wrap items-center gap-2 text-sm text-success">
+                    <span>
+                        http://localhost:{localPort} → {pod}:{remotePort}
+                    </span>
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => OpenExternal(`http://localhost:${localPort}`)}
+                    >
+                        <ExternalLink className="size-4"/>
+                        {t('pod.openInBrowser')}
+                    </Button>
+                </div>
             )}
             {error && <p className="break-words text-sm text-destructive">{error}</p>}
         </div>

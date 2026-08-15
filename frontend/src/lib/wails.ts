@@ -22,6 +22,7 @@ export {
     ListSavedNamespaces,
     ListServices,
     ListStatefulSets,
+    OpenExternal,
     RemoveCluster,
     RemoveNamespace,
     ResizeExec,

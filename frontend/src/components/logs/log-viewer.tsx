@@ -1,5 +1,6 @@
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'react-i18next'
+import {toast} from 'sonner'
 import {Clipboard, Download, Eraser, Search} from 'lucide-react'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
@@ -84,7 +85,24 @@ export function LogViewer({clusterId, namespace, pod, containers}: LogViewerProp
             .join('\n')
     }, [logs, search])
 
-    const handleCopy = () => void navigator.clipboard.writeText(logs)
+    const handleCopy = async () => {
+        const fallback = () => {
+            const ta = document.createElement('textarea')
+            ta.value = logs
+            ta.style.position = 'fixed'
+            ta.style.opacity = '0'
+            document.body.appendChild(ta)
+            ta.select()
+            document.execCommand('copy')
+            document.body.removeChild(ta)
+        }
+        try {
+            await navigator.clipboard.writeText(logs)
+        } catch {
+            fallback()
+        }
+        toast.success(t('pod.copySuccess'))
+    }
 
     const handleDownload = (text: string) => {
         const blob = new Blob([text], {type: 'text/plain'})
@@ -92,8 +110,10 @@ export function LogViewer({clusterId, namespace, pod, containers}: LogViewerProp
         const a = document.createElement('a')
         a.href = url
         a.download = `${pod}-${container || 'logs'}.log`
+        document.body.appendChild(a)
         a.click()
-        URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+        setTimeout(() => URL.revokeObjectURL(url), 1000)
     }
 
     return (

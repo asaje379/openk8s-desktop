@@ -309,6 +309,11 @@ func (a *App) StopPortForward(forwardID string) {
 	a.portforward.Stop(forwardID)
 }
 
+// OpenExternal opens a URL in the system browser.
+func (a *App) OpenExternal(url string) {
+	runtime.BrowserOpenURL(a.ctxOrDefault(), url)
+}
+
 // ctxOrDefault returns the app context or a background context if not started.
 func (a *App) ctxOrDefault() context.Context {
 	if a.ctx != nil {
