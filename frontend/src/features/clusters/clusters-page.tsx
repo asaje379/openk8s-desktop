@@ -6,6 +6,7 @@ import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components
 import {Badge} from '@/components/ui/badge'
 import {TestConnection} from '@/lib/wails'
 import type {Cluster, ConnectionStatus} from '@/lib/wails'
+import {useAppStore} from '@/stores/app-store'
 import {
     useClusters,
     useContexts,
@@ -24,6 +25,10 @@ function ClusterCard({cluster}: {cluster: Cluster}) {
     const removeCluster = useRemoveCluster()
     const switchContext = useSwitchContext()
     const {data: contexts = []} = useContexts(cluster.id)
+    const activeCluster = useAppStore((s) => s.activeCluster)
+    const setActiveCluster = useAppStore((s) => s.setActiveCluster)
+
+    const isActive = activeCluster?.id === cluster.id
 
     const [status, setStatus] = useState<ConnectionStatus | null>(null)
     const [testing, setTesting] = useState(false)
@@ -51,12 +56,15 @@ function ClusterCard({cluster}: {cluster: Cluster}) {
             <CardHeader>
                 <div className="flex items-center justify-between gap-2">
                     <CardTitle className="truncate">{cluster.name}</CardTitle>
-                    {status &&
-                        (status.connected ? (
-                            <Badge variant="success">{t('clusters.connected')}</Badge>
-                        ) : (
-                            <Badge variant="destructive">{t('clusters.disconnected')}</Badge>
-                        ))}
+                    <div className="flex items-center gap-1.5">
+                        {isActive && <Badge variant="success">{t('clusters.active')}</Badge>}
+                        {status &&
+                            (status.connected ? (
+                                <Badge variant="outline">{t('clusters.connected')}</Badge>
+                            ) : (
+                                <Badge variant="destructive">{t('clusters.disconnected')}</Badge>
+                            ))}
+                    </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
@@ -94,6 +102,20 @@ function ClusterCard({cluster}: {cluster: Cluster}) {
                 )}
             </CardContent>
             <CardFooter className="gap-2">
+                <Button
+                    size="sm"
+                    variant={isActive ? 'secondary' : 'default'}
+                    disabled={isActive}
+                    onClick={() =>
+                        setActiveCluster({
+                            id: cluster.id,
+                            name: cluster.name,
+                            context: cluster.currentContext,
+                        })
+                    }
+                >
+                    {isActive ? t('clusters.active') : t('clusters.setActive')}
+                </Button>
                 <Button size="sm" variant="outline" onClick={handleTest} disabled={testing}>
                     {testing ? t('clusters.testing') : t('clusters.testConnection')}
                 </Button>

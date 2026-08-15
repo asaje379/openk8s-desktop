@@ -4,6 +4,12 @@ import {ErrorBoundary} from '@/components/error-boundary'
 import {PlaceholderPage} from '@/components/placeholder-page'
 import {DashboardPage} from '@/features/dashboard/dashboard-page'
 import {ClustersPage} from '@/features/clusters/clusters-page'
+import {NamespacesPage} from '@/features/namespaces/namespaces-page'
+import {NodesPage} from '@/features/nodes/nodes-page'
+import {WorkloadsPage} from '@/features/workloads/workloads-page'
+import {PodsPage} from '@/features/pods/pods-page'
+import {ServicesPage} from '@/features/services/services-page'
+import {IngressPage} from '@/features/ingress/ingress-page'
 
 export const router = createHashRouter([
     {
@@ -16,11 +22,12 @@ export const router = createHashRouter([
         children: [
             {index: true, element: <DashboardPage/>},
             {path: 'clusters', element: <ClustersPage/>},
-            {path: 'namespaces', element: <PlaceholderPage titleKey="sidebar.namespaces"/>},
-            {path: 'workloads', element: <PlaceholderPage titleKey="sidebar.workloads"/>},
-            {path: 'pods', element: <PlaceholderPage titleKey="sidebar.pods"/>},
-            {path: 'services', element: <PlaceholderPage titleKey="sidebar.services"/>},
-            {path: 'ingress', element: <PlaceholderPage titleKey="sidebar.ingress"/>},
+            {path: 'nodes', element: <NodesPage/>},
+            {path: 'namespaces', element: <NamespacesPage/>},
+            {path: 'workloads', element: <WorkloadsPage/>},
+            {path: 'pods', element: <PodsPage/>},
+            {path: 'services', element: <ServicesPage/>},
+            {path: 'ingress', element: <IngressPage/>},
             {path: 'configmaps', element: <PlaceholderPage titleKey="sidebar.configmaps"/>},
             {path: 'secrets', element: <PlaceholderPage titleKey="sidebar.secrets"/>},
             {path: 'events', element: <PlaceholderPage titleKey="sidebar.events"/>},

@@ -80,6 +80,7 @@ type ClusterManager interface {
 	TestKubeconfig(kubeconfig string, contextName string) (ConnectionStatus, error)
 	ListLocalKubeconfigs() ([]LocalKubeconfig, error)
 	ImportLocalCluster(path string, contextName string, name string) (Cluster, error)
+	Client(id string) (kubernetes.Interface, error)
 }
 
 // ClientFactory builds a Kubernetes client from a kubeconfig and context.

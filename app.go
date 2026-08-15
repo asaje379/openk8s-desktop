@@ -8,6 +8,7 @@ import (
 	"runtime/debug"
 
 	"openk8s-desktop/internal/cluster"
+	"openk8s-desktop/internal/k8s"
 	"openk8s-desktop/internal/storage"
 )
 
@@ -95,6 +96,104 @@ func (a *App) ListLocalKubeconfigs() ([]cluster.LocalKubeconfig, error) {
 // ImportLocalCluster imports a local kubeconfig context as a cluster.
 func (a *App) ImportLocalCluster(path string, contextName string, name string) (cluster.Cluster, error) {
 	return a.clusters.ImportLocalCluster(path, contextName, name)
+}
+
+// ListNamespaces returns the namespaces of a cluster.
+func (a *App) ListNamespaces(clusterID string) ([]k8s.NamespaceInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListNamespaces(a.ctxOrDefault(), client)
+}
+
+// ListNodes returns the nodes of a cluster.
+func (a *App) ListNodes(clusterID string) ([]k8s.NodeInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListNodes(a.ctxOrDefault(), client)
+}
+
+// ListPods returns the pods of a cluster.
+func (a *App) ListPods(clusterID string, namespace string) ([]k8s.PodInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListPods(a.ctxOrDefault(), client, namespace)
+}
+
+// ListDeployments returns the deployments of a cluster.
+func (a *App) ListDeployments(clusterID string, namespace string) ([]k8s.WorkloadInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListDeployments(a.ctxOrDefault(), client, namespace)
+}
+
+// ListStatefulSets returns the statefulsets of a cluster.
+func (a *App) ListStatefulSets(clusterID string, namespace string) ([]k8s.WorkloadInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListStatefulSets(a.ctxOrDefault(), client, namespace)
+}
+
+// ListDaemonSets returns the daemonsets of a cluster.
+func (a *App) ListDaemonSets(clusterID string, namespace string) ([]k8s.WorkloadInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListDaemonSets(a.ctxOrDefault(), client, namespace)
+}
+
+// ListJobs returns the jobs of a cluster.
+func (a *App) ListJobs(clusterID string, namespace string) ([]k8s.JobInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListJobs(a.ctxOrDefault(), client, namespace)
+}
+
+// ListCronJobs returns the cronjobs of a cluster.
+func (a *App) ListCronJobs(clusterID string, namespace string) ([]k8s.CronJobInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListCronJobs(a.ctxOrDefault(), client, namespace)
+}
+
+// ListServices returns the services of a cluster.
+func (a *App) ListServices(clusterID string, namespace string) ([]k8s.ServiceInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListServices(a.ctxOrDefault(), client, namespace)
+}
+
+// ListIngresses returns the ingresses of a cluster.
+func (a *App) ListIngresses(clusterID string, namespace string) ([]k8s.IngressInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListIngresses(a.ctxOrDefault(), client, namespace)
+}
+
+// ctxOrDefault returns the app context or a background context if not started.
+func (a *App) ctxOrDefault() context.Context {
+	if a.ctx != nil {
+		return a.ctx
+	}
+	return context.Background()
 }
 
 // openStores returns the persistent stores, falling back to in-memory storage

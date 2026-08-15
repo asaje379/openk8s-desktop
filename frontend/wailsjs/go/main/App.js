@@ -26,8 +26,48 @@ export function ListClusters() {
   return window['go']['main']['App']['ListClusters']();
 }
 
+export function ListCronJobs(arg1, arg2) {
+  return window['go']['main']['App']['ListCronJobs'](arg1, arg2);
+}
+
+export function ListDaemonSets(arg1, arg2) {
+  return window['go']['main']['App']['ListDaemonSets'](arg1, arg2);
+}
+
+export function ListDeployments(arg1, arg2) {
+  return window['go']['main']['App']['ListDeployments'](arg1, arg2);
+}
+
+export function ListIngresses(arg1, arg2) {
+  return window['go']['main']['App']['ListIngresses'](arg1, arg2);
+}
+
+export function ListJobs(arg1, arg2) {
+  return window['go']['main']['App']['ListJobs'](arg1, arg2);
+}
+
 export function ListLocalKubeconfigs() {
   return window['go']['main']['App']['ListLocalKubeconfigs']();
+}
+
+export function ListNamespaces(arg1) {
+  return window['go']['main']['App']['ListNamespaces'](arg1);
+}
+
+export function ListNodes(arg1) {
+  return window['go']['main']['App']['ListNodes'](arg1);
+}
+
+export function ListPods(arg1, arg2) {
+  return window['go']['main']['App']['ListPods'](arg1, arg2);
+}
+
+export function ListServices(arg1, arg2) {
+  return window['go']['main']['App']['ListServices'](arg1, arg2);
+}
+
+export function ListStatefulSets(arg1, arg2) {
+  return window['go']['main']['App']['ListStatefulSets'](arg1, arg2);
 }
 
 export function RemoveCluster(arg1) {

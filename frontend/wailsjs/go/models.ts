@@ -165,3 +165,186 @@ export namespace cluster {
 
 }
 
+export namespace k8s {
+	
+	export class CronJobInfo {
+	    name: string;
+	    namespace: string;
+	    schedule: string;
+	    suspend: boolean;
+	    active: number;
+	    lastSchedule: string;
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CronJobInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.schedule = source["schedule"];
+	        this.suspend = source["suspend"];
+	        this.active = source["active"];
+	        this.lastSchedule = source["lastSchedule"];
+	        this.age = source["age"];
+	    }
+	}
+	export class IngressInfo {
+	    name: string;
+	    namespace: string;
+	    class: string;
+	    hosts: string[];
+	    addresses: string[];
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new IngressInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.class = source["class"];
+	        this.hosts = source["hosts"];
+	        this.addresses = source["addresses"];
+	        this.age = source["age"];
+	    }
+	}
+	export class JobInfo {
+	    name: string;
+	    namespace: string;
+	    completions: string;
+	    duration: string;
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new JobInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.completions = source["completions"];
+	        this.duration = source["duration"];
+	        this.age = source["age"];
+	    }
+	}
+	export class NamespaceInfo {
+	    name: string;
+	    status: string;
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new NamespaceInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.status = source["status"];
+	        this.age = source["age"];
+	    }
+	}
+	export class NodeInfo {
+	    name: string;
+	    status: string;
+	    roles: string[];
+	    version: string;
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new NodeInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.status = source["status"];
+	        this.roles = source["roles"];
+	        this.version = source["version"];
+	        this.age = source["age"];
+	    }
+	}
+	export class PodInfo {
+	    name: string;
+	    namespace: string;
+	    status: string;
+	    ready: string;
+	    restarts: number;
+	    node: string;
+	    ip: string;
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new PodInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.status = source["status"];
+	        this.ready = source["ready"];
+	        this.restarts = source["restarts"];
+	        this.node = source["node"];
+	        this.ip = source["ip"];
+	        this.age = source["age"];
+	    }
+	}
+	export class ServiceInfo {
+	    name: string;
+	    namespace: string;
+	    type: string;
+	    clusterIP: string;
+	    externalIP: string;
+	    ports: string;
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ServiceInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.type = source["type"];
+	        this.clusterIP = source["clusterIP"];
+	        this.externalIP = source["externalIP"];
+	        this.ports = source["ports"];
+	        this.age = source["age"];
+	    }
+	}
+	export class WorkloadInfo {
+	    kind: string;
+	    name: string;
+	    namespace: string;
+	    desired: number;
+	    ready: number;
+	    available: number;
+	    image: string;
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new WorkloadInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.kind = source["kind"];
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.desired = source["desired"];
+	        this.ready = source["ready"];
+	        this.available = source["available"];
+	        this.image = source["image"];
+	        this.age = source["age"];
+	    }
+	}
+
+}
+

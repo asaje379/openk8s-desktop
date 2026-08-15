@@ -9,6 +9,7 @@ import {
     LayoutDashboard,
     Network,
     Route,
+    Server,
     type LucideIcon,
 } from 'lucide-react'
 import {NavLink} from 'react-router'
@@ -24,6 +25,7 @@ interface NavItem {
 const navItems: NavItem[] = [
     {to: '/', labelKey: 'sidebar.dashboard', icon: LayoutDashboard},
     {to: '/clusters', labelKey: 'sidebar.clusters', icon: Boxes},
+    {to: '/nodes', labelKey: 'sidebar.nodes', icon: Server},
     {to: '/namespaces', labelKey: 'sidebar.namespaces', icon: Layers},
     {to: '/workloads', labelKey: 'sidebar.workloads', icon: Container},
     {to: '/pods', labelKey: 'sidebar.pods', icon: Box},
