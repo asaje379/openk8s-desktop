@@ -1,0 +1,41 @@
+name: Deploy landing page
+
+# Deploys the landing page to GitHub Pages. Runs from the default branch
+# because the github-pages environment only permits deployments from branches
+# (tag-based deploys are rejected by environment protection rules).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy landing page to GitHub Pages
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble landing page
+        run: |
+          mkdir -p _site/logos _site/screenshots
+          cp website/index.html _site/
+          cp -r logos/. _site/logos/
+          cp -r website/screenshots/. _site/screenshots/
+          sed -i 's|\.\./logos/|logos/|g' _site/index.html
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
