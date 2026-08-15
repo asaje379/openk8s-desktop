@@ -87,3 +87,58 @@ func TestListDeployments(t *testing.T) {
 		t.Fatalf("unexpected deployment: %+v", list[0])
 	}
 }
+
+func TestGetPod(t *testing.T) {
+	client := fake.NewSimpleClientset(
+		&corev1.Pod{
+			ObjectMeta: metav1.ObjectMeta{Name: "api-1", Namespace: "default", Labels: map[string]string{"app": "api"}},
+			Spec:       corev1.PodSpec{NodeName: "node-1"},
+			Status: corev1.PodStatus{
+				Phase: corev1.PodRunning,
+				ContainerStatuses: []corev1.ContainerStatus{
+					{
+						Name:  "api",
+						Image: "myregistry/api:v1",
+						Ready: true,
+						State: corev1.ContainerState{Running: &corev1.ContainerStateRunning{}},
+					},
+				},
+			},
+		},
+	)
+	detail, err := GetPod(context.Background(), client, "default", "api-1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if detail.Status != "Running" || detail.Node != "node-1" {
+		t.Fatalf("unexpected detail: %+v", detail)
+	}
+	if len(detail.Containers) != 1 || detail.Containers[0].State != "running" {
+		t.Fatalf("unexpected containers: %+v", detail.Containers)
+	}
+	if detail.Labels["app"] != "api" {
+		t.Fatalf("unexpected labels: %+v", detail.Labels)
+	}
+}
+
+func TestListEvents(t *testing.T) {
+	client := fake.NewSimpleClientset(
+		&corev1.Event{
+			ObjectMeta: metav1.ObjectMeta{Name: "evt-1", Namespace: "default"},
+			InvolvedObject: corev1.ObjectReference{Kind: "Pod", Name: "api-1", Namespace: "default"},
+			Type:            "Warning",
+			Reason:          "BackOff",
+			Message:         "Back-off restarting failed container",
+		},
+	)
+	list, err := ListEvents(context.Background(), client, "default")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(list) != 1 {
+		t.Fatalf("expected 1 event, got %d", len(list))
+	}
+	if list[0].Object != "api-1" || list[0].Type != "Warning" {
+		t.Fatalf("unexpected event: %+v", list[0])
+	}
+}

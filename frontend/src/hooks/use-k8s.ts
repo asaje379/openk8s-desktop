@@ -1,9 +1,12 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {
     AddNamespace,
+    GetPod,
+    GetPodYAML,
     ListCronJobs,
     ListDaemonSets,
     ListDeployments,
+    ListEvents,
     ListIngresses,
     ListJobs,
     ListNamespaces,
@@ -130,5 +133,32 @@ export function useRemoveNamespace() {
             RemoveNamespace(clusterId, namespace),
         onSuccess: (_data, {clusterId}) =>
             queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'saved-namespaces']}),
+    })
+}
+
+export function usePod(clusterId: string | null, namespace: string, name: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'pod', namespace, name],
+        queryFn: () => GetPod(clusterId as string, namespace, name),
+        enabled: !!clusterId && !!namespace && !!name,
+        retry: false,
+    })
+}
+
+export function usePodYAML(clusterId: string | null, namespace: string, name: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'pod-yaml', namespace, name],
+        queryFn: () => GetPodYAML(clusterId as string, namespace, name),
+        enabled: !!clusterId && !!namespace && !!name,
+        retry: false,
+    })
+}
+
+export function useEvents(clusterId: string | null, namespace: string) {
+    return useQuery({
+        queryKey: ['k8s', clusterId, 'events', namespace],
+        queryFn: () => ListEvents(clusterId as string, namespace),
+        enabled: !!clusterId && !!namespace,
+        retry: false,
     })
 }

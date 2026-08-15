@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
 
 // Cluster is a locally-registered Kubernetes cluster connection.
@@ -83,10 +84,11 @@ type ClusterManager interface {
 	TestKubeconfig(kubeconfig string, contextName string) (ConnectionStatus, error)
 	ListLocalKubeconfigs() ([]LocalKubeconfig, error)
 	ImportLocalCluster(path string, contextName string, name string) (Cluster, error)
-	Client(id string) (kubernetes.Interface, error)
 	ListSavedNamespaces(clusterID string) ([]string, error)
 	AddNamespace(clusterID string, namespace string) ([]string, error)
 	RemoveNamespace(clusterID string, namespace string) ([]string, error)
+	Client(id string) (kubernetes.Interface, error)
+	RESTConfig(id string) (*rest.Config, error)
 }
 
 // ClientFactory builds a Kubernetes client from a kubeconfig and context.

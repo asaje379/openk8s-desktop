@@ -8,6 +8,7 @@ import {NamespacesPage} from '@/features/namespaces/namespaces-page'
 import {NodesPage} from '@/features/nodes/nodes-page'
 import {WorkloadsPage} from '@/features/workloads/workloads-page'
 import {PodsPage} from '@/features/pods/pods-page'
+import {PodDetailPage} from '@/features/pods/pod-detail-page'
 import {ServicesPage} from '@/features/services/services-page'
 import {IngressPage} from '@/features/ingress/ingress-page'
 
@@ -26,6 +27,7 @@ export const router = createHashRouter([
             {path: 'namespaces', element: <NamespacesPage/>},
             {path: 'workloads', element: <WorkloadsPage/>},
             {path: 'pods', element: <PodsPage/>},
+            {path: 'pods/:namespace/:name', element: <PodDetailPage/>},
             {path: 'services', element: <ServicesPage/>},
             {path: 'ingress', element: <IngressPage/>},
             {path: 'configmaps', element: <PlaceholderPage titleKey="sidebar.configmaps"/>},

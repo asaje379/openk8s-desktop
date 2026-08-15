@@ -10,8 +10,20 @@ export function AddNamespace(arg1, arg2) {
   return window['go']['main']['App']['AddNamespace'](arg1, arg2);
 }
 
+export function CloseExec(arg1) {
+  return window['go']['main']['App']['CloseExec'](arg1);
+}
+
 export function GetContexts(arg1) {
   return window['go']['main']['App']['GetContexts'](arg1);
+}
+
+export function GetPod(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GetPod'](arg1, arg2, arg3);
+}
+
+export function GetPodYAML(arg1, arg2, arg3) {
+  return window['go']['main']['App']['GetPodYAML'](arg1, arg2, arg3);
 }
 
 export function GetVersion() {
@@ -40,6 +52,10 @@ export function ListDaemonSets(arg1, arg2) {
 
 export function ListDeployments(arg1, arg2) {
   return window['go']['main']['App']['ListDeployments'](arg1, arg2);
+}
+
+export function ListEvents(arg1, arg2) {
+  return window['go']['main']['App']['ListEvents'](arg1, arg2);
 }
 
 export function ListIngresses(arg1, arg2) {
@@ -86,6 +102,22 @@ export function RemoveNamespace(arg1, arg2) {
   return window['go']['main']['App']['RemoveNamespace'](arg1, arg2);
 }
 
+export function ResizeExec(arg1, arg2, arg3) {
+  return window['go']['main']['App']['ResizeExec'](arg1, arg2, arg3);
+}
+
+export function StartExec(arg1, arg2, arg3, arg4, arg5) {
+  return window['go']['main']['App']['StartExec'](arg1, arg2, arg3, arg4, arg5);
+}
+
+export function StartLogStream(arg1, arg2, arg3, arg4, arg5, arg6) {
+  return window['go']['main']['App']['StartLogStream'](arg1, arg2, arg3, arg4, arg5, arg6);
+}
+
+export function StopLogStream(arg1) {
+  return window['go']['main']['App']['StopLogStream'](arg1);
+}
+
 export function SwitchContext(arg1, arg2) {
   return window['go']['main']['App']['SwitchContext'](arg1, arg2);
 }
@@ -100,4 +132,8 @@ export function TestKubeconfig(arg1, arg2) {
 
 export function ValidateKubeconfig(arg1) {
   return window['go']['main']['App']['ValidateKubeconfig'](arg1);
+}
+
+export function WriteExec(arg1, arg2) {
+  return window['go']['main']['App']['WriteExec'](arg1, arg2);
 }

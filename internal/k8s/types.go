@@ -88,6 +88,40 @@ type IngressInfo struct {
 	Age       string   `json:"age"`
 }
 
+// ContainerInfo is a compact view of a container within a pod.
+type ContainerInfo struct {
+	Name         string `json:"name"`
+	Image        string `json:"image"`
+	Ready        bool   `json:"ready"`
+	RestartCount int32  `json:"restartCount"`
+	State        string `json:"state"`
+}
+
+// PodDetail is a compact view of a pod for the detail page.
+type PodDetail struct {
+	Name       string            `json:"name"`
+	Namespace  string            `json:"namespace"`
+	Status     string            `json:"status"`
+	Node       string            `json:"node"`
+	IP         string            `json:"ip"`
+	CreatedAt  string            `json:"createdAt"`
+	Restarts   int32             `json:"restarts"`
+	Labels     map[string]string `json:"labels"`
+	Containers []ContainerInfo   `json:"containers"`
+}
+
+// EventInfo is a compact view of a Kubernetes event.
+type EventInfo struct {
+	Type      string `json:"type"`
+	Reason    string `json:"reason"`
+	Message   string `json:"message"`
+	Object    string `json:"object"`
+	Kind      string `json:"kind"`
+	Namespace string `json:"namespace"`
+	Count     int32  `json:"count"`
+	Age       string `json:"age"`
+}
+
 // formatAge returns a human-readable duration since the given timestamp.
 func formatAge(t metav1.Time) string {
 	d := time.Since(t.Time)

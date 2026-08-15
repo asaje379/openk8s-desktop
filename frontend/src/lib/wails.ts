@@ -1,7 +1,10 @@
 export {
     AddCluster,
     AddNamespace,
+    CloseExec,
     GetContexts,
+    GetPod,
+    GetPodYAML,
     GetVersion,
     Health,
     ImportLocalCluster,
@@ -9,6 +12,7 @@ export {
     ListCronJobs,
     ListDaemonSets,
     ListDeployments,
+    ListEvents,
     ListIngresses,
     ListJobs,
     ListLocalKubeconfigs,
@@ -20,10 +24,15 @@ export {
     ListStatefulSets,
     RemoveCluster,
     RemoveNamespace,
+    ResizeExec,
+    StartExec,
+    StartLogStream,
+    StopLogStream,
     SwitchContext,
     TestConnection,
     TestKubeconfig,
     ValidateKubeconfig,
+    WriteExec,
 } from '../../wailsjs/go/main/App'
 
 import type {cluster} from '../../wailsjs/go/models'
@@ -44,3 +53,8 @@ export type JobInfo = k8s.JobInfo
 export type CronJobInfo = k8s.CronJobInfo
 export type ServiceInfo = k8s.ServiceInfo
 export type IngressInfo = k8s.IngressInfo
+export type ContainerInfo = k8s.ContainerInfo
+export type PodDetail = k8s.PodDetail
+export type EventInfo = k8s.EventInfo
+
+export {EventsOff, EventsOn} from '../../wailsjs/runtime/runtime'

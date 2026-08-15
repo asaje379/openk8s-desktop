@@ -1,5 +1,6 @@
 import {useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
+import {Link} from 'react-router'
 import type {ColumnDef} from '@tanstack/react-table'
 import {DataTable} from '@/components/tables/data-table'
 import {ResourcePage} from '@/components/resource-page'
@@ -7,20 +8,8 @@ import {NoCluster} from '@/components/no-cluster'
 import {Badge} from '@/components/ui/badge'
 import {useAppStore} from '@/stores/app-store'
 import {usePods} from '@/hooks/use-k8s'
+import {podStatusVariant} from '@/lib/status'
 import type {PodInfo} from '@/lib/wails'
-
-function podStatusVariant(status: string): 'success' | 'destructive' | 'warning' | 'outline' {
-    switch (status) {
-        case 'Running':
-            return 'success'
-        case 'Failed':
-            return 'destructive'
-        case 'Pending':
-            return 'warning'
-        default:
-            return 'outline'
-    }
-}
 
 export function PodsPage() {
     const {t} = useTranslation()
@@ -37,7 +26,12 @@ export function PodsPage() {
                 accessorKey: 'name',
                 header: t('resources.name'),
                 cell: ({row}) => (
-                    <span className="font-mono text-[13px]">{row.original.name}</span>
+                    <Link
+                        to={`/pods/${row.original.namespace}/${row.original.name}`}
+                        className="font-mono text-[13px] text-primary hover:underline"
+                    >
+                        {row.original.name}
+                    </Link>
                 ),
             },
             {accessorKey: 'namespace', header: t('resources.namespace')},

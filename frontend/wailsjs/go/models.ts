@@ -167,6 +167,26 @@ export namespace cluster {
 
 export namespace k8s {
 	
+	export class ContainerInfo {
+	    name: string;
+	    image: string;
+	    ready: boolean;
+	    restartCount: number;
+	    state: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ContainerInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.image = source["image"];
+	        this.ready = source["ready"];
+	        this.restartCount = source["restartCount"];
+	        this.state = source["state"];
+	    }
+	}
 	export class CronJobInfo {
 	    name: string;
 	    namespace: string;
@@ -188,6 +208,32 @@ export namespace k8s {
 	        this.suspend = source["suspend"];
 	        this.active = source["active"];
 	        this.lastSchedule = source["lastSchedule"];
+	        this.age = source["age"];
+	    }
+	}
+	export class EventInfo {
+	    type: string;
+	    reason: string;
+	    message: string;
+	    object: string;
+	    kind: string;
+	    namespace: string;
+	    count: number;
+	    age: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new EventInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.type = source["type"];
+	        this.reason = source["reason"];
+	        this.message = source["message"];
+	        this.object = source["object"];
+	        this.kind = source["kind"];
+	        this.namespace = source["namespace"];
+	        this.count = source["count"];
 	        this.age = source["age"];
 	    }
 	}
@@ -268,6 +314,52 @@ export namespace k8s {
 	        this.version = source["version"];
 	        this.age = source["age"];
 	    }
+	}
+	export class PodDetail {
+	    name: string;
+	    namespace: string;
+	    status: string;
+	    node: string;
+	    ip: string;
+	    createdAt: string;
+	    restarts: number;
+	    labels: Record<string, string>;
+	    containers: ContainerInfo[];
+	
+	    static createFrom(source: any = {}) {
+	        return new PodDetail(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.namespace = source["namespace"];
+	        this.status = source["status"];
+	        this.node = source["node"];
+	        this.ip = source["ip"];
+	        this.createdAt = source["createdAt"];
+	        this.restarts = source["restarts"];
+	        this.labels = source["labels"];
+	        this.containers = this.convertValues(source["containers"], ContainerInfo);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class PodInfo {
 	    name: string;

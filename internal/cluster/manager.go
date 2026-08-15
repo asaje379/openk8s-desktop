@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 
 	"openk8s-desktop/internal/k8s"
 )
@@ -204,6 +205,19 @@ func (m *Manager) TestKubeconfig(kubeconfig string, contextName string) (Connect
 // Client returns the cached (or newly built) Kubernetes client for a cluster.
 func (m *Manager) Client(id string) (kubernetes.Interface, error) {
 	return m.client(id)
+}
+
+// RESTConfig returns the rest.Config for a cluster, used for exec/log streaming.
+func (m *Manager) RESTConfig(id string) (*rest.Config, error) {
+	cl, err := m.store.GetCluster(id)
+	if err != nil {
+		return nil, err
+	}
+	kc, err := m.creds.GetKubeconfig(id)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.RESTConfig(kc, cl.CurrentContext)
 }
 
 // ListSavedNamespaces returns the manually-added namespaces for a cluster.

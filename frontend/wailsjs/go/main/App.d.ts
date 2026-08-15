@@ -7,7 +7,13 @@ export function AddCluster(arg1:cluster.AddClusterInput):Promise<cluster.Cluster
 
 export function AddNamespace(arg1:string,arg2:string):Promise<Array<string>>;
 
+export function CloseExec(arg1:string):Promise<void>;
+
 export function GetContexts(arg1:string):Promise<Array<cluster.KubeContext>>;
+
+export function GetPod(arg1:string,arg2:string,arg3:string):Promise<k8s.PodDetail>;
+
+export function GetPodYAML(arg1:string,arg2:string,arg3:string):Promise<string>;
 
 export function GetVersion():Promise<Record<string, string>>;
 
@@ -22,6 +28,8 @@ export function ListCronJobs(arg1:string,arg2:string):Promise<Array<k8s.CronJobI
 export function ListDaemonSets(arg1:string,arg2:string):Promise<Array<k8s.WorkloadInfo>>;
 
 export function ListDeployments(arg1:string,arg2:string):Promise<Array<k8s.WorkloadInfo>>;
+
+export function ListEvents(arg1:string,arg2:string):Promise<Array<k8s.EventInfo>>;
 
 export function ListIngresses(arg1:string,arg2:string):Promise<Array<k8s.IngressInfo>>;
 
@@ -45,6 +53,14 @@ export function RemoveCluster(arg1:string):Promise<void>;
 
 export function RemoveNamespace(arg1:string,arg2:string):Promise<Array<string>>;
 
+export function ResizeExec(arg1:string,arg2:number,arg3:number):Promise<void>;
+
+export function StartExec(arg1:string,arg2:string,arg3:string,arg4:string,arg5:string):Promise<string>;
+
+export function StartLogStream(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number,arg6:boolean):Promise<string>;
+
+export function StopLogStream(arg1:string):Promise<void>;
+
 export function SwitchContext(arg1:string,arg2:string):Promise<void>;
 
 export function TestConnection(arg1:string):Promise<cluster.ConnectionStatus>;
@@ -52,3 +68,5 @@ export function TestConnection(arg1:string):Promise<cluster.ConnectionStatus>;
 export function TestKubeconfig(arg1:string,arg2:string):Promise<cluster.ConnectionStatus>;
 
 export function ValidateKubeconfig(arg1:string):Promise<cluster.KubeconfigInfo>;
+
+export function WriteExec(arg1:string,arg2:string):Promise<void>;

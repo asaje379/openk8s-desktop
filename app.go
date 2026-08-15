@@ -7,8 +7,12 @@ import (
 	"path/filepath"
 	"runtime/debug"
 
+	"github.com/wailsapp/wails/v2/pkg/runtime"
+
 	"openk8s-desktop/internal/cluster"
+	"openk8s-desktop/internal/exec"
 	"openk8s-desktop/internal/k8s"
+	"openk8s-desktop/internal/logs"
 	"openk8s-desktop/internal/storage"
 )
 
@@ -16,13 +20,19 @@ import (
 type App struct {
 	ctx      context.Context
 	clusters cluster.ClusterManager
+	logs     *logs.Manager
+	exec     *exec.Manager
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
 	clusterStore, credentialStore := openStores()
 	manager := cluster.NewManager(clusterStore, credentialStore, nil)
-	return &App{clusters: manager}
+	return &App{
+		clusters: manager,
+		logs:     logs.NewManager(),
+		exec:     exec.NewManager(),
+	}
 }
 
 // startup is called when the app starts. The context is saved
@@ -201,6 +211,79 @@ func (a *App) AddNamespace(clusterID string, namespace string) ([]string, error)
 // RemoveNamespace removes a namespace from the saved list for a cluster.
 func (a *App) RemoveNamespace(clusterID string, namespace string) ([]string, error) {
 	return a.clusters.RemoveNamespace(clusterID, namespace)
+}
+
+// GetPod returns the detail of a pod.
+func (a *App) GetPod(clusterID string, namespace string, name string) (*k8s.PodDetail, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.GetPod(a.ctxOrDefault(), client, namespace, name)
+}
+
+// GetPodYAML returns the YAML of a pod.
+func (a *App) GetPodYAML(clusterID string, namespace string, name string) (string, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return "", err
+	}
+	return k8s.GetPodYAML(a.ctxOrDefault(), client, namespace, name)
+}
+
+// ListEvents returns the events of a namespace.
+func (a *App) ListEvents(clusterID string, namespace string) ([]k8s.EventInfo, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return nil, err
+	}
+	return k8s.ListEvents(a.ctxOrDefault(), client, namespace)
+}
+
+// StartLogStream starts streaming logs and returns a stream id.
+func (a *App) StartLogStream(clusterID string, namespace string, pod string, container string, tailLines int64, follow bool) (string, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return "", err
+	}
+	return a.logs.Start(a.ctxOrDefault(), client, namespace, pod, container, tailLines, follow, func(event string, data any) {
+		runtime.EventsEmit(a.ctx, event, data)
+	}), nil
+}
+
+// StopLogStream stops a log stream.
+func (a *App) StopLogStream(streamID string) {
+	a.logs.Stop(streamID)
+}
+
+// StartExec opens an interactive exec session and returns a session id.
+func (a *App) StartExec(clusterID string, namespace string, pod string, container string, command string) (string, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return "", err
+	}
+	restCfg, err := a.clusters.RESTConfig(clusterID)
+	if err != nil {
+		return "", err
+	}
+	return a.exec.Start(a.ctxOrDefault(), client, restCfg, namespace, pod, container, command, func(event string, data any) {
+		runtime.EventsEmit(a.ctx, event, data)
+	})
+}
+
+// WriteExec sends input to an exec session.
+func (a *App) WriteExec(sessionID string, data string) error {
+	return a.exec.Write(sessionID, data)
+}
+
+// ResizeExec resizes an exec session's terminal.
+func (a *App) ResizeExec(sessionID string, cols int, rows int) error {
+	return a.exec.Resize(sessionID, cols, rows)
+}
+
+// CloseExec closes an exec session.
+func (a *App) CloseExec(sessionID string) {
+	a.exec.Close(sessionID)
 }
 
 // ctxOrDefault returns the app context or a background context if not started.

@@ -98,7 +98,7 @@ docs/                            # architecture, conventions, décisions (ADR)
 
 ## Limitations connues
 
-- MVP en cours : **Étapes 1–3 implémentées** — import kubeconfig (collé/local), multi-cluster, switch de contexte, stockage SQLite, et exploration des ressources (namespaces, nodes, workloads, pods, services, ingress). La page Dashboard reste un squelette.
-- L'édition YAML, le terminal, les métriques, les logs, les événements et le Watch arrivent aux étapes suivantes.
+- MVP en cours : **Étapes 1–4 implémentées** — import kubeconfig (collé/local), multi-cluster, switch de contexte, stockage SQLite, exploration des ressources (namespaces, nodes, workloads, pods, services, ingress), et expérience pod (détail, containers, logs streaming, terminal xterm.js, events, YAML).
+- L'édition YAML (éditeur), les métriques CPU/mémoire, les événements globaux et le Watch arrivent aux étapes suivantes.
 - Le kubeconfig est stocké en clair dans SQLite pour le MVP (abstraction `CredentialStore` prête pour le keychain natif).
 - Le lancement graphique nécessite un serveur d'affichage (X11/Wayland) ; le build `wails build` est la vérification CI en environnement headless.

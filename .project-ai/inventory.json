@@ -16,6 +16,8 @@
     "frontend/src/components/no-cluster.tsx",
     "frontend/src/components/namespace-switcher.tsx",
     "frontend/src/components/add-namespace-dialog.tsx",
+    "frontend/src/components/logs/log-viewer.tsx",
+    "frontend/src/components/terminal/terminal-view.tsx",
     "frontend/src/components/placeholder-page.tsx",
     "frontend/src/components/error-boundary.tsx",
     "frontend/src/components/providers/theme-provider.tsx",
@@ -29,6 +31,7 @@
     "frontend/src/features/nodes/nodes-page.tsx",
     "frontend/src/features/workloads/workloads-page.tsx",
     "frontend/src/features/pods/pods-page.tsx",
+    "frontend/src/features/pods/pod-detail-page.tsx",
     "frontend/src/features/services/services-page.tsx",
     "frontend/src/features/ingress/ingress-page.tsx"
   ],
@@ -45,7 +48,8 @@
   ],
   "helpers": [
     "frontend/src/lib/utils.ts (cn)",
-    "frontend/src/lib/errors.ts (isForbiddenError)"
+    "frontend/src/lib/errors.ts (isForbiddenError)",
+    "frontend/src/lib/status.ts (podStatusVariant)"
   ],
   "routes": [
     "frontend/src/routes/index.tsx"
