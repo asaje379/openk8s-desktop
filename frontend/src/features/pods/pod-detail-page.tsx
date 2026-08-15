@@ -7,13 +7,15 @@ import {NoCluster} from '@/components/no-cluster'
 import {Badge} from '@/components/ui/badge'
 import {LogViewer} from '@/components/logs/log-viewer'
 import {TerminalView} from '@/components/terminal/terminal-view'
+import {YamlViewer} from '@/components/yaml/yaml-viewer'
+import {PortForward} from '@/components/portforward/port-forward'
 import {useAppStore} from '@/stores/app-store'
 import {useEvents, usePod, usePodYAML} from '@/hooks/use-k8s'
 import {podStatusVariant} from '@/lib/status'
 import {cn} from '@/lib/utils'
 import type {ContainerInfo, EventInfo, PodDetail} from '@/lib/wails'
 
-type Tab = 'overview' | 'containers' | 'logs' | 'terminal' | 'events' | 'yaml'
+type Tab = 'overview' | 'containers' | 'logs' | 'terminal' | 'events' | 'yaml' | 'portforward'
 
 const TABS: {value: Tab; labelKey: string}[] = [
     {value: 'overview', labelKey: 'pod.overview'},
@@ -22,6 +24,7 @@ const TABS: {value: Tab; labelKey: string}[] = [
     {value: 'terminal', labelKey: 'pod.terminal'},
     {value: 'events', labelKey: 'pod.events'},
     {value: 'yaml', labelKey: 'pod.yaml'},
+    {value: 'portforward', labelKey: 'pod.portForward'},
 ]
 
 function Overview({pod}: {pod: PodDetail}) {
@@ -105,11 +108,7 @@ function EventsTab({clusterId, namespace, podName}: {clusterId: string; namespac
 function YamlTab({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) {
     const {data, isLoading} = usePodYAML(clusterId, namespace, name)
     if (isLoading) return <div className="h-40 animate-pulse rounded-md bg-muted"/>
-    return (
-        <pre className="overflow-auto rounded-md border border-border bg-black p-4 font-mono text-xs text-gray-200">
-            {data ?? ''}
-        </pre>
-    )
+    return <YamlViewer value={data ?? ''}/>
 }
 
 export function PodDetailPage() {
@@ -186,6 +185,9 @@ export function PodDetailPage() {
                     )}
                     {tab === 'yaml' && (
                         <YamlTab clusterId={clusterId as string} namespace={namespace} name={name}/>
+                    )}
+                    {tab === 'portforward' && (
+                        <PortForward clusterId={clusterId as string} namespace={namespace} pod={name}/>
                     )}
                 </>
             ) : null}

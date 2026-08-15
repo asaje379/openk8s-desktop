@@ -149,6 +149,13 @@ export const fr: Translation = {
         clear: "Effacer",
         copy: "Copier",
         download: "Télécharger",
+        downloadVisible: "Télécharger les logs visibles",
+        downloadAll: "Télécharger tous les logs",
+        portForward: "Port-forward",
+        localPort: "Port local",
+        remotePort: "Port du pod",
+        startForward: "Démarrer",
+        stopForward: "Arrêter",
     },
     placeholder: {
         description: "Cette section sera implémentée dans une étape ultérieure du MVP.",

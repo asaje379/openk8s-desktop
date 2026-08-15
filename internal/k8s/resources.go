@@ -11,6 +11,9 @@ import (
 
 // ListNamespaces returns the namespaces of a cluster, sorted by name.
 func ListNamespaces(ctx context.Context, client kubernetes.Interface) ([]NamespaceInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	list, err := client.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
@@ -29,6 +32,9 @@ func ListNamespaces(ctx context.Context, client kubernetes.Interface) ([]Namespa
 
 // ListNodes returns the nodes of a cluster, sorted by name.
 func ListNodes(ctx context.Context, client kubernetes.Interface) ([]NodeInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	list, err := client.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err

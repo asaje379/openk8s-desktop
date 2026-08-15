@@ -12,6 +12,9 @@ import (
 
 // ListServices returns services in a namespace.
 func ListServices(ctx context.Context, client kubernetes.Interface, namespace string) ([]ServiceInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	list, err := client.CoreV1().Services(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err

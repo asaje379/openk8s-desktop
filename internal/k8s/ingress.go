@@ -10,6 +10,9 @@ import (
 
 // ListIngresses returns ingresses in a namespace.
 func ListIngresses(ctx context.Context, client kubernetes.Interface, namespace string) ([]IngressInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	list, err := client.NetworkingV1().Ingresses(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err

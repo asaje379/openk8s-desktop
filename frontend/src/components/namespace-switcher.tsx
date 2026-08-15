@@ -9,6 +9,7 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import {Button} from '@/components/ui/button'
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip'
 import {useAppStore} from '@/stores/app-store'
 import {useNamespaces, useSavedNamespaces} from '@/hooks/use-k8s'
 import {AddNamespaceDialog} from '@/components/add-namespace-dialog'
@@ -49,16 +50,20 @@ export function NamespaceSwitcher() {
                     ))}
                 </SelectContent>
             </Select>
-            <Button
-                size="icon"
-                variant="ghost"
-                className="size-8"
-                onClick={() => setAddOpen(true)}
-                title={t('resources.addNamespace')}
-            >
-                <Plus className="size-4"/>
-                <span className="sr-only">{t('resources.addNamespace')}</span>
-            </Button>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="size-8"
+                        onClick={() => setAddOpen(true)}
+                    >
+                        <Plus className="size-4"/>
+                        <span className="sr-only">{t('resources.addNamespace')}</span>
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t('resources.addNamespace')}</TooltipContent>
+            </Tooltip>
             <AddNamespaceDialog
                 open={addOpen}
                 onOpenChange={setAddOpen}

@@ -147,6 +147,13 @@ export const en = {
         clear: 'Clear',
         copy: 'Copy',
         download: 'Download',
+        downloadVisible: 'Download visible logs',
+        downloadAll: 'Download all logs',
+        portForward: 'Port forward',
+        localPort: 'Local port',
+        remotePort: 'Pod port',
+        startForward: 'Start',
+        stopForward: 'Stop',
     },
     placeholder: {
         description: 'This section will be implemented in a later step of the MVP.',

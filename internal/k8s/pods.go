@@ -14,6 +14,9 @@ import (
 
 // ListPods returns the pods of a cluster (optionally filtered by namespace).
 func ListPods(ctx context.Context, client kubernetes.Interface, namespace string) ([]PodInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	list, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
@@ -62,6 +65,9 @@ func containerState(s corev1.ContainerState) string {
 
 // GetPod returns a compact detail view of a pod.
 func GetPod(ctx context.Context, client kubernetes.Interface, namespace string, name string) (*PodDetail, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	p, err := client.CoreV1().Pods(namespace).Get(ctx, name, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
@@ -94,6 +100,9 @@ func GetPod(ctx context.Context, client kubernetes.Interface, namespace string, 
 
 // GetPodYAML returns the pod serialized as YAML.
 func GetPodYAML(ctx context.Context, client kubernetes.Interface, namespace string, name string) (string, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	p, err := client.CoreV1().Pods(namespace).Get(ctx, name, metav1.GetOptions{})
 	if err != nil {
 		return "", err

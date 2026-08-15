@@ -24,6 +24,9 @@ func sortWorkloads(result []WorkloadInfo) {
 
 // ListDeployments returns deployments in a namespace.
 func ListDeployments(ctx context.Context, client kubernetes.Interface, namespace string) ([]WorkloadInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	list, err := client.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
@@ -51,6 +54,9 @@ func ListDeployments(ctx context.Context, client kubernetes.Interface, namespace
 
 // ListStatefulSets returns statefulsets in a namespace.
 func ListStatefulSets(ctx context.Context, client kubernetes.Interface, namespace string) ([]WorkloadInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	list, err := client.AppsV1().StatefulSets(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
@@ -78,6 +84,9 @@ func ListStatefulSets(ctx context.Context, client kubernetes.Interface, namespac
 
 // ListDaemonSets returns daemonsets in a namespace.
 func ListDaemonSets(ctx context.Context, client kubernetes.Interface, namespace string) ([]WorkloadInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	list, err := client.AppsV1().DaemonSets(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
@@ -101,6 +110,9 @@ func ListDaemonSets(ctx context.Context, client kubernetes.Interface, namespace 
 
 // ListJobs returns jobs in a namespace.
 func ListJobs(ctx context.Context, client kubernetes.Interface, namespace string) ([]JobInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	list, err := client.BatchV1().Jobs(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
@@ -133,6 +145,9 @@ func ListJobs(ctx context.Context, client kubernetes.Interface, namespace string
 
 // ListCronJobs returns cronjobs in a namespace.
 func ListCronJobs(ctx context.Context, client kubernetes.Interface, namespace string) ([]CronJobInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	list, err := client.BatchV1().CronJobs(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err

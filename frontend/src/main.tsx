@@ -9,16 +9,19 @@ import '@fontsource/jetbrains-mono/500.css'
 import {queryClient} from './lib/query-client'
 import {router} from './routes'
 import {ThemeProvider} from './components/providers/theme-provider'
+import {TooltipProvider} from './components/ui/tooltip'
 import './lib/i18n'
 import './style.css'
 
 createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <ThemeProvider>
-            <QueryClientProvider client={queryClient}>
-                <RouterProvider router={router}/>
-                <Toaster position="bottom-right" richColors/>
-            </QueryClientProvider>
+            <TooltipProvider delayDuration={150}>
+                <QueryClientProvider client={queryClient}>
+                    <RouterProvider router={router}/>
+                    <Toaster position="bottom-right" richColors/>
+                </QueryClientProvider>
+            </TooltipProvider>
         </ThemeProvider>
     </React.StrictMode>
 )

@@ -37,6 +37,9 @@ func formatAgeTime(t time.Time) string {
 
 // ListEvents returns the events of a namespace, most recent first.
 func ListEvents(ctx context.Context, client kubernetes.Interface, namespace string) ([]EventInfo, error) {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
 	list, err := client.CoreV1().Events(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err

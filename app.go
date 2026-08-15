@@ -13,15 +13,17 @@ import (
 	"openk8s-desktop/internal/exec"
 	"openk8s-desktop/internal/k8s"
 	"openk8s-desktop/internal/logs"
+	"openk8s-desktop/internal/portforward"
 	"openk8s-desktop/internal/storage"
 )
 
 // App struct
 type App struct {
-	ctx      context.Context
-	clusters cluster.ClusterManager
-	logs     *logs.Manager
-	exec     *exec.Manager
+	ctx         context.Context
+	clusters    cluster.ClusterManager
+	logs        *logs.Manager
+	exec        *exec.Manager
+	portforward *portforward.Manager
 }
 
 // NewApp creates a new App application struct
@@ -29,9 +31,10 @@ func NewApp() *App {
 	clusterStore, credentialStore := openStores()
 	manager := cluster.NewManager(clusterStore, credentialStore, nil)
 	return &App{
-		clusters: manager,
-		logs:     logs.NewManager(),
-		exec:     exec.NewManager(),
+		clusters:    manager,
+		logs:        logs.NewManager(),
+		exec:        exec.NewManager(),
+		portforward: portforward.NewManager(),
 	}
 }
 
@@ -284,6 +287,26 @@ func (a *App) ResizeExec(sessionID string, cols int, rows int) error {
 // CloseExec closes an exec session.
 func (a *App) CloseExec(sessionID string) {
 	a.exec.Close(sessionID)
+}
+
+// StartPortForward begins a port-forward to a pod and returns a forward id.
+func (a *App) StartPortForward(clusterID string, namespace string, pod string, localPort int, remotePort int) (string, error) {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return "", err
+	}
+	restCfg, err := a.clusters.RESTConfig(clusterID)
+	if err != nil {
+		return "", err
+	}
+	return a.portforward.Start(a.ctxOrDefault(), client, restCfg, namespace, pod, localPort, remotePort, func(event string, data any) {
+		runtime.EventsEmit(a.ctx, event, data)
+	})
+}
+
+// StopPortForward stops a port-forward.
+func (a *App) StopPortForward(forwardID string) {
+	a.portforward.Stop(forwardID)
 }
 
 // ctxOrDefault returns the app context or a background context if not started.

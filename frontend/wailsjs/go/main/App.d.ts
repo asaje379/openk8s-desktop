@@ -59,7 +59,11 @@ export function StartExec(arg1:string,arg2:string,arg3:string,arg4:string,arg5:s
 
 export function StartLogStream(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number,arg6:boolean):Promise<string>;
 
+export function StartPortForward(arg1:string,arg2:string,arg3:string,arg4:number,arg5:number):Promise<string>;
+
 export function StopLogStream(arg1:string):Promise<void>;
+
+export function StopPortForward(arg1:string):Promise<void>;
 
 export function SwitchContext(arg1:string,arg2:string):Promise<void>;
 

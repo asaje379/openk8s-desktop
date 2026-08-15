@@ -124,11 +124,11 @@ func TestGetPod(t *testing.T) {
 func TestListEvents(t *testing.T) {
 	client := fake.NewSimpleClientset(
 		&corev1.Event{
-			ObjectMeta: metav1.ObjectMeta{Name: "evt-1", Namespace: "default"},
+			ObjectMeta:     metav1.ObjectMeta{Name: "evt-1", Namespace: "default"},
 			InvolvedObject: corev1.ObjectReference{Kind: "Pod", Name: "api-1", Namespace: "default"},
-			Type:            "Warning",
-			Reason:          "BackOff",
-			Message:         "Back-off restarting failed container",
+			Type:           "Warning",
+			Reason:         "BackOff",
+			Message:        "Back-off restarting failed container",
 		},
 	)
 	list, err := ListEvents(context.Background(), client, "default")

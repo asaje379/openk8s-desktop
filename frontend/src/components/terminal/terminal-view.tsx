@@ -127,7 +127,10 @@ export function TerminalView({clusterId, namespace, pod, containers}: TerminalVi
                 </Select>
                 {error && <p className="break-words text-sm text-destructive">{error}</p>}
             </div>
-            <div ref={termElRef} className="h-[62vh] overflow-hidden rounded-md border border-border"/>
+            <div
+                ref={termElRef}
+                className="h-[62vh] overflow-hidden rounded-md border border-border bg-[#0b1326] p-3"
+            />
         </div>
     )
 }

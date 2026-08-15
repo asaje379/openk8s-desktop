@@ -4,6 +4,13 @@ import {Clipboard, Download, Eraser, Search} from 'lucide-react'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip'
 import {EventsOn, StartLogStream, StopLogStream} from '@/lib/wails'
 
 interface LogViewerProps {
@@ -79,8 +86,8 @@ export function LogViewer({clusterId, namespace, pod, containers}: LogViewerProp
 
     const handleCopy = () => void navigator.clipboard.writeText(logs)
 
-    const handleDownload = () => {
-        const blob = new Blob([logs], {type: 'text/plain'})
+    const handleDownload = (text: string) => {
+        const blob = new Blob([text], {type: 'text/plain'})
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
@@ -131,15 +138,37 @@ export function LogViewer({clusterId, namespace, pod, containers}: LogViewerProp
                         className="h-8 w-full rounded-md border border-input bg-transparent pl-8 pr-2 text-sm"
                     />
                 </div>
-                <Button size="icon" variant="ghost" onClick={() => setLogs('')} title={t('pod.clear')}>
-                    <Eraser className="size-4"/>
-                </Button>
-                <Button size="icon" variant="ghost" onClick={handleCopy} title={t('pod.copy')}>
-                    <Clipboard className="size-4"/>
-                </Button>
-                <Button size="icon" variant="ghost" onClick={handleDownload} title={t('pod.download')}>
-                    <Download className="size-4"/>
-                </Button>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button size="icon" variant="ghost" onClick={() => setLogs('')}>
+                            <Eraser className="size-4"/>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t('pod.clear')}</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button size="icon" variant="ghost" onClick={handleCopy}>
+                            <Clipboard className="size-4"/>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t('pod.copy')}</TooltipContent>
+                </Tooltip>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button size="icon" variant="ghost">
+                            <Download className="size-4"/>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => handleDownload(displayed)}>
+                            {t('pod.downloadVisible')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDownload(logs)}>
+                            {t('pod.downloadAll')}
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             {error && <p className="break-words text-sm text-destructive">{error}</p>}
