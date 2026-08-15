@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpenK8s Desktop - Cluster Overview</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#005236",
+                        "secondary": "#006c49",
+                        "on-secondary-fixed": "#002113",
+                        "surface-container": "#f1f5f9",
+                        "on-secondary-container": "#00734e",
+                        "outline-variant": "#c3c6d6",
+                        "secondary-fixed": "#7afac0",
+                        "surface": "#ffffff",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-background": "#1a1c1c",
+                        "error": "#d32f2f",
+                        "on-primary-container": "#faf9ff",
+                        "inverse-primary": "#b2c5ff",
+                        "secondary-container": "#7afac0",
+                        "surface-container-highest": "#e2e2e2",
+                        "secondary-fixed-dim": "#5cdda5",
+                        "tertiary": "#805000",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "surface-container-low": "#f3f3f4",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "surface-dim": "#f8fafc",
+                        "on-surface": "#0f172a",
+                        "surface-bright": "#f9f9f9",
+                        "inverse-on-surface": "#f0f1f1",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed": "#001848",
+                        "on-surface-variant": "#434654",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2f3131",
+                        "outline": "#cbd5e1",
+                        "tertiary-container": "#a16600",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "primary-fixed": "#dae2ff",
+                        "tertiary-fixed-dim": "#ffb95e",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#e8e8e8",
+                        "primary-container": "#326ce5",
+                        "primary": "#0052ca",
+                        "on-error": "#ffffff",
+                        "background": "#f9f9f9",
+                        "on-tertiary-container": "#fff9f5",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e2e2e2",
+                        "surface-tint": "#0b56cf",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffddb7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "base": "4px",
+                        "margin-page": "24px",
+                        "gutter": "16px",
+                        "widget-gap": "24px",
+                        "table-row-height": "40px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "code-md": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "code-sm": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["18px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "code-md": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "code-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased overflow-x-hidden">
+<!-- SideNavBar Component -->
+<aside class="bg-surface-container-low dark:bg-surface-container-low w-sidebar-width h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant flex flex-col h-full py-gutter z-50">
+<!-- Header -->
+<div class="px-6 pb-6 flex items-center gap-3 border-b border-outline-variant/30 mb-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden flex-shrink-0 border border-outline-variant">
+<img alt="OpenK8s Logo" class="w-7 h-7 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChfwh1saTeQ7LmkLCJRK5S164bJuYdPy3PRvI3DVvxbX7NRZ6ds7bXTqkiE955uKebn8wteywHBhPXJ9S3rh8TAtHAjGTuIG7pvXCibFiaK1iVcg9PhK-bazec7QMLhmaELqjYcF8L0Ks8X7KRgJwGCeTwLYln68BUEqTgs8lS6MwbL3MLFhH9viYSaO-lViFT7Gs2s0hnOQRghWKzbihwEWno8X49Ct3dc-YyETjxJRTacF417ur0"/>
+</div>
+<div>
+<h2 class="text-headline-sm font-headline-sm font-bold text-primary dark:text-primary leading-tight">OpenK8s Desktop</h2>
+<p class="text-code-sm font-code-sm text-on-surface-variant opacity-80 mt-1">Production Cluster</p>
+</div>
+</div>
+<!-- CTA -->
+<div class="px-4 mb-6">
+<button class="w-full bg-primary text-on-primary py-2 px-4 rounded font-body-md font-semibold flex items-center justify-center gap-2 hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Resource
+            </button>
+</div>
+<!-- Primary Tabs -->
+<nav class="flex-1 overflow-y-auto px-2 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 text-primary dark:text-primary font-bold border-l-4 border-primary bg-primary/10" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-body-md font-body-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+<span class="text-body-md font-body-md">Namespaces</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+<span class="text-body-md font-body-md">Workloads</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">reorder</span>
+<span class="text-body-md font-body-md">Pods</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">lan</span>
+<span class="text-body-md font-body-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings_applications</span>
+<span class="text-body-md font-body-md">Config</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">event_note</span>
+<span class="text-body-md font-body-md">Events</span>
+</a>
+</nav>
+<!-- Footer Tabs -->
+<div class="mt-auto px-2 pt-4 border-t border-outline-variant/30 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-body-md font-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+<span class="text-body-md font-body-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar Component -->
+<header class="bg-surface dark:bg-surface h-16 fixed top-0 right-0 left-sidebar-width z-40 border-b border-outline-variant dark:border-outline-variant flex items-center justify-between px-margin-page gap-4">
+<!-- Search Bar (Command Palette Style) -->
+<div class="flex-1 max-w-xl">
+<div class="relative flex items-center w-full h-10 rounded bg-surface-container border border-outline-variant focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all shadow-sm">
+<span class="material-symbols-outlined text-on-surface-variant ml-3 text-[18px]">search</span>
+<input class="w-full h-full bg-transparent border-none text-code-md font-code-md text-on-surface placeholder:text-outline focus:ring-0 px-3 outline-none" placeholder="Search resources or execute command..." type="text"/>
+<div class="mr-3 flex items-center gap-1 opacity-60">
+<kbd class="font-code-sm text-[10px] bg-surface-container-high px-1.5 py-0.5 rounded border border-outline-variant/50 text-on-surface-variant">⌘</kbd>
+<kbd class="font-code-sm text-[10px] bg-surface-container-high px-1.5 py-0.5 rounded border border-outline-variant/50 text-on-surface-variant">K</kbd>
+</div>
+</div>
+</div>
+<!-- Nav Links -->
+<div class="hidden md:flex items-center gap-6 border-l border-outline-variant/30 pl-6 h-8">
+<a class="text-body-md font-body-md text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors px-2 py-1 rounded" href="#">Cluster Selector</a>
+<a class="text-body-md font-body-md text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors px-2 py-1 rounded" href="#">Namespace: default</a>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-2 ml-auto">
+<button class="w-9 h-9 rounded flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest hover:text-primary transition-colors scale-95 active:scale-90 relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface"></span>
+</button>
+<button class="w-9 h-9 rounded flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest hover:text-primary transition-colors scale-95 active:scale-90">
+<span class="material-symbols-outlined text-[20px]">terminal</span>
+</button>
+<button class="w-9 h-9 rounded flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest hover:text-primary transition-colors scale-95 active:scale-90 ml-2">
+<span class="material-symbols-outlined text-[24px]">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width mt-16 p-margin-page min-h-[calc(100vh-64px)] bg-background">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface mb-2">Cluster Overview</h1>
+<div class="flex items-center gap-4 text-body-md font-body-md text-on-surface-variant">
+<div class="flex items-center gap-1.5 bg-surface-container px-2.5 py-1 rounded-full border border-outline-variant/50">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-code-md text-secondary">v1.27.3</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">dns</span>
+<span>API Server: <span class="text-on-surface">Reachable</span></span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary">swap_horiz</span>
+<span>Context: <span class="text-on-surface font-code-md">minikube</span></span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container border border-outline-variant text-on-surface px-4 py-2 rounded text-body-md font-body-md hover:bg-surface-container-highest transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+                    Refresh
+                </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Status Cards (Span 12, subgrid 3) -->
+<div class="col-span-1 md:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Nodes Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-5 flex flex-col justify-between relative overflow-hidden group hover:border-primary/50 transition-colors">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">dns</span>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Nodes</h3>
+</div>
+<span class="bg-secondary/10 text-secondary border border-secondary/20 px-2.5 py-0.5 rounded-full text-label-caps font-label-caps">HEALTHY</span>
+</div>
+<div class="relative z-10 flex items-baseline gap-2">
+<span class="text-headline-lg font-headline-lg text-on-surface">3/3</span>
+<span class="text-body-md font-body-md text-on-surface-variant">Ready</span>
+</div>
+</div>
+<!-- Pods Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-5 flex flex-col justify-between relative overflow-hidden group hover:border-primary/50 transition-colors">
+<div class="absolute top-0 right-0 w-24 h-24 bg-tertiary/5 rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">reorder</span>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Pods</h3>
+</div>
+<span class="bg-tertiary/10 text-tertiary border border-tertiary/20 px-2.5 py-0.5 rounded-full text-label-caps font-label-caps">1 PENDING</span>
+</div>
+<div class="relative z-10 flex items-baseline gap-2">
+<span class="text-headline-lg font-headline-lg text-on-surface">12</span>
+<span class="text-body-md font-body-md text-on-surface-variant">Running</span>
+</div>
+</div>
+<!-- Deployments Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-5 flex flex-col justify-between relative overflow-hidden group hover:border-primary/50 transition-colors">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">apps</span>
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Deployments</h3>
+</div>
+<span class="bg-secondary/10 text-secondary border border-secondary/20 px-2.5 py-0.5 rounded-full text-label-caps font-label-caps">STABLE</span>
+</div>
+<div class="relative z-10 flex items-baseline gap-2">
+<span class="text-headline-lg font-headline-lg text-on-surface">5</span>
+<span class="text-body-md font-body-md text-on-surface-variant">Available</span>
+</div>
+</div>
+</div>
+<!-- Resource Utilization (Span 8) -->
+<div class="col-span-1 md:col-span-8 bg-surface-container-low border border-outline-variant rounded-lg p-6 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-headline-sm font-headline-sm text-on-surface">Resource Utilization</h3>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 flex-1">
+<!-- CPU -->
+<div class="flex flex-col justify-center">
+<div class="flex justify-between text-body-md font-body-md mb-2">
+<span class="text-on-surface-variant">Cluster CPU</span>
+<span class="text-on-surface font-code-md">45%</span>
+</div>
+<!-- Custom CSS Progress Bar with segments -->
+<div class="h-4 bg-surface-container rounded-full overflow-hidden flex">
+<div class="bg-primary h-full w-[30%] border-r border-background/20" title="System: 30%"></div>
+<div class="bg-tertiary h-full w-[15%] border-r border-background/20" title="User: 15%"></div>
+</div>
+<div class="flex justify-between mt-3 text-code-sm font-code-sm text-outline">
+<div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-primary"></span> System (30%)</div>
+<div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-tertiary"></span> Workloads (15%)</div>
+</div>
+</div>
+<!-- Memory -->
+<div class="flex flex-col justify-center">
+<div class="flex justify-between text-body-md font-body-md mb-2">
+<span class="text-on-surface-variant">Cluster Memory</span>
+<span class="text-on-surface font-code-md">72%</span>
+</div>
+<div class="h-4 bg-surface-container rounded-full overflow-hidden flex">
+<div class="bg-primary h-full w-[50%] border-r border-background/20" title="Used: 50%"></div>
+<div class="bg-tertiary h-full w-[22%] border-r border-background/20" title="Cache: 22%"></div>
+</div>
+<div class="flex justify-between mt-3 text-code-sm font-code-sm text-outline">
+<div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-primary"></span> Used (8.2 GB)</div>
+<div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-tertiary"></span> Cache (3.6 GB)</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Events (Span 4) -->
+<div class="col-span-1 md:col-span-4 bg-surface-container-low border border-outline-variant rounded-lg p-6 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-headline-sm font-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-outline">history</span>
+                        Recent Events
+                    </h3>
+<a class="text-body-md font-body-md text-primary hover:underline" href="#">View All</a>
+</div>
+<div class="flex flex-col gap-4 overflow-y-auto max-h-[200px] pr-2">
+<!-- Event Item -->
+<div class="flex gap-3 items-start group">
+<div class="mt-0.5 w-2 h-2 rounded-full bg-secondary flex-shrink-0 relative">
+<div class="absolute inset-0 bg-secondary rounded-full animate-ping opacity-20"></div>
+</div>
+<div>
+<p class="text-body-md font-body-md text-on-surface leading-snug">Pod <span class="font-code-md text-primary bg-primary/10 px-1 rounded">frontend-deployment-7bb9...</span> scheduled to node-01</p>
+<p class="text-code-sm font-code-sm text-outline mt-1">Just now • default</p>
+</div>
+</div>
+<!-- Event Item -->
+<div class="flex gap-3 items-start group">
+<div class="mt-0.5 w-2 h-2 rounded-full bg-tertiary flex-shrink-0"></div>
+<div>
+<p class="text-body-md font-body-md text-on-surface leading-snug">HorizontalPodAutoscaler scaled up replicas to 4</p>
+<p class="text-code-sm font-code-sm text-outline mt-1">2 mins ago • kube-system</p>
+</div>
+</div>
+<!-- Event Item -->
+<div class="flex gap-3 items-start group">
+<div class="mt-0.5 w-2 h-2 rounded-full bg-error flex-shrink-0"></div>
+<div>
+<p class="text-body-md font-body-md text-on-surface leading-snug">ImagePullBackOff for <span class="font-code-md text-error bg-error/10 px-1 rounded">worker-queue-pod</span></p>
+<p class="text-code-sm font-code-sm text-outline mt-1">15 mins ago • processing</p>
+</div>
+</div>
+<!-- Event Item -->
+<div class="flex gap-3 items-start group">
+<div class="mt-0.5 w-2 h-2 rounded-full bg-outline flex-shrink-0"></div>
+<div>
+<p class="text-body-md font-body-md text-on-surface leading-snug">ConfigMap updated <span class="font-code-md">app-settings</span></p>
+<p class="text-code-sm font-code-sm text-outline mt-1">1 hr ago • default</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

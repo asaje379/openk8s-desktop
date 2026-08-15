@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpenK8s Desktop - Add Cluster</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-secondary-fixed-variant": "#005236",
+                "secondary": "#006c49",
+                "on-secondary-fixed": "#002113",
+                "surface-container": "#f1f5f9",
+                "on-secondary-container": "#00734e",
+                "outline-variant": "#c3c6d6",
+                "secondary-fixed": "#7afac0",
+                "surface": "#ffffff",
+                "on-tertiary-fixed": "#2a1700",
+                "on-background": "#1a1c1c",
+                "error": "#d32f2f",
+                "on-primary-container": "#faf9ff",
+                "inverse-primary": "#b2c5ff",
+                "secondary-container": "#7afac0",
+                "surface-container-highest": "#e2e2e2",
+                "secondary-fixed-dim": "#5cdda5",
+                "tertiary": "#805000",
+                "error-container": "#ffdad6",
+                "on-tertiary-fixed-variant": "#653e00",
+                "surface-container-low": "#f3f3f4",
+                "on-primary-fixed-variant": "#0040a1",
+                "surface-dim": "#f8fafc",
+                "on-surface": "#0f172a",
+                "surface-bright": "#f9f9f9",
+                "inverse-on-surface": "#f0f1f1",
+                "on-primary": "#ffffff",
+                "on-primary-fixed": "#001848",
+                "on-surface-variant": "#434654",
+                "surface-container-lowest": "#ffffff",
+                "inverse-surface": "#2f3131",
+                "outline": "#cbd5e1",
+                "tertiary-container": "#a16600",
+                "primary-fixed-dim": "#b2c5ff",
+                "primary-fixed": "#dae2ff",
+                "tertiary-fixed-dim": "#ffb95e",
+                "on-secondary": "#ffffff",
+                "surface-container-high": "#e8e8e8",
+                "primary-container": "#326ce5",
+                "primary": "#0052ca",
+                "on-error": "#ffffff",
+                "background": "#f9f9f9",
+                "on-tertiary-container": "#fff9f5",
+                "on-tertiary": "#ffffff",
+                "surface-variant": "#e2e2e2",
+                "surface-tint": "#0b56cf",
+                "on-error-container": "#93000a",
+                "tertiary-fixed": "#ffddb7"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "sidebar-width": "260px",
+                "base": "4px",
+                "margin-page": "24px",
+                "gutter": "16px",
+                "widget-gap": "24px",
+                "table-row-height": "40px"
+        },
+        "fontFamily": {
+                "headline-sm": [
+                        "Inter"
+                ],
+                "code-md": [
+                        "JetBrains Mono"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "label-caps": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Inter"
+                ],
+                "headline-lg": [
+                        "Inter"
+                ],
+                "code-sm": [
+                        "JetBrains Mono"
+                ],
+                "body-sm": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "headline-sm": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "code-md": [
+                        "13px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-caps": [
+                        "11px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "code-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "18px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "18px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+    }
+  }
+</script>
+<style>
+        /* Custom scrollbar for textareas and content */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.surface-container-highest');
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline-variant');
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="w-sidebar-width h-screen fixed left-0 top-0 border-r border-outline-variant bg-surface-container-low flex flex-col py-gutter z-50">
+<!-- Brand Header -->
+<div class="px-6 pb-6 pt-2 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-headline-sm shadow-[0_0_15px_rgba(50,108,229,0.3)]">
+                K8s
+            </div>
+<div>
+<h1 class="text-headline-sm font-headline-sm font-bold text-primary">OpenK8s Desktop</h1>
+<p class="text-body-md font-body-md text-on-surface-variant text-xs">Production Cluster</p>
+</div>
+</div>
+<!-- Main Navigation Tabs -->
+<div class="flex-1 overflow-y-auto px-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-body-md font-body-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+<span class="text-body-md font-body-md">Namespaces</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+<span class="text-body-md font-body-md">Workloads</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">reorder</span>
+<span class="text-body-md font-body-md">Pods</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">lan</span>
+<span class="text-body-md font-body-md">Network</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">settings_applications</span>
+<span class="text-body-md font-body-md">Config</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">event_note</span>
+<span class="text-body-md font-body-md">Events</span>
+</a>
+</div>
+<!-- Footer Tabs -->
+<div class="mt-auto px-4 flex flex-col gap-1 pt-4 border-t border-outline-variant/30">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-body-md font-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+<span class="text-body-md font-body-md">Support</span>
+</a>
+<button class="mt-4 w-full bg-primary text-on-primary hover:bg-primary/90 px-4 py-2 rounded-lg text-body-md font-headline-sm font-semibold transition-all shadow-md flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Resource
+            </button>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="h-16 fixed top-0 right-0 left-[260px] z-40 bg-surface border-b border-outline-variant flex items-center justify-between px-margin-page gap-4 shadow-sm shadow-black/5">
+<div class="flex items-center gap-4">
+<!-- Breadcrumb / Context -->
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="text-body-md font-headline-md font-medium">Cluster Selector</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary font-semibold text-body-md">Add New</span>
+</div>
+<!-- Namespace Indicator (Inactive state for context) -->
+<div class="ml-4 flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded border border-outline-variant/50">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="text-code-sm font-code-sm text-on-surface-variant">Namespace: default</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors scale-95 active:scale-90">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors scale-95 active:scale-90">
+<span class="material-symbols-outlined">terminal</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 ml-2">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-[260px] mt-16 p-margin-page overflow-y-auto bg-surface-dim">
+<div class="max-w-4xl mx-auto py-8">
+<!-- Page Header -->
+<div class="mb-8">
+<h2 class="text-headline-lg font-headline-lg text-on-surface mb-2">Add Cluster</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant">Connect a new Kubernetes environment by importing or pasting your kubeconfig.</p>
+</div>
+<!-- Main Form Card -->
+<div class="bg-surface border border-outline-variant rounded-xl shadow-lg shadow-black/5 overflow-hidden">
+<!-- Toggle / Tabs -->
+<div class="border-b border-outline-variant bg-surface-container-low flex">
+<button class="flex-1 py-4 px-6 text-center border-b-2 border-transparent text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors font-headline-sm text-sm">
+                        Import Kubeconfig
+                    </button>
+<button class="flex-1 py-4 px-6 text-center border-b-2 border-primary text-primary bg-primary/5 font-headline-sm text-sm font-semibold">
+                        Paste Kubeconfig YAML
+                    </button>
+</div>
+<div class="p-8">
+<!-- Cluster Name Input (Optional logical grouping) -->
+<div class="mb-6">
+<label class="block text-body-md font-headline-sm text-on-surface mb-2">Cluster Name <span class="text-outline-variant font-normal">(Optional Override)</span></label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 text-body-md font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder-outline-variant" placeholder="e.g., prod-cluster-01" type="text"/>
+</div>
+<!-- YAML Editor Area -->
+<div class="mb-8">
+<div class="flex items-center justify-between mb-2">
+<label class="block text-body-md font-headline-sm text-on-surface">Kubeconfig Context</label>
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider bg-surface-container-high px-2 py-1 rounded">YAML</span>
+</div>
+<!-- Pseudo Code Editor -->
+<div class="relative bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden flex flex-col group focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all shadow-inner">
+<!-- Editor Header Bar -->
+<div class="h-8 bg-surface-container-highest border-b border-outline-variant flex items-center px-4 justify-between">
+<div class="flex gap-1.5">
+<div class="w-2.5 h-2.5 rounded-full bg-error/80"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-tertiary/80"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-secondary/80"></div>
+</div>
+<div class="text-xs text-outline-variant font-code-sm font-code-sm">config.yaml</div>
+</div>
+<!-- Editor Body -->
+<div class="flex w-full">
+<!-- Line Numbers -->
+<div class="w-12 bg-surface-container-low border-r border-outline-variant/30 text-right pr-2 py-4 text-outline-variant font-code-md text-code-md opacity-70 select-none flex flex-col gap-[2px]">
+<span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
+</div>
+<!-- Textarea -->
+<textarea class="w-full h-[300px] bg-transparent text-primary font-code-md text-code-md p-4 focus:outline-none resize-none leading-relaxed" placeholder="apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: DATA+OMITTED
+    server: https://your-k8s-api-server:6443
+  name: my-cluster
+contexts:
+- context:
+    cluster: my-cluster
+    user: my-user
+  name: my-context
+current-context: my-context
+..." spellcheck="false"></textarea>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant mt-2 font-body-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                            Ensure your context is correctly set and credentials are included.
+                        </p>
+</div>
+<!-- Action Area -->
+<div class="flex items-center justify-between pt-6 border-t border-outline-variant/50">
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container-high transition-colors font-headline-sm text-sm">
+<span class="material-symbols-outlined text-[18px]">close</span>
+                            Cancel
+                        </button>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-primary text-primary hover:bg-primary/10 transition-colors font-headline-sm text-sm">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+                                Test Connection
+                            </button>
+<button class="flex items-center gap-2 px-8 py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary/90 transition-colors font-headline-sm text-sm font-bold shadow-md shadow-primary/20">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                                Save Cluster
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Informational Toast / Alert (Example of state styling) -->
+<div class="mt-6 flex items-center gap-3 p-4 rounded-lg bg-surface border border-outline-variant text-body-md font-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-[20px]">verified_user</span>
+<div>
+<span class="font-semibold text-on-surface block mb-0.5">Secure Processing</span>
+                    Your kubeconfig is processed locally and is never sent to any external telemetry servers.
+                </div>
+</div>
+</div>
+</main>
+</body></html>

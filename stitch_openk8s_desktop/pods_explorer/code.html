@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pods Explorer - OpenK8s Desktop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#4edea3",
+                    "tertiary": "#ffb95f",
+                    "inverse-surface": "#dae2fd",
+                    "inverse-primary": "#0b56cf",
+                    "primary-fixed": "#dae2ff",
+                    "surface-bright": "#31394d",
+                    "error-container": "#93000a",
+                    "outline-variant": "#434654",
+                    "on-background": "#dae2fd",
+                    "on-primary-fixed": "#001848",
+                    "surface-container-high": "#222a3d",
+                    "surface-container": "#171f33",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#2d3449",
+                    "surface-container-low": "#131b2e",
+                    "surface-variant": "#2d3449",
+                    "on-primary": "#002b73",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "inverse-on-surface": "#283044",
+                    "error": "#ffb4ab",
+                    "on-secondary-container": "#00311f",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "on-surface-variant": "#c3c6d6",
+                    "on-secondary-fixed-variant": "#005236",
+                    "tertiary-container": "#a16600",
+                    "secondary-fixed-dim": "#4edea3",
+                    "on-tertiary-fixed": "#2a1700",
+                    "background": "#0b1326",
+                    "secondary-container": "#00a572",
+                    "surface-container-lowest": "#060e20",
+                    "outline": "#8d909f",
+                    "on-secondary": "#003824",
+                    "primary-container": "#326ce5",
+                    "surface": "#0b1326",
+                    "on-tertiary": "#472a00",
+                    "on-secondary-fixed": "#002113",
+                    "surface-tint": "#b2c5ff",
+                    "on-error": "#690005",
+                    "on-surface": "#dae2fd",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "on-tertiary-container": "#fff9f5",
+                    "primary": "#b2c5ff",
+                    "on-primary-container": "#faf9ff",
+                    "tertiary-fixed": "#ffddb8",
+                    "surface-dim": "#0b1326",
+                    "secondary-fixed": "#6ffbbe"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "unit": "4px",
+                    "sidebar-width": "260px",
+                    "table-row-height": "40px",
+                    "margin-page": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-sm": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "code-sm": [
+                            "JetBrains Mono"
+                    ],
+                    "code-md": [
+                            "JetBrains Mono"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-sm": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "code-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "18px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "code-md": [
+                            "13px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "11px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        /* Minimalist scrollbar for a cleaner technical feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #434654;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8d909f;
+        }
+        /* Sticky header fix for table */
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md antialiased overflow-hidden flex">
+<!-- SideNavBar (from JSON) -->
+<nav class="w-sidebar-width h-screen fixed left-0 top-0 border-r border-outline-variant bg-surface-container-low flex flex-col h-full py-gutter z-50">
+<!-- Brand Header -->
+<div class="px-gutter mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="hub">hub</span>
+</div>
+<div>
+<h1 class="text-headline-sm font-headline-sm font-bold text-primary">OpenK8s Desktop</h1>
+<p class="text-label-caps font-label-caps text-on-surface-variant uppercase">Production Cluster</p>
+</div>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 overflow-y-auto px-unit">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="layers">layers</span>
+<span>Namespaces</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span>Workloads</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-primary font-bold border-l-4 border-primary bg-primary/10 cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="reorder">reorder</span>
+<span>Pods</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="lan">lan</span>
+<span>Network</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings_applications">settings_applications</span>
+<span>Config</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span>Events</span>
+</a>
+</li>
+</ul>
+</div>
+<!-- Footer Actions -->
+<div class="mt-auto px-unit pt-4 border-t border-outline-variant/30">
+<button class="w-full mb-4 bg-primary text-on-primary py-2 px-4 rounded-md font-semibold flex items-center justify-center gap-2 hover:bg-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                New Resource
+            </button>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="help_outline">help_outline</span>
+<span class="text-sm">Support</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- TopNavBar (from JSON) -->
+<header class="h-16 fixed top-0 right-0 left-sidebar-width z-40 border-b border-outline-variant bg-surface flex items-center justify-between px-margin-page gap-4">
+<!-- Left / Search Area -->
+<div class="flex items-center gap-4 flex-1">
+<div class="relative max-w-md w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-surface-container-high border border-outline-variant text-on-surface rounded-md pl-10 pr-4 py-1.5 focus:border-primary focus:ring-1 focus:ring-primary outline-none font-code-sm text-code-sm placeholder-on-surface-variant/70" placeholder="Search resources (⌘K)" type="text"/>
+</div>
+<div class="hidden md:flex items-center gap-4 text-sm">
+<a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1" href="#">
+                    Cluster Selector <span class="material-symbols-outlined text-[16px]" data-icon="expand_more">expand_more</span>
+</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1" href="#">
+                    Namespace: default <span class="material-symbols-outlined text-[16px]" data-icon="expand_more">expand_more</span>
+</a>
+</div>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors scale-95 active:scale-90">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors scale-95 active:scale-90">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors scale-95 active:scale-90">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[260px] pt-16 flex-1 h-screen flex flex-col bg-background">
+<!-- Page Header -->
+<div class="px-margin-page py-6 flex items-center justify-between shrink-0">
+<div>
+<h2 class="text-headline-md font-headline-md text-on-surface font-semibold tracking-tight">Pods</h2>
+<p class="text-on-surface-variant mt-1">Manage and inspect pod instances across all namespaces.</p>
+</div>
+<!-- Contextual Filters (Bento style placement) -->
+<div class="flex items-center gap-3">
+<div class="flex items-center bg-surface-container-high border border-outline-variant rounded-md p-1">
+<button class="px-3 py-1.5 text-sm font-medium rounded bg-surface-variant text-on-surface shadow-sm">All</button>
+<button class="px-3 py-1.5 text-sm font-medium rounded text-on-surface-variant hover:text-on-surface">Running</button>
+<button class="px-3 py-1.5 text-sm font-medium rounded text-on-surface-variant hover:text-on-surface">Failed</button>
+</div>
+<button class="flex items-center justify-center w-9 h-9 rounded-md border border-outline-variant bg-surface-container-low text-on-surface-variant hover:text-primary hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Data Table Container -->
+<div class="flex-1 px-margin-page pb-margin-page min-h-0">
+<div class="h-full border border-outline-variant rounded-lg bg-surface-container-low flex flex-col overflow-hidden shadow-sm">
+<!-- Table Wrapper -->
+<div class="flex-1 overflow-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-highest border-b border-outline-variant">
+<tr>
+<th class="px-4 py-3 text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider font-semibold w-8"></th>
+<th class="px-4 py-3 text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">Name</th>
+<th class="px-4 py-3 text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">Namespace</th>
+<th class="px-4 py-3 text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">Status</th>
+<th class="px-4 py-3 text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">Ready</th>
+<th class="px-4 py-3 text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">Restarts</th>
+<th class="px-4 py-3 text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">IP</th>
+<th class="px-4 py-3 text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">Age</th>
+<th class="px-4 py-3 text-right"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/50">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-high transition-colors group cursor-pointer">
+<td class="px-4 py-3">
+<input class="rounded border-outline-variant bg-surface text-primary focus:ring-primary focus:ring-offset-surface" type="checkbox"/>
+</td>
+<td class="px-4 py-3 font-medium text-on-surface">api-gateway-7b98d4f8-c2xjq</td>
+<td class="px-4 py-3 text-on-surface-variant">ingress-nginx</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-secondary/15 text-secondary border border-secondary/30">
+                                        Running
+                                    </span>
+</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface">1/1</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface-variant">0</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface-variant">10.244.1.45</td>
+<td class="px-4 py-3 text-on-surface-variant">2d 4h</td>
+<td class="px-4 py-3 text-right">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-high transition-colors group cursor-pointer">
+<td class="px-4 py-3">
+<input class="rounded border-outline-variant bg-surface text-primary focus:ring-primary focus:ring-offset-surface" type="checkbox"/>
+</td>
+<td class="px-4 py-3 font-medium text-on-surface">auth-service-5f6cc8b75-9k2lw</td>
+<td class="px-4 py-3 text-on-surface-variant">production</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-secondary/15 text-secondary border border-secondary/30">
+                                        Running
+                                    </span>
+</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface">1/1</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-tertiary">2</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface-variant">10.244.2.12</td>
+<td class="px-4 py-3 text-on-surface-variant">5h</td>
+<td class="px-4 py-3 text-right">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 (Error State) -->
+<tr class="hover:bg-surface-container-high transition-colors group cursor-pointer bg-error/5">
+<td class="px-4 py-3">
+<input class="rounded border-outline-variant bg-surface text-primary focus:ring-primary focus:ring-offset-surface" type="checkbox"/>
+</td>
+<td class="px-4 py-3 font-medium text-error">billing-worker-d492c8d-x8s9z</td>
+<td class="px-4 py-3 text-on-surface-variant">production</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-error/15 text-error border border-error/30">
+                                        CrashLoopBackOff
+                                    </span>
+</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-error">0/1</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-error font-bold">14</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface-variant">10.244.1.88</td>
+<td class="px-4 py-3 text-on-surface-variant">12m</td>
+<td class="px-4 py-3 text-right">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-high transition-colors group cursor-pointer">
+<td class="px-4 py-3">
+<input class="rounded border-outline-variant bg-surface text-primary focus:ring-primary focus:ring-offset-surface" type="checkbox"/>
+</td>
+<td class="px-4 py-3 font-medium text-on-surface">redis-cache-master-0</td>
+<td class="px-4 py-3 text-on-surface-variant">data-tier</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-secondary/15 text-secondary border border-secondary/30">
+                                        Running
+                                    </span>
+</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface">1/1</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface-variant">0</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface-variant">10.244.0.5</td>
+<td class="px-4 py-3 text-on-surface-variant">14d</td>
+<td class="px-4 py-3 text-right">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 (Pending) -->
+<tr class="hover:bg-surface-container-high transition-colors group cursor-pointer">
+<td class="px-4 py-3">
+<input class="rounded border-outline-variant bg-surface text-primary focus:ring-primary focus:ring-offset-surface" type="checkbox"/>
+</td>
+<td class="px-4 py-3 font-medium text-on-surface opacity-70">ui-frontend-8c77b4d-p2mqt</td>
+<td class="px-4 py-3 text-on-surface-variant opacity-70">production</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-tertiary/15 text-tertiary border border-tertiary/30">
+                                        Pending
+                                    </span>
+</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface opacity-70">0/1</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface-variant opacity-70">0</td>
+<td class="px-4 py-3 font-code-sm text-code-sm text-on-surface-variant opacity-70">&lt;none&gt;</td>
+<td class="px-4 py-3 text-on-surface-variant opacity-70">45s</td>
+<td class="px-4 py-3 text-right">
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination/Footer -->
+<div class="px-4 py-3 border-t border-outline-variant bg-surface-container-lowest flex items-center justify-between text-sm text-on-surface-variant">
+<div>Showing 1 to 5 of 42 Pods</div>
+<div class="flex items-center gap-2">
+<button class="p-1 rounded hover:bg-surface-container-high disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[20px]" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-[20px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

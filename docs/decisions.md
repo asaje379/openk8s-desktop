@@ -96,3 +96,11 @@
 - **Décision** : `i18next` + `react-i18next` + `i18next-browser-languagedetector`.
 - **Justification** : standard de facto, riche en fonctionnalités (pluriels, interpolation, lazy loading), détection de langue (`navigator` + `localStorage`) adaptée au webview Wails.
 - **Conséquences** : traductions centralisées dans `frontend/src/locales/{en,fr}.ts` (namespace `translation`) ; toute chaîne visible doit passer par `useTranslation()` ; la langue est persistée en `localStorage`.
+
+## ADR-012 — Design system issu du dossier Google Stitch
+
+- **Date** : 2026-08-15
+- **Contexte** : remplacer le thème monochrome initial par un design plus coloré et élégant, basé sur la proposition générée par Google Stitch (`stitch_openk8s_desktop/`).
+- **Décision** : adopter la palette Stitch (fond navy `#0b1326`, Kubernetes blue `#326ce5`/`#b2c5ff`, émeraude `#4edea3`, ambre `#ffb95f`, rose `#ffb4ab`) mappée sur les tokens shadcn (Tailwind v4 CSS variables) en modes clair/sombre ; typo **Inter** (UI) + **JetBrains Mono** (code/données techniques) auto-hébergées via `@fontsource` ; badges pill semi-transparents (`bg-<color>/15 text-<color> border-<color>/30`) ; sidebar avec indicateur actif bleu (barre gauche + fond translucide).
+- **Justification** : cohérence avec la proposition Stitch (validée par l'utilisateur), palette « Corporate/Modern » adaptée au monitoring longue durée, conformité `tailwind-design-system` (tokens en variables CSS, variantes dark, contraste WCAG).
+- **Conséquences** : nouvelles variables `--success`/`--warning` (+ `success-foreground`/`warning-foreground`) ; police `font-sans` par défaut, `font-mono` pour les données techniques ; toute nouvelle couleur doit passer par un token.

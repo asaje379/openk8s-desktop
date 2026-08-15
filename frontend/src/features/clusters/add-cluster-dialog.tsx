@@ -142,7 +142,7 @@ export function AddClusterDialog({open, onOpenChange}: AddClusterDialogProps) {
 
                     {testResult &&
                         (testResult.connected ? (
-                            <p className="text-sm text-emerald-600 dark:text-emerald-400">
+                            <p className="text-sm text-success">
                                 {t('clusters.testSuccess', {version: testResult.version})}
                             </p>
                         ) : (

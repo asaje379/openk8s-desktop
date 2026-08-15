@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpenK8s Desktop - The Modern Kubernetes Desktop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ffb4ab",
+                    "on-background": "#dae2fd",
+                    "surface-bright": "#31394d",
+                    "background": "#0b1326",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-tertiary-container": "#fff9f5",
+                    "tertiary": "#ffb95f",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "inverse-surface": "#dae2fd",
+                    "on-secondary-fixed": "#002113",
+                    "on-tertiary-fixed": "#2a1700",
+                    "surface-container-high": "#222a3d",
+                    "error-container": "#93000a",
+                    "on-primary-fixed-variant": "#0040a1",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "tertiary-container": "#a16600",
+                    "surface-tint": "#b2c5ff",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-lowest": "#060e20",
+                    "surface-dim": "#0b1326",
+                    "outline": "#8d909f",
+                    "on-primary-container": "#faf9ff",
+                    "outline-variant": "#434654",
+                    "secondary-fixed-dim": "#4edea3",
+                    "on-secondary-fixed-variant": "#005236",
+                    "primary-container": "#326ce5",
+                    "surface-container-low": "#131b2e",
+                    "on-secondary-container": "#00311f",
+                    "surface-container-highest": "#2d3449",
+                    "surface": "#0b1326",
+                    "secondary": "#4edea3",
+                    "inverse-primary": "#0b56cf",
+                    "on-error": "#690005",
+                    "primary-fixed": "#dae2ff",
+                    "inverse-on-surface": "#283044",
+                    "on-secondary": "#003824",
+                    "on-primary-fixed": "#001848",
+                    "on-surface": "#dae2fd",
+                    "on-primary": "#002b73",
+                    "primary": "#b2c5ff",
+                    "on-tertiary": "#472a00",
+                    "surface-container": "#171f33",
+                    "secondary-container": "#00a572",
+                    "tertiary-fixed": "#ffddb8",
+                    "on-surface-variant": "#c3c6d6",
+                    "surface-variant": "#2d3449",
+                    "secondary-fixed": "#6ffbbe"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sidebar-width": "260px",
+                    "gutter": "16px",
+                    "table-row-height": "40px",
+                    "margin-page": "24px",
+                    "unit": "4px"
+            },
+            "fontFamily": {
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "code-sm": [
+                            "JetBrains Mono"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ],
+                    "code-md": [
+                            "JetBrains Mono"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Inter"
+                    ],
+                    "headline-sm": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "code-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "18px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "11px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "code-md": [
+                            "13px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-sm": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Glassmorphism effects */
+        .glass-panel {
+            background: rgba(19, 27, 46, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(141, 144, 159, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden min-h-screen flex flex-col">
+<!-- Top Navigation (Landing Page Variant) -->
+<header class="fixed top-0 w-full z-50 glass-panel h-16 border-b border-outline-variant/30 flex items-center justify-between px-margin-page transition-all duration-300" id="main-header">
+<div class="flex items-center gap-3">
+<img alt="OpenK8s Desktop Logo" class="w-8 h-8 rounded-DEFAULT" src="https://lh3.googleusercontent.com/aida/AP1WRLskCzp_slogSKDSNHK_SwkcLZAw1uYHhGp3A8gN1kCI_dQLh3bWoKmgXXOTbxrt7hbGK08OR03D8enAC5dpksVNMT5X73657r2oivrw8geHW3Ej6kKkrFKYS_lIlHKuisuFrmUvx87G4CK0OOW3MQyLF3y0f26ADkYPQk2P9DiybCmMrs7mSE2MHuvQ8VKj9rreeXOXhgNORYqOqEDiJCSVQ9gJy0NcpUNufjGp7uNT9LrLv5RWSLAHLw"/>
+<span class="text-headline-sm font-headline-sm text-primary font-bold tracking-tight">OpenK8s</span>
+</div>
+<nav class="hidden md:flex gap-8">
+<a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#features">Features</a>
+<a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#pricing">Pricing</a>
+<a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#testimonials">Testimonials</a>
+</nav>
+<div class="flex items-center gap-4">
+<a class="hidden md:flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors" href="https://github.com" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">code</span>
+<span class="text-body-md font-body-md">GitHub</span>
+</a>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-DEFAULT text-body-md font-body-md font-semibold hover:bg-primary-fixed transition-colors">
+                Download
+            </button>
+</div>
+</header>
+<main class="flex-grow pt-24 pb-16">
+<!-- Hero Section -->
+<section class="relative max-w-7xl mx-auto px-margin-page pt-16 pb-24 lg:pt-32 lg:pb-40 flex flex-col items-center text-center">
+<!-- Decorative background element -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary mb-8 animate-fade-in-up">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="text-label-caps font-label-caps uppercase tracking-wider">v2.0 is now available</span>
+</div>
+<h1 class="text-headline-lg font-headline-lg md:text-[56px] md:leading-[64px] font-extrabold text-on-surface max-w-4xl mx-auto mb-6 tracking-tight text-balance">
+                The Modern Kubernetes Desktop for <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">DevOps Professionals</span>
+</h1>
+<p class="text-body-lg font-body-lg md:text-headline-sm md:font-headline-sm text-on-surface-variant max-w-2xl mx-auto mb-10 text-balance leading-relaxed">
+                A fast, powerful, and open-source alternative to Lens. Built with Go, Wails, and React for native performance and minimal resource footprint.
+            </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 w-full max-w-md mx-auto">
+<button class="w-full sm:w-auto bg-primary text-on-primary px-8 py-3.5 rounded-DEFAULT text-body-lg font-body-lg font-semibold hover:bg-primary-fixed shadow-[0_0_20px_rgba(178,197,255,0.2)] transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">download</span>
+                    Download for Free
+                </button>
+<button class="w-full sm:w-auto bg-surface-container text-on-surface px-8 py-3.5 rounded-DEFAULT text-body-lg font-body-lg font-semibold border border-outline-variant hover:bg-surface-container-high transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">code</span>
+                    View Source on GitHub
+                </button>
+</div>
+<!-- Platform Downloads -->
+<div class="flex flex-col items-center">
+<p class="text-label-caps font-label-caps text-outline mb-4 uppercase tracking-widest">Available for all platforms</p>
+<div class="flex flex-wrap justify-center gap-6 text-on-surface-variant">
+<div class="flex items-center gap-2 hover:text-primary cursor-pointer transition-colors p-2 rounded-lg hover:bg-surface-container">
+<span class="material-symbols-outlined text-[24px]">desktop_windows</span>
+<span class="text-body-md font-body-md">Windows (x64/ARM)</span>
+</div>
+<div class="flex items-center gap-2 hover:text-primary cursor-pointer transition-colors p-2 rounded-lg hover:bg-surface-container">
+<span class="material-symbols-outlined text-[24px]">terminal</span>
+<span class="text-body-md font-body-md">Linux (AppImage/Deb/Rpm)</span>
+</div>
+<div class="flex items-center gap-2 hover:text-primary cursor-pointer transition-colors p-2 rounded-lg hover:bg-surface-container">
+<span class="material-symbols-outlined text-[24px]">laptop_mac</span>
+<span class="text-body-md font-body-md">macOS (Intel/Apple Silicon)</span>
+</div>
+</div>
+</div>
+<!-- Hero Image/App Preview Placeholder -->
+<div class="mt-20 w-full max-w-6xl mx-auto rounded-xl border border-outline-variant bg-surface-container-low shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden relative">
+<!-- Mac-style Window Controls -->
+<div class="h-8 bg-surface-container-high flex items-center px-4 gap-2 border-b border-outline-variant">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<div class="w-3 h-3 rounded-full bg-tertiary"></div>
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+</div>
+<!-- Mock App Content -->
+<div class="h-[60vh] bg-surface flex relative">
+<!-- Sidebar Mock -->
+<div class="w-sidebar-width border-r border-outline-variant bg-surface-container-low hidden md:flex flex-col p-4 gap-2">
+<div class="h-8 bg-surface-container-highest rounded-DEFAULT w-full mb-4"></div>
+<div class="h-6 bg-surface-container rounded-DEFAULT w-3/4"></div>
+<div class="h-6 bg-primary/20 rounded-DEFAULT w-full border-l-2 border-primary"></div>
+<div class="h-6 bg-surface-container rounded-DEFAULT w-2/3"></div>
+<div class="h-6 bg-surface-container rounded-DEFAULT w-4/5"></div>
+</div>
+<!-- Main Content Mock -->
+<div class="flex-1 p-6 flex flex-col gap-4">
+<div class="flex justify-between items-center mb-4">
+<div class="h-8 bg-surface-container-high rounded-DEFAULT w-48"></div>
+<div class="h-8 bg-surface-container-high rounded-DEFAULT w-32"></div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+<div class="h-24 bg-surface-container-low border border-outline-variant rounded-lg p-4"></div>
+<div class="h-24 bg-surface-container-low border border-outline-variant rounded-lg p-4"></div>
+<div class="h-24 bg-surface-container-low border border-outline-variant rounded-lg p-4"></div>
+</div>
+<div class="flex-1 border border-outline-variant rounded-lg bg-surface-container-low overflow-hidden">
+<div class="h-10 bg-surface-container border-b border-outline-variant"></div>
+<div class="h-12 border-b border-outline-variant/50"></div>
+<div class="h-12 border-b border-outline-variant/50"></div>
+<div class="h-12 border-b border-outline-variant/50"></div>
+<div class="h-12 border-b border-outline-variant/50"></div>
+</div>
+</div>
+<!-- Command Palette Overlay Mock -->
+<div class="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-start justify-center pt-24 z-10 hidden" id="mock-cmd-palette">
+<div class="w-[600px] bg-surface-container-high border border-outline-variant rounded-xl shadow-2xl overflow-hidden">
+<div class="p-4 border-b border-outline-variant flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">search</span>
+<div class="text-body-lg font-body-lg text-on-surface w-full">Find resources...</div>
+<div class="px-2 py-1 bg-surface-container rounded text-code-sm font-code-sm text-outline">ESC</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="py-24 bg-surface-container-lowest" id="features">
+<div class="max-w-7xl mx-auto px-margin-page">
+<div class="text-center mb-16">
+<h2 class="text-headline-lg font-headline-lg font-bold text-on-surface mb-4">Built for Performance</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl mx-auto">Experience unmatched speed and low resource consumption. OpenK8s is designed to get out of your way and let you focus on your clusters.</p>
+</div>
+<!-- Bento Grid Features -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-min">
+<!-- Feature 1: Command Palette -->
+<div class="md:col-span-2 bg-surface-container-low rounded-xl border border-outline-variant p-8 flex flex-col justify-between overflow-hidden relative group hover:border-primary/50 transition-colors">
+<div class="z-10 mb-8">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6 border border-primary/20">
+<span class="material-symbols-outlined text-primary text-[24px]">terminal</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface mb-2">Omni-Search Command Palette</h3>
+<p class="text-body-md font-body-md text-on-surface-variant max-w-md">Navigate clusters, switch contexts, and execute commands instantly with <code class="bg-surface px-1.5 py-0.5 rounded text-code-sm font-code-sm text-primary">⌘K</code>. Never lift your hands from the keyboard.</p>
+</div>
+<div class="mt-auto bg-surface-container-high border border-outline-variant rounded-lg p-4 shadow-lg transform group-hover:-translate-y-1 transition-transform">
+<div class="flex items-center gap-3 border-b border-outline-variant pb-3 mb-3">
+<span class="material-symbols-outlined text-outline">search</span>
+<span class="text-body-md font-code-sm text-on-surface-variant">get pods -n kube-system</span>
+</div>
+<div class="flex items-center justify-between py-2 px-3 bg-primary/10 rounded border border-primary/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">reorder</span>
+<span class="text-body-md font-body-md text-on-surface">coredns-5d78c9869d-xyz</span>
+</div>
+<span class="text-code-sm font-code-sm text-outline">kube-system</span>
+</div>
+</div>
+</div>
+<!-- Feature 2: Multi-Cluster -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant p-8 flex flex-col group hover:border-primary/50 transition-colors">
+<div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-6 border border-secondary/20">
+<span class="material-symbols-outlined text-secondary text-[24px]">lan</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface mb-2">Seamless Multi-Cluster</h3>
+<p class="text-body-md font-body-md text-on-surface-variant mb-6">Manage hundreds of clusters simultaneously without UI lag or memory leaks.</p>
+<div class="mt-auto space-y-2">
+<div class="flex items-center justify-between p-3 rounded-DEFAULT bg-surface-container border border-outline-variant/50">
+<span class="text-body-md font-body-md text-on-surface">production-eu</span>
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+</div>
+<div class="flex items-center justify-between p-3 rounded-DEFAULT bg-surface-container border border-outline-variant/50">
+<span class="text-body-md font-body-md text-on-surface">staging-us</span>
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+</div>
+</div>
+</div>
+<!-- Feature 3: Live Logs -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant p-8 flex flex-col group hover:border-primary/50 transition-colors">
+<div class="w-12 h-12 rounded-lg bg-tertiary/10 flex items-center justify-center mb-6 border border-tertiary/20">
+<span class="material-symbols-outlined text-tertiary text-[24px]">subject</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface mb-2">Real-time Logs &amp; Metrics</h3>
+<p class="text-body-md font-body-md text-on-surface-variant mb-6">Stream logs instantly with intelligent syntax highlighting and regex filtering.</p>
+<div class="mt-auto bg-black rounded-lg p-3 border border-outline-variant font-code-sm text-code-sm overflow-hidden h-32 relative">
+<div class="text-secondary opacity-80">[INFO] Server started on :8080</div>
+<div class="text-on-surface opacity-80">Handling request GET /api/v1/pods</div>
+<div class="text-error opacity-80">[ERROR] Connection timeout to db-0</div>
+<div class="text-on-surface opacity-80">Retrying connection...</div>
+<!-- Fake scroll gradient -->
+<div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-black to-transparent"></div>
+</div>
+</div>
+<!-- Feature 4: Local First -->
+<div class="md:col-span-2 bg-surface-container-low rounded-xl border border-outline-variant p-8 flex flex-col md:flex-row items-center gap-8 group hover:border-primary/50 transition-colors">
+<div class="flex-1">
+<div class="w-12 h-12 rounded-lg bg-error/10 flex items-center justify-center mb-6 border border-error/20">
+<span class="material-symbols-outlined text-error text-[24px]">lock</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface mb-2">Privacy &amp; Local-First</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">Your kubeconfigs never leave your machine. No mandatory accounts, no telemetry phoning home unless you explicitly opt-in. True open-source freedom.</p>
+</div>
+<div class="w-full md:w-1/3 flex justify-center">
+<div class="relative w-32 h-32 flex items-center justify-center">
+<!-- Abstract security visualization -->
+<div class="absolute inset-0 border-2 border-dashed border-outline-variant rounded-full animate-[spin_10s_linear_infinite]"></div>
+<div class="absolute inset-4 border border-outline rounded-full"></div>
+<span class="material-symbols-outlined text-on-surface text-[48px]">shield_lock</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="py-24 bg-surface" id="pricing">
+<div class="max-w-5xl mx-auto px-margin-page">
+<div class="text-center mb-16">
+<h2 class="text-headline-lg font-headline-lg font-bold text-on-surface mb-4">Simple, Transparent Pricing</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant">Choose the version that fits your workflow.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+<!-- Free Tier -->
+<div class="bg-surface-container-low rounded-2xl border border-outline-variant p-8 flex flex-col relative">
+<div class="mb-8">
+<h3 class="text-headline-md font-headline-md font-bold text-on-surface mb-2">Desktop App</h3>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="text-headline-lg font-headline-lg font-extrabold text-on-surface">Free</span>
+<span class="text-body-md font-body-md text-on-surface-variant">forever</span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant pb-6 border-b border-outline-variant/50">The core open-source application. Perfect for individual developers.</p>
+</div>
+<ul class="space-y-4 mb-8 flex-1">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] mt-0.5">check_circle</span>
+<span class="text-body-md font-body-md text-on-surface">100% Open Source</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] mt-0.5">check_circle</span>
+<span class="text-body-md font-body-md text-on-surface">Local-first architecture</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] mt-0.5">check_circle</span>
+<span class="text-body-md font-body-md text-on-surface">Unlimited local clusters</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] mt-0.5">check_circle</span>
+<span class="text-body-md font-body-md text-on-surface">Helm &amp; Kustomize support</span>
+</li>
+</ul>
+<button class="w-full bg-surface-container-high text-on-surface border border-outline-variant py-3 rounded-DEFAULT text-body-md font-body-md font-semibold hover:bg-surface-container-highest transition-colors">
+                            Download Now
+                        </button>
+</div>
+<!-- Cloud Tier -->
+<div class="bg-surface-container-highest rounded-2xl border border-primary p-8 flex flex-col relative shadow-[0_0_30px_rgba(50,108,229,0.1)]">
+<div class="absolute top-0 right-8 -translate-y-1/2 bg-primary text-on-primary px-3 py-1 rounded-full text-label-caps font-label-caps uppercase tracking-wider font-bold">
+                            Most Popular for Teams
+                        </div>
+<div class="mb-8">
+<h3 class="text-headline-md font-headline-md font-bold text-on-surface mb-2">Cloud Version</h3>
+<div class="flex items-baseline gap-2 mb-4">
+<span class="text-headline-lg font-headline-lg font-extrabold text-on-surface">$5</span>
+<span class="text-body-md font-body-md text-on-surface-variant">/ user / month</span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant pb-6 border-b border-outline-variant/50">Everything in Free, plus cloud synchronization and team features.</p>
+</div>
+<ul class="space-y-4 mb-8 flex-1">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
+<span class="text-body-md font-body-md text-on-surface">Multi-device cluster sync</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
+<span class="text-body-md font-body-md text-on-surface">Team RBAC &amp; Collaboration</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
+<span class="text-body-md font-body-md text-on-surface">Advanced resource analytics</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
+<span class="text-body-md font-body-md text-on-surface">Priority community support</span>
+</li>
+</ul>
+<button class="w-full bg-primary text-on-primary py-3 rounded-DEFAULT text-body-md font-body-md font-semibold hover:bg-primary-fixed transition-colors shadow-[0_4px_14px_0_rgba(50,108,229,0.39)]">
+                            Start 14-day Trial
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials Section -->
+<section class="py-24 bg-surface-container-lowest border-t border-outline-variant/30" id="testimonials">
+<div class="max-w-7xl mx-auto px-margin-page">
+<div class="text-center mb-16">
+<h2 class="text-headline-lg font-headline-lg font-bold text-on-surface mb-4">Loved by Engineers</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Review 1 -->
+<div class="bg-surface-container rounded-xl p-6 border border-outline-variant/50">
+<div class="flex items-center gap-1 mb-4">
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant mb-6 italic">"Switched from Lens and haven't looked back. The memory usage is literally 10x less and the command palette makes navigation instant."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-bright flex items-center justify-center text-primary font-bold">JD</div>
+<div>
+<div class="text-body-md font-body-md font-semibold text-on-surface">Sarah J.</div>
+<div class="text-code-sm font-code-sm text-outline">Sr. DevOps Engineer</div>
+</div>
+</div>
+</div>
+<!-- Review 2 -->
+<div class="bg-surface-container rounded-xl p-6 border border-outline-variant/50">
+<div class="flex items-center gap-1 mb-4">
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant mb-6 italic">"The fact that it's truly local-first and open source gives our security team peace of mind. The native feel on macOS is a huge plus."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-bright flex items-center justify-center text-secondary font-bold">MR</div>
+<div>
+<div class="text-body-md font-body-md font-semibold text-on-surface">Marcus R.</div>
+<div class="text-code-sm font-code-sm text-outline">Platform Architect</div>
+</div>
+</div>
+</div>
+<!-- Review 3 -->
+<div class="bg-surface-container rounded-xl p-6 border border-outline-variant/50">
+<div class="flex items-center gap-1 mb-4">
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" style="font-variation-settings: 'FILL' 1;">star_half</span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant mb-6 italic">"Handling 50+ clusters used to crash my previous tools. OpenK8s handles it without breaking a sweat. The multi-cluster view is essential."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-bright flex items-center justify-center text-tertiary font-bold">AL</div>
+<div>
+<div class="text-body-md font-body-md font-semibold text-on-surface">Alex L.</div>
+<div class="text-code-sm font-code-sm text-outline">SRE</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface border-t border-outline-variant py-12">
+<div class="max-w-7xl mx-auto px-margin-page flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-3">
+<img alt="OpenK8s Desktop Logo" class="w-6 h-6 rounded-sm opacity-80 grayscale" src="https://lh3.googleusercontent.com/aida/AP1WRLskCzp_slogSKDSNHK_SwkcLZAw1uYHhGp3A8gN1kCI_dQLh3bWoKmgXXOTbxrt7hbGK08OR03D8enAC5dpksVNMT5X73657r2oivrw8geHW3Ej6kKkrFKYS_lIlHKuisuFrmUvx87G4CK0OOW3MQyLF3y0f26ADkYPQk2P9DiybCmMrs7mSE2MHuvQ8VKj9rreeXOXhgNORYqOqEDiJCSVQ9gJy0NcpUNufjGp7uNT9LrLv5RWSLAHLw"/>
+<span class="text-body-md font-body-md font-bold text-on-surface-variant">OpenK8s</span>
+<span class="text-code-sm font-code-sm text-outline">© 2024</span>
+</div>
+<div class="flex items-center gap-6">
+<a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Blog</a>
+<a class="text-body-md font-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1" href="https://github.com" rel="noopener noreferrer" target="_blank">
+<span class="material-symbols-outlined text-[20px]">code</span>
+<span class="text-body-md font-body-md">GitHub</span>
+</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple script to handle header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('main-header');
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-md');
+                header.style.backgroundColor = 'rgba(11, 19, 38, 0.9)';
+            } else {
+                header.classList.remove('shadow-md');
+                header.style.backgroundColor = 'rgba(19, 27, 46, 0.7)';
+            }
+        });
+    </script>
+</body></html>

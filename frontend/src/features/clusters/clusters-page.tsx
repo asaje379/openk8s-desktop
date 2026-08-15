@@ -96,7 +96,7 @@ function ClusterCard({cluster}: {cluster: Cluster}) {
                     <p className="text-xs text-destructive">{status.message}</p>
                 )}
                 {status?.connected && (
-                    <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                    <p className="text-xs text-success">
                         {t('clusters.testSuccess', {version: status.version})}
                     </p>
                 )}

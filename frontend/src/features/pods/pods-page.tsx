@@ -10,14 +10,14 @@ import {useAppStore} from '@/stores/app-store'
 import {useNamespaceFilter, usePods} from '@/hooks/use-k8s'
 import type {PodInfo} from '@/lib/wails'
 
-function podStatusVariant(status: string): 'success' | 'destructive' | 'secondary' | 'outline' {
+function podStatusVariant(status: string): 'success' | 'destructive' | 'warning' | 'outline' {
     switch (status) {
         case 'Running':
             return 'success'
         case 'Failed':
             return 'destructive'
         case 'Pending':
-            return 'secondary'
+            return 'warning'
         default:
             return 'outline'
     }
