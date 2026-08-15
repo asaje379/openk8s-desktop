@@ -142,3 +142,23 @@ func TestListEvents(t *testing.T) {
 		t.Fatalf("unexpected event: %+v", list[0])
 	}
 }
+
+func TestScaleDeployment(t *testing.T) {
+	replicas := int32(3)
+	client := fake.NewSimpleClientset(
+		&appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{Name: "api", Namespace: "default"},
+			Spec:       appsv1.DeploymentSpec{Replicas: &replicas},
+		},
+	)
+	if err := ScaleDeployment(context.Background(), client, "default", "api", 5); err != nil {
+		t.Fatal(err)
+	}
+	d, err := client.AppsV1().Deployments("default").Get(context.Background(), "api", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if d.Spec.Replicas == nil || *d.Spec.Replicas != 5 {
+		t.Fatalf("expected 5 replicas, got %v", d.Spec.Replicas)
+	}
+}

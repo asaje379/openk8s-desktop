@@ -218,6 +218,20 @@ func ListDeploymentPods(ctx context.Context, client kubernetes.Interface, namesp
 	return result, nil
 }
 
+// ScaleDeployment updates the replica count of a deployment.
+func ScaleDeployment(ctx context.Context, client kubernetes.Interface, namespace string, name string, replicas int32) error {
+	ctx, cancel := withTimeout(ctx)
+	defer cancel()
+
+	d, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+	d.Spec.Replicas = &replicas
+	_, err = client.AppsV1().Deployments(namespace).Update(ctx, d, metav1.UpdateOptions{})
+	return err
+}
+
 // ListCronJobs returns cronjobs in a namespace.
 func ListCronJobs(ctx context.Context, client kubernetes.Interface, namespace string) ([]CronJobInfo, error) {
 	ctx, cancel := withTimeout(ctx)

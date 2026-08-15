@@ -135,6 +135,9 @@ export const fr: Translation = {
         message: "Message",
         replicas: "Réplicas",
         selector: "Sélecteur",
+        scale: "Mettre à l'échelle",
+        apply: "Appliquer",
+        scaled: "Mise à l'échelle réussie",
     },
     pod: {
         overview: "Vue d'ensemble",

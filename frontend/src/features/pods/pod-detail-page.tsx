@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {lazy, Suspense, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Link, useParams} from 'react-router'
 import type {ColumnDef} from '@tanstack/react-table'
@@ -6,14 +6,19 @@ import {DataTable} from '@/components/tables/data-table'
 import {NoCluster} from '@/components/no-cluster'
 import {Badge} from '@/components/ui/badge'
 import {LogViewer} from '@/components/logs/log-viewer'
-import {TerminalView} from '@/components/terminal/terminal-view'
-import {YamlViewer} from '@/components/yaml/yaml-viewer'
 import {PortForward} from '@/components/portforward/port-forward'
 import {useAppStore} from '@/stores/app-store'
 import {useEvents, usePod, usePodYAML} from '@/hooks/use-k8s'
 import {podStatusVariant} from '@/lib/status'
 import {cn} from '@/lib/utils'
 import type {ContainerInfo, EventInfo, PodDetail} from '@/lib/wails'
+
+const TerminalView = lazy(() =>
+    import('@/components/terminal/terminal-view').then((m) => ({default: m.TerminalView}))
+)
+const YamlViewer = lazy(() =>
+    import('@/components/yaml/yaml-viewer').then((m) => ({default: m.YamlViewer}))
+)
 
 type Tab = 'overview' | 'containers' | 'logs' | 'terminal' | 'events' | 'yaml' | 'portforward'
 
@@ -108,7 +113,11 @@ function EventsTab({clusterId, namespace, podName}: {clusterId: string; namespac
 function YamlTab({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) {
     const {data, isLoading} = usePodYAML(clusterId, namespace, name)
     if (isLoading) return <div className="h-40 animate-pulse rounded-md bg-muted"/>
-    return <YamlViewer value={data ?? ''}/>
+    return (
+        <Suspense fallback={<div className="h-64 animate-pulse rounded-md bg-muted"/>}>
+            <YamlViewer value={data ?? ''}/>
+        </Suspense>
+    )
 }
 
 export function PodDetailPage() {
@@ -173,12 +182,14 @@ export function PodDetailPage() {
                         />
                     )}
                     {tab === 'terminal' && (
-                        <TerminalView
-                            clusterId={clusterId as string}
-                            namespace={namespace}
-                            pod={name}
-                            containers={containers}
-                        />
+                        <Suspense fallback={<div className="h-64 animate-pulse rounded-md bg-muted"/>}>
+                            <TerminalView
+                                clusterId={clusterId as string}
+                                namespace={namespace}
+                                pod={name}
+                                containers={containers}
+                            />
+                        </Suspense>
                     )}
                     {tab === 'events' && (
                         <EventsTab clusterId={clusterId as string} namespace={namespace} podName={name}/>

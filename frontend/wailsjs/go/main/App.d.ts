@@ -63,6 +63,8 @@ export function RemoveNamespace(arg1:string,arg2:string):Promise<Array<string>>;
 
 export function ResizeExec(arg1:string,arg2:number,arg3:number):Promise<void>;
 
+export function ScaleDeployment(arg1:string,arg2:string,arg3:string,arg4:number):Promise<void>;
+
 export function StartDeploymentLogStream(arg1:string,arg2:string,arg3:string,arg4:string,arg5:number,arg6:boolean):Promise<string>;
 
 export function StartExec(arg1:string,arg2:string,arg3:string,arg4:string,arg5:string):Promise<string>;

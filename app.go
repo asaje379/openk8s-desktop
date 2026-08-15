@@ -286,6 +286,15 @@ func (a *App) ListDeploymentPods(clusterID string, namespace string, name string
 	return k8s.ListDeploymentPods(a.ctxOrDefault(), client, namespace, name)
 }
 
+// ScaleDeployment updates the replica count of a deployment.
+func (a *App) ScaleDeployment(clusterID string, namespace string, name string, replicas int32) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.ScaleDeployment(a.ctxOrDefault(), client, namespace, name, replicas)
+}
+
 // StartDeploymentLogStream streams aggregated logs for all pods of a deployment.
 func (a *App) StartDeploymentLogStream(clusterID string, namespace string, deployment string, container string, tailLines int64, follow bool) (string, error) {
 	client, err := a.clusters.Client(clusterID)

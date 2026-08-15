@@ -19,6 +19,7 @@ import {
     ListServices,
     ListStatefulSets,
     RemoveNamespace,
+    ScaleDeployment,
 } from '@/lib/wails'
 
 export function useNamespaces(clusterId: string | null) {
@@ -190,5 +191,26 @@ export function useDeploymentPods(clusterId: string | null, namespace: string, n
         queryFn: () => ListDeploymentPods(clusterId as string, namespace, name),
         enabled: !!clusterId && !!namespace && !!name,
         retry: false,
+    })
+}
+
+export function useScaleDeployment() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({
+            clusterId,
+            namespace,
+            name,
+            replicas,
+        }: {
+            clusterId: string
+            namespace: string
+            name: string
+            replicas: number
+        }) => ScaleDeployment(clusterId, namespace, name, replicas),
+        onSuccess: (_data, {clusterId, namespace, name}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'deployment', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
+        },
     })
 }

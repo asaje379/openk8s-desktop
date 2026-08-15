@@ -29,6 +29,7 @@ export {
     RemoveCluster,
     RemoveNamespace,
     ResizeExec,
+    ScaleDeployment,
     StartExec,
     StartLogStream,
     StartDeploymentLogStream,

@@ -122,6 +122,10 @@ export function ResizeExec(arg1, arg2, arg3) {
   return window['go']['main']['App']['ResizeExec'](arg1, arg2, arg3);
 }
 
+export function ScaleDeployment(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['ScaleDeployment'](arg1, arg2, arg3, arg4);
+}
+
 export function StartDeploymentLogStream(arg1, arg2, arg3, arg4, arg5, arg6) {
   return window['go']['main']['App']['StartDeploymentLogStream'](arg1, arg2, arg3, arg4, arg5, arg6);
 }

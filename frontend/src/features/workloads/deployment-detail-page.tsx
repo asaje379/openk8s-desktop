@@ -1,17 +1,23 @@
-import {useState} from 'react'
+import {lazy, Suspense, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Link, useParams} from 'react-router'
+import {toast} from 'sonner'
 import type {ColumnDef} from '@tanstack/react-table'
 import {DataTable} from '@/components/tables/data-table'
 import {NoCluster} from '@/components/no-cluster'
 import {Badge} from '@/components/ui/badge'
+import {Button} from '@/components/ui/button'
+import {Input} from '@/components/ui/input'
 import {LogViewer} from '@/components/logs/log-viewer'
-import {YamlViewer} from '@/components/yaml/yaml-viewer'
 import {useAppStore} from '@/stores/app-store'
-import {useDeployment, useDeploymentPods, useDeploymentYAML, useEvents} from '@/hooks/use-k8s'
+import {useDeployment, useDeploymentPods, useDeploymentYAML, useEvents, useScaleDeployment} from '@/hooks/use-k8s'
 import {podStatusVariant} from '@/lib/status'
 import {cn} from '@/lib/utils'
 import type {DeploymentDetail, EventInfo, PodInfo} from '@/lib/wails'
+
+const YamlViewer = lazy(() =>
+    import('@/components/yaml/yaml-viewer').then((m) => ({default: m.YamlViewer}))
+)
 
 type Tab = 'overview' | 'pods' | 'logs' | 'events' | 'yaml'
 
@@ -23,8 +29,21 @@ const TABS: {value: Tab; labelKey: string}[] = [
     {value: 'yaml', labelKey: 'pod.yaml'},
 ]
 
-function Overview({deployment}: {deployment: DeploymentDetail}) {
+function Overview({
+    clusterId,
+    namespace,
+    name,
+    deployment,
+}: {
+    clusterId: string
+    namespace: string
+    name: string
+    deployment: DeploymentDetail
+}) {
     const {t} = useTranslation()
+    const scale = useScaleDeployment()
+    const [replicas, setReplicas] = useState(deployment.desired)
+
     const rows = [
         [t('resources.namespace'), deployment.namespace],
         [t('resources.replicas'), `${deployment.ready}/${deployment.desired}`],
@@ -43,6 +62,30 @@ function Overview({deployment}: {deployment: DeploymentDetail}) {
                         </div>
                     </div>
                 ))}
+            </div>
+            <div className="rounded-lg border border-border bg-card p-4">
+                <div className="mb-2 text-xs text-muted-foreground">{t('resources.scale')}</div>
+                <div className="flex items-center gap-2">
+                    <Input
+                        type="number"
+                        className="w-24"
+                        min={0}
+                        value={replicas}
+                        onChange={(e) => setReplicas(Math.max(0, Number(e.target.value)))}
+                    />
+                    <Button
+                        size="sm"
+                        disabled={scale.isPending}
+                        onClick={() =>
+                            scale.mutate(
+                                {clusterId, namespace, name, replicas},
+                                {onSuccess: () => toast.success(t('resources.scaled'))}
+                            )
+                        }
+                    >
+                        {t('resources.apply')}
+                    </Button>
+                </div>
             </div>
             {deployment.selector && Object.keys(deployment.selector).length > 0 && (
                 <div className="rounded-lg border border-border bg-card p-4">
@@ -115,6 +158,16 @@ function EventsTab({clusterId, namespace, name}: {clusterId: string; namespace: 
     return <DataTable columns={columns} data={filtered} searchable={false}/>
 }
 
+function YamlTab({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) {
+    const {data, isLoading} = useDeploymentYAML(clusterId, namespace, name)
+    if (isLoading) return <div className="h-40 animate-pulse rounded-md bg-muted"/>
+    return (
+        <Suspense fallback={<div className="h-64 animate-pulse rounded-md bg-muted"/>}>
+            <YamlViewer value={data ?? ''}/>
+        </Suspense>
+    )
+}
+
 export function DeploymentDetailPage() {
     const {t} = useTranslation()
     const {namespace = '', name = ''} = useParams()
@@ -169,7 +222,14 @@ export function DeploymentDetailPage() {
                 <p className="text-sm text-destructive">{String(error)}</p>
             ) : deployment ? (
                 <>
-                    {tab === 'overview' && <Overview deployment={deployment}/>}
+                    {tab === 'overview' && (
+                        <Overview
+                            clusterId={clusterId as string}
+                            namespace={namespace}
+                            name={name}
+                            deployment={deployment}
+                        />
+                    )}
                     {tab === 'pods' && <PodsTab pods={pods}/>}
                     {tab === 'logs' && (
                         <LogViewer
@@ -183,24 +243,10 @@ export function DeploymentDetailPage() {
                         <EventsTab clusterId={clusterId as string} namespace={namespace} name={name}/>
                     )}
                     {tab === 'yaml' && (
-                        <DeploymentYamlTab clusterId={clusterId as string} namespace={namespace} name={name}/>
+                        <YamlTab clusterId={clusterId as string} namespace={namespace} name={name}/>
                     )}
                 </>
             ) : null}
         </div>
     )
-}
-
-function DeploymentYamlTab({
-    clusterId,
-    namespace,
-    name,
-}: {
-    clusterId: string
-    namespace: string
-    name: string
-}) {
-    const {data, isLoading} = useDeploymentYAML(clusterId, namespace, name)
-    if (isLoading) return <div className="h-40 animate-pulse rounded-md bg-muted"/>
-    return <YamlViewer value={data ?? ''}/>
 }

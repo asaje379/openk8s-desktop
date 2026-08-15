@@ -133,6 +133,9 @@ export const en = {
         message: 'Message',
         replicas: 'Replicas',
         selector: 'Selector',
+        scale: 'Scale',
+        apply: 'Apply',
+        scaled: 'Scaled successfully',
     },
     pod: {
         overview: 'Overview',
