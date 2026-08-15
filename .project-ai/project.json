@@ -1,0 +1,19 @@
+{
+  "name": "openk8s-desktop",
+  "description": "Application desktop (alternative à Lens) pour se connecter et administrer plusieurs clusters Kubernetes. Stack : Wails + Go + client-go (backend) / React + TypeScript + Tailwind + shadcn/ui (frontend).",
+  "stack": {
+    "frontend": "React + TypeScript + Tailwind CSS + shadcn/ui",
+    "backend": "Go + Wails + client-go",
+    "database": "SQLite (modernc.org/sqlite)",
+    "orm": ""
+  },
+  "packageManager": "pnpm",
+  "architecture": "Wails desktop (backend Go embarqué + frontend React)",
+  "tools": {
+    "quality": "ESLint + Prettier (frontend) ; go vet + gofmt (backend)",
+    "testing": "Vitest (frontend) ; go test (backend) ; Playwright (e2e)",
+    "ci": ""
+  },
+  "conventions": [],
+  "generatedBy": "@asaje/skills"
+}

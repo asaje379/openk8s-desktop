@@ -1,0 +1,1453 @@
+# Projet : Kubernetes Desktop — Alternative moderne à Lens
+
+Tu es un ingénieur logiciel senior spécialisé en Go, Kubernetes, React et applications desktop.
+
+Je veux construire une application desktop moderne similaire à Lens Desktop, mais développée avec :
+
+* **Go**
+* **Wails**
+* **React**
+* **TypeScript**
+* **Tailwind CSS**
+* **shadcn/ui**
+* **Kubernetes client-go**
+
+L'objectif est de créer un outil desktop permettant de se connecter à plusieurs clusters Kubernetes et de les administrer depuis une interface graphique moderne.
+
+## 1. Architecture obligatoire
+
+L'application doit utiliser **Wails comme framework desktop**.
+
+Architecture cible :
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                    Desktop Application                     │
+│                         Wails                               │
+│                                                             │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │                 React + TypeScript                    │  │
+│  │                                                       │  │
+│  │  Dashboard                                             │  │
+│  │  Clusters                                              │  │
+│  │  Namespaces                                            │  │
+│  │  Workloads                                             │  │
+│  │  Pods                                                  │  │
+│  │  Services                                              │  │
+│  │  Ingress                                               │  │
+│  │  ConfigMaps                                            │  │
+│  │  Secrets                                               │  │
+│  │  Logs                                                  │  │
+│  │  Terminal                                               │  │
+│  │  Events                                                │  │
+│  │  Metrics                                               │  │
+│  └──────────────────────────┬────────────────────────────┘  │
+│                             │ Wails bindings/events          │
+│                             ▼                               │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │                       Go Backend                      │  │
+│  │                                                       │  │
+│  │  Cluster Manager                                      │  │
+│  │  Kubeconfig Manager                                   │  │
+│  │  Kubernetes Client                                    │  │
+│  │  Resource Manager                                     │  │
+│  │  Logs Manager                                         │  │
+│  │  Exec / Terminal Manager                              │  │
+│  │  Metrics Manager                                      │  │
+│  │  Events Manager                                       │  │
+│  │  Watch Manager                                        │  │
+│  └──────────────────────────┬────────────────────────────┘  │
+│                             │                               │
+└─────────────────────────────┼───────────────────────────────┘
+                              ▼
+                    Kubernetes API Server
+                              │
+              ┌───────────────┼────────────────┐
+              ▼               ▼                ▼
+             AWS             Azure             GCP
+             EKS             AKS               GKE
+```
+
+Le backend Kubernetes doit être en Go avec **client-go**.
+
+Ne pas introduire Rust.
+
+Ne pas utiliser Electron.
+
+Ne pas utiliser un backend Node.js.
+
+Ne pas transformer l'application en application web nécessitant un serveur externe.
+
+Le backend Go doit être embarqué dans l'application Wails.
+
+---
+
+# 2. Objectif principal du MVP
+
+Le MVP doit permettre à un utilisateur de :
+
+1. Ajouter un ou plusieurs clusters Kubernetes.
+2. Se connecter à des clusters AWS EKS, Azure AKS ou Google GKE.
+3. Ajouter un cluster en collant directement un kubeconfig.
+4. Gérer les contextes Kubernetes.
+5. Explorer les namespaces.
+6. Explorer les workloads.
+7. Gérer les Pods.
+8. Gérer les Deployments.
+9. Gérer les StatefulSets.
+10. Gérer les DaemonSets.
+11. Gérer les Jobs et CronJobs.
+12. Gérer les Services.
+13. Gérer les Ingress.
+14. Gérer les ConfigMaps.
+15. Gérer les Secrets.
+16. Consulter les logs des Pods.
+17. Ouvrir un terminal directement dans un container.
+18. Consulter CPU et mémoire.
+19. Consulter les événements Kubernetes.
+20. Voir l'état du cluster et de ses ressources.
+21. Rafraîchir les données automatiquement grâce aux mécanismes Kubernetes Watch lorsque cela est pertinent.
+
+Le MVP doit être réellement fonctionnel, pas seulement une maquette UI.
+
+---
+
+# 3. Support des clusters AWS / Azure / GCP
+
+Il ne faut pas développer une authentification spécifique AWS, Azure et GCP dans le MVP.
+
+Kubernetes utilise déjà kubeconfig et ses mécanismes d'authentification.
+
+L'application doit donc accepter :
+
+```text
+kubeconfig YAML
+```
+
+par exemple via :
+
+```text
+Add Cluster
+    ↓
+Paste kubeconfig
+    ↓
+Validate
+    ↓
+Test connection
+    ↓
+Save cluster
+```
+
+L'application doit pouvoir gérer plusieurs contextes provenant d'un kubeconfig.
+
+Elle doit notamment permettre :
+
+* de charger un kubeconfig existant ;
+* de coller un kubeconfig ;
+* de sélectionner un context ;
+* de changer de context ;
+* de renommer localement une connexion si nécessaire ;
+* de supprimer une connexion ;
+* de tester la connexion ;
+* d'afficher le serveur Kubernetes ;
+* d'afficher la version Kubernetes ;
+* d'afficher le namespace courant ;
+* d'afficher le contexte actif.
+
+Ne jamais supposer que le cluster est AWS, Azure ou GCP.
+
+Le système doit simplement fonctionner avec un kubeconfig Kubernetes valide.
+
+Prévoir une architecture permettant plus tard d'ajouter des intégrations cloud spécifiques.
+
+---
+
+# 4. Gestion des clusters
+
+Créer un "Cluster Manager" Go.
+
+Responsabilités :
+
+* ajouter une connexion ;
+* supprimer une connexion ;
+* charger une connexion ;
+* tester une connexion ;
+* changer de contexte ;
+* créer un client Kubernetes à partir d'un kubeconfig ;
+* maintenir les clients Kubernetes en mémoire ;
+* gérer plusieurs clusters simultanément.
+
+Prévoir une abstraction claire :
+
+```go
+type ClusterManager interface {
+    ListClusters() ([]Cluster, error)
+    AddCluster(input AddClusterInput) (Cluster, error)
+    RemoveCluster(id string) error
+    TestConnection(id string) (ConnectionStatus, error)
+    GetContexts(id string) ([]KubeContext, error)
+    SwitchContext(id string, context string) error
+}
+```
+
+Adapter cette interface à une architecture idiomatique Go si nécessaire.
+
+Ne pas copier exactement cette interface si une meilleure abstraction existe.
+
+---
+
+# 5. Stockage local
+
+Utiliser SQLite pour stocker les informations locales de l'application.
+
+Stocker notamment :
+
+* identifiant du cluster ;
+* nom local ;
+* kubeconfig ou référence sécurisée au kubeconfig ;
+* contexte sélectionné ;
+* préférences utilisateur ;
+* favoris éventuels.
+
+Important :
+
+Les credentials Kubernetes doivent être traités comme des secrets.
+
+Ne jamais afficher ou logger :
+
+* tokens ;
+* certificats privés ;
+* client keys ;
+* credentials ;
+* secrets Kubernetes.
+
+Prévoir une architecture permettant ultérieurement d'utiliser le keychain/credential store natif du système.
+
+Pour le MVP, isoler clairement cette partie afin qu'elle puisse être remplacée par un stockage sécurisé natif.
+
+---
+
+# 6. Interface utilisateur
+
+L'interface doit être moderne, professionnelle et proche des standards d'un outil développeur.
+
+Utiliser exclusivement :
+
+* React
+* TypeScript
+* Tailwind CSS
+* shadcn/ui
+
+Ne pas utiliser une autre bibliothèque de composants UI globale.
+
+L'application doit avoir un layout desktop :
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│ Topbar                                                      │
+├────────────────┬────────────────────────────────────────────┤
+│                │                                            │
+│ Sidebar        │ Main content                               │
+│                │                                            │
+│ Cluster        │                                            │
+│ Namespace      │                                            │
+│ Workloads      │                                            │
+│ Pods           │                                            │
+│ Services       │                                            │
+│ Ingress        │                                            │
+│ ConfigMaps     │                                            │
+│ Secrets        │                                            │
+│ Events         │                                            │
+│                │                                            │
+└────────────────┴────────────────────────────────────────────┘
+```
+
+Le sidebar doit permettre de naviguer facilement entre :
+
+```text
+Cluster
+Namespaces
+Workloads
+    Deployments
+    StatefulSets
+    DaemonSets
+    Jobs
+    CronJobs
+
+Pods
+
+Network
+    Services
+    Ingress
+
+Configuration
+    ConfigMaps
+    Secrets
+
+Events
+```
+
+---
+
+# 7. Dashboard
+
+Créer un dashboard cluster.
+
+Afficher notamment :
+
+```text
+Cluster
+────────────────────────────
+
+Kubernetes version
+API server
+Context
+Namespace
+
+Nodes
+X / Y Ready
+
+Pods
+Running
+Pending
+Failed
+
+Deployments
+Available
+Unavailable
+
+CPU
+Used / Total
+
+Memory
+Used / Total
+
+Recent Events
+```
+
+Le dashboard doit être fonctionnel et alimenté par les vraies données Kubernetes.
+
+Ne pas utiliser de données mockées dans le MVP.
+
+---
+
+# 8. Namespaces
+
+Créer une page Namespaces.
+
+Fonctionnalités :
+
+* liste ;
+* recherche ;
+* statut ;
+* nombre de Pods ;
+* nombre de Deployments ;
+* sélection du namespace ;
+* navigation vers les ressources du namespace.
+
+Prévoir une option :
+
+```text
+All namespaces
+```
+
+---
+
+# 9. Workloads
+
+Créer une section Workloads.
+
+Supporter au minimum :
+
+```text
+Deployments
+StatefulSets
+DaemonSets
+Jobs
+CronJobs
+```
+
+Pour chaque workload :
+
+* nom ;
+* namespace ;
+* desired replicas ;
+* ready replicas ;
+* available replicas ;
+* image ;
+* age ;
+* status.
+
+Ajouter une page détail.
+
+Exemple :
+
+```text
+Deployment
+api
+
+Status
+3 / 3 replicas ready
+
+Images
+myregistry/api:v1.4.2
+
+Pods
+api-xxx
+api-yyy
+api-zzz
+
+Events
+...
+```
+
+Prévoir :
+
+* scale ;
+* restart ;
+* delete ;
+* YAML ;
+* events ;
+* pods associés.
+
+---
+
+# 10. Pods
+
+Créer une page Pods.
+
+Afficher :
+
+* nom ;
+* namespace ;
+* status ;
+* ready ;
+* restarts ;
+* node ;
+* IP ;
+* age ;
+* containers.
+
+Filtres :
+
+* namespace ;
+* status ;
+* node ;
+* recherche.
+
+Page détail du Pod :
+
+```text
+Overview
+Containers
+Logs
+Terminal
+Events
+YAML
+```
+
+---
+
+# 11. Logs
+
+Les logs sont une fonctionnalité obligatoire du MVP.
+
+L'utilisateur doit pouvoir :
+
+* sélectionner un container ;
+* voir les logs ;
+* suivre les nouveaux logs ;
+* arrêter le follow ;
+* choisir le nombre de lignes ;
+* afficher les timestamps ;
+* rechercher dans les logs ;
+* copier les logs ;
+* télécharger les logs.
+
+Architecture :
+
+```text
+React
+   │
+   │ streaming
+   ▼
+Go
+   │
+   ▼
+Kubernetes Pod Logs
+```
+
+Ne pas charger inutilement tout le contenu des logs en mémoire.
+
+Gérer correctement :
+
+* cancellation ;
+* reconnect ;
+* pod supprimé ;
+* container terminé ;
+* erreurs réseau.
+
+---
+
+# 12. Terminal dans un Pod
+
+Le terminal est également obligatoire.
+
+Utiliser **xterm.js** côté React.
+
+Architecture :
+
+```text
+React
+  │
+  │ terminal input/output
+  ▼
+Wails
+  │
+  ▼
+Go
+  │
+  ▼
+Kubernetes Exec
+  │
+  ▼
+Container
+```
+
+Supporter :
+
+* sélection du Pod ;
+* sélection du container ;
+* shell disponible ;
+* stdin ;
+* stdout ;
+* stderr ;
+* resize du terminal ;
+* fermeture propre de la session.
+
+Essayer intelligemment les shells :
+
+```text
+/bin/sh
+/bin/bash
+```
+
+mais ne jamais supposer qu'un shell particulier existe.
+
+Gérer proprement les erreurs :
+
+```text
+container does not have /bin/bash
+```
+
+Le terminal doit être interactif.
+
+---
+
+# 13. CPU et mémoire
+
+Le MVP doit afficher les métriques CPU et mémoire.
+
+Utiliser les APIs Kubernetes appropriées, notamment :
+
+```text
+metrics.k8s.io
+```
+
+via les mécanismes disponibles dans client-go.
+
+Afficher au minimum :
+
+### Cluster
+
+```text
+CPU
+Used / Allocatable
+
+Memory
+Used / Allocatable
+```
+
+### Nodes
+
+```text
+Node
+CPU
+Memory
+Status
+```
+
+### Pods
+
+```text
+Pod
+CPU
+Memory
+```
+
+Important :
+
+Les métriques peuvent être indisponibles si Metrics Server n'est pas installé.
+
+Dans ce cas, afficher clairement :
+
+```text
+Metrics unavailable
+
+Metrics Server is not available in this cluster.
+```
+
+Ne pas considérer cela comme une erreur fatale.
+
+---
+
+# 14. Events Kubernetes
+
+Créer une page Events.
+
+Afficher :
+
+* timestamp ;
+* type ;
+* reason ;
+* object ;
+* namespace ;
+* message.
+
+Permettre :
+
+* filtrage ;
+* recherche ;
+* tri ;
+* rafraîchissement ;
+* affichage des événements récents.
+
+Les événements doivent également être visibles dans les pages de détail pertinentes :
+
+```text
+Pod
+Deployment
+Node
+Service
+etc.
+```
+
+---
+
+# 15. Services
+
+Créer une page Services.
+
+Afficher :
+
+* name ;
+* namespace ;
+* type ;
+* cluster IP ;
+* external IP ;
+* ports ;
+* selector ;
+* endpoints ;
+* age.
+
+Supporter :
+
+```text
+ClusterIP
+NodePort
+LoadBalancer
+ExternalName
+```
+
+Afficher également les endpoints/endpointslices lorsque pertinent.
+
+---
+
+# 16. Ingress
+
+Créer une page Ingress.
+
+Afficher :
+
+* name ;
+* namespace ;
+* ingress class ;
+* hosts ;
+* paths ;
+* backend ;
+* addresses ;
+* TLS ;
+* age.
+
+Prévoir une vue permettant de comprendre rapidement :
+
+```text
+Host
+  ↓
+Path
+  ↓
+Service
+  ↓
+Port
+```
+
+---
+
+# 17. ConfigMaps
+
+Créer une page ConfigMaps.
+
+Afficher :
+
+* name ;
+* namespace ;
+* keys ;
+* age.
+
+Page détail :
+
+```text
+Metadata
+Data
+YAML
+```
+
+Permettre l'édition via YAML.
+
+---
+
+# 18. Secrets
+
+Créer une page Secrets.
+
+Important :
+
+La sécurité est prioritaire.
+
+Par défaut, ne jamais afficher directement les valeurs des Secrets.
+
+Afficher :
+
+```text
+Secret
+my-secret
+
+Keys
+DATABASE_URL
+API_KEY
+TOKEN
+
+Values
+••••••••••
+```
+
+Prévoir un mécanisme explicite :
+
+```text
+Reveal value
+```
+
+avant de montrer une valeur.
+
+Ajouter un avertissement clair avant affichage.
+
+Ne jamais écrire les valeurs dans les logs.
+
+Ne jamais envoyer les Secrets à un système externe.
+
+---
+
+# 19. YAML viewer/editor
+
+Pour les ressources Kubernetes, prévoir une vue YAML.
+
+Utiliser Monaco Editor ou une solution équivalente.
+
+Supporter :
+
+```text
+View YAML
+Edit YAML
+Apply
+```
+
+Pour le MVP, l'édition doit être disponible au minimum pour :
+
+* Deployments ;
+* StatefulSets ;
+* DaemonSets ;
+* Services ;
+* Ingress ;
+* ConfigMaps ;
+* Secrets.
+
+Avant l'application :
+
+```text
+Validate
+Diff
+Apply
+```
+
+Si possible.
+
+Ne pas faire de modification silencieuse.
+
+Afficher clairement :
+
+```text
+This operation will modify the Kubernetes resource.
+```
+
+---
+
+# 20. Kubernetes Watch
+
+Ne pas construire l'application avec un simple polling permanent.
+
+Utiliser Kubernetes Watch lorsque possible.
+
+Exemples :
+
+```text
+Pods
+Deployments
+StatefulSets
+DaemonSets
+Events
+Nodes
+Services
+```
+
+Architecture :
+
+```text
+Kubernetes Watch
+       ↓
+Go Watch Manager
+       ↓
+Wails Events
+       ↓
+React
+       ↓
+Update UI
+```
+
+Gérer :
+
+* cancellation ;
+* reconnect ;
+* resourceVersion ;
+* timeout ;
+* erreurs ;
+* resync ;
+* changement de cluster ;
+* changement de namespace.
+
+Le système ne doit pas provoquer de boucle de requêtes excessive contre l'API Kubernetes.
+
+---
+
+# 21. Architecture Go
+
+Créer une architecture modulaire.
+
+Exemple :
+
+```text
+backend/
+├── app/
+│
+├── cluster/
+│   ├── manager.go
+│   ├── kubeconfig.go
+│   └── context.go
+│
+├── kubernetes/
+│   ├── client.go
+│   ├── discovery.go
+│   ├── resources.go
+│   ├── watch.go
+│   ├── pods.go
+│   ├── workloads.go
+│   ├── services.go
+│   ├── ingress.go
+│   ├── metrics.go
+│   └── events.go
+│
+├── terminal/
+│   └── session.go
+│
+├── logs/
+│   └── manager.go
+│
+├── storage/
+│   └── sqlite.go
+│
+└── api/
+    └── bindings.go
+```
+
+Adapter la structure si une meilleure organisation Go est nécessaire.
+
+Favoriser :
+
+* interfaces uniquement lorsqu'elles apportent une vraie valeur ;
+* dependency injection ;
+* contexte `context.Context` ;
+* cancellation ;
+* erreurs explicites ;
+* tests unitaires ;
+* séparation claire des responsabilités.
+
+Éviter le sur-engineering.
+
+---
+
+# 22. Architecture React
+
+Structure suggérée :
+
+```text
+frontend/
+├── src/
+│   ├── app/
+│   ├── components/
+│   │   ├── ui/
+│   │   ├── layout/
+│   │   ├── tables/
+│   │   ├── yaml/
+│   │   ├── logs/
+│   │   └── terminal/
+│   │
+│   ├── features/
+│   │   ├── clusters/
+│   │   ├── namespaces/
+│   │   ├── workloads/
+│   │   ├── pods/
+│   │   ├── services/
+│   │   ├── ingress/
+│   │   ├── configmaps/
+│   │   ├── secrets/
+│   │   ├── events/
+│   │   └── metrics/
+│   │
+│   ├── stores/
+│   ├── hooks/
+│   ├── lib/
+│   ├── types/
+│   └── routes/
+```
+
+Utiliser :
+
+* TanStack Query pour les données serveur ;
+* Zustand uniquement pour l'état global réellement nécessaire ;
+* React Hook Form lorsque des formulaires sont nécessaires ;
+* Zod pour la validation ;
+* shadcn/ui pour les composants ;
+* Tailwind CSS pour le styling.
+
+Ne pas mettre toutes les données Kubernetes dans un énorme store Zustand.
+
+---
+
+# 23. UX
+
+L'application doit être pensée pour un développeur ou un DevOps.
+
+Priorités :
+
+1. rapidité ;
+2. lisibilité ;
+3. navigation rapide ;
+4. feedback immédiat ;
+5. erreurs compréhensibles ;
+6. peu de clics ;
+7. recherche globale.
+
+Prévoir une recherche globale permettant de rechercher par exemple :
+
+```text
+api
+```
+
+et trouver :
+
+```text
+Deployment/api
+Pod/api-xxx
+Service/api
+Ingress/api
+```
+
+---
+
+# 24. Gestion des erreurs
+
+Ne jamais afficher des erreurs brutes incompréhensibles lorsque cela peut être évité.
+
+Transformer par exemple :
+
+```text
+forbidden
+```
+
+en :
+
+```text
+Access denied
+
+Your current Kubernetes identity does not have permission
+to access this resource.
+```
+
+Mais conserver les détails techniques accessibles pour le debugging.
+
+Les erreurs doivent contenir suffisamment d'informations pour diagnostiquer :
+
+* cluster ;
+* resource ;
+* namespace ;
+* operation ;
+* Kubernetes error.
+
+Ne jamais exposer de credentials.
+
+---
+
+# 25. Sécurité
+
+Principes obligatoires :
+
+* ne jamais logger de credentials ;
+* ne jamais logger les valeurs de Secrets ;
+* ne jamais envoyer le kubeconfig vers un serveur externe ;
+* ne jamais envoyer les données Kubernetes vers un service externe ;
+* principe du moindre privilège ;
+* respecter les permissions RBAC du cluster ;
+* gérer correctement les erreurs `Forbidden` ;
+* ne jamais contourner RBAC ;
+* ne jamais stocker inutilement les tokens en clair ;
+* préparer l'intégration avec le credential manager natif.
+
+L'application doit être **local-first**.
+
+Aucune donnée Kubernetes ne doit quitter la machine de l'utilisateur sans action explicite de sa part.
+
+---
+
+# 26. Multi-cluster
+
+Le MVP doit supporter plusieurs clusters.
+
+Exemple :
+
+```text
+Clusters
+
+● Production
+  EKS
+
+○ Staging
+  AKS
+
+○ Development
+  GKE
+
+○ Local
+  Minikube
+```
+
+L'utilisateur doit pouvoir changer de cluster rapidement.
+
+Le contexte actif doit être visible en permanence dans l'interface.
+
+Attention à ne jamais mélanger les données de deux clusters.
+
+Chaque requête doit être explicitement associée au bon client Kubernetes.
+
+---
+
+# 27. Support des CRD
+
+Le MVP doit au minimum préparer l'architecture pour les CRD.
+
+Ne pas coder une logique spécifique uniquement pour les ressources natives.
+
+Prévoir une abstraction de type :
+
+```text
+Group
+Version
+Resource
+Kind
+Namespaced
+```
+
+afin de pouvoir découvrir automatiquement les ressources Kubernetes.
+
+À terme, l'application devra pouvoir afficher :
+
+```text
+cert-manager.io
+    Certificates
+    Issuers
+    ClusterIssuers
+
+argoproj.io
+    Applications
+    AppProjects
+```
+
+Cette fonctionnalité peut être partiellement implémentée après le MVP, mais l'architecture doit la permettre.
+
+---
+
+# 28. Tests
+
+Ajouter des tests.
+
+Backend :
+
+* kubeconfig parsing ;
+* cluster manager ;
+* context manager ;
+* resource manager ;
+* erreurs Kubernetes ;
+* cancellation ;
+* watch manager.
+
+Frontend :
+
+* navigation ;
+* tables ;
+* états loading ;
+* erreurs ;
+* sélection de cluster ;
+* sélection de namespace.
+
+Ne pas chercher à tester Kubernetes réel dans chaque test.
+
+Utiliser des mocks/fakes lorsque pertinent.
+
+---
+
+# 29. Documentation
+
+Créer un README complet contenant :
+
+* présentation ;
+* architecture ;
+* prérequis ;
+* installation ;
+* développement ;
+* build ;
+* tests ;
+* structure du projet ;
+* fonctionnement de Wails ;
+* fonctionnement du backend Go ;
+* gestion des kubeconfigs ;
+* connexion à EKS/AKS/GKE ;
+* limitations connues.
+
+Créer également :
+
+```text
+docs/
+├── architecture.md
+├── kubernetes.md
+├── security.md
+└── development.md
+```
+
+---
+
+# 30. Développement par étapes
+
+NE PAS essayer d'implémenter tout le projet en une seule opération.
+
+Procéder par étapes fonctionnelles.
+
+## Étape 1 — Bootstrap
+
+Créer :
+
+* projet Wails ;
+* React ;
+* TypeScript ;
+* Tailwind ;
+* shadcn/ui ;
+* Go ;
+* structure backend ;
+* configuration de développement ;
+* README.
+
+Puis vérifier que l'application desktop démarre.
+
+## Étape 2 — Kubernetes connection
+
+Implémenter :
+
+* kubeconfig ;
+* contexts ;
+* cluster manager ;
+* connexion ;
+* test de connexion ;
+* plusieurs clusters.
+
+Créer l'écran :
+
+```text
+Clusters
+```
+
+avec :
+
+```text
+Add cluster
+Connect
+Remove
+Test connection
+Switch context
+```
+
+## Étape 3 — Cluster explorer
+
+Implémenter :
+
+* namespaces ;
+* nodes ;
+* pods ;
+* deployments ;
+* statefulsets ;
+* daemonsets ;
+* jobs ;
+* cronjobs ;
+* services ;
+* ingress.
+
+Créer les pages correspondantes.
+
+## Étape 4 — Pod experience
+
+Implémenter :
+
+* pod details ;
+* logs ;
+* streaming logs ;
+* terminal ;
+* events ;
+* containers.
+
+## Étape 5 — Metrics
+
+Implémenter :
+
+* node CPU ;
+* node memory ;
+* pod CPU ;
+* pod memory ;
+* cluster overview.
+
+Gérer proprement l'absence de Metrics Server.
+
+## Étape 6 — Configuration
+
+Implémenter :
+
+* ConfigMaps ;
+* Secrets ;
+* YAML viewer ;
+* YAML editor ;
+* apply ;
+* delete.
+
+## Étape 7 — Kubernetes Watch
+
+Implémenter les watches et les mises à jour temps réel.
+
+## Étape 8 — Polish
+
+Améliorer :
+
+* UX ;
+* loading states ;
+* empty states ;
+* erreurs ;
+* raccourcis clavier ;
+* recherche ;
+* performance ;
+* packaging.
+
+---
+
+# 31. Contraintes importantes
+
+Ne pas :
+
+* utiliser Electron ;
+* utiliser Rust ;
+* créer un serveur backend externe obligatoire ;
+* utiliser des données mockées dans le produit final ;
+* hardcoder les clusters ;
+* hardcoder les namespaces ;
+* hardcoder les ressources Kubernetes ;
+* supposer AWS uniquement ;
+* supposer GCP uniquement ;
+* supposer Azure uniquement ;
+* contourner RBAC ;
+* exposer les Secrets par défaut ;
+* stocker les credentials dans les logs.
+
+Privilégier :
+
+* Go idiomatique ;
+* React moderne ;
+* TypeScript strict ;
+* composants réutilisables ;
+* architecture modulaire ;
+* client-go ;
+* Wails ;
+* shadcn/ui ;
+* Tailwind ;
+* tests ;
+* documentation ;
+* sécurité.
+
+---
+
+# 32. Critères de réussite du MVP
+
+Le MVP sera considéré comme réussi si, depuis l'application desktop, je peux :
+
+### Connexion
+
+* [ ] coller un kubeconfig ;
+* [ ] tester la connexion ;
+* [ ] voir les contexts ;
+* [ ] sélectionner un context ;
+* [ ] ajouter plusieurs clusters ;
+* [ ] passer d'un cluster à l'autre.
+
+### Exploration
+
+* [ ] voir les namespaces ;
+* [ ] voir les Pods ;
+* [ ] voir les Deployments ;
+* [ ] voir les StatefulSets ;
+* [ ] voir les DaemonSets ;
+* [ ] voir les Jobs ;
+* [ ] voir les CronJobs ;
+* [ ] voir les Services ;
+* [ ] voir les Ingress ;
+* [ ] voir les ConfigMaps ;
+* [ ] voir les Secrets ;
+* [ ] voir les Nodes ;
+* [ ] voir les Events.
+
+### Pods
+
+* [ ] voir les détails d'un Pod ;
+* [ ] voir ses containers ;
+* [ ] voir ses logs ;
+* [ ] suivre ses logs en temps réel ;
+* [ ] ouvrir un terminal dans un container ;
+* [ ] voir CPU ;
+* [ ] voir mémoire ;
+* [ ] voir ses événements ;
+* [ ] voir son YAML.
+
+### Workloads
+
+* [ ] voir les replicas ;
+* [ ] voir les Pods associés ;
+* [ ] scale ;
+* [ ] restart ;
+* [ ] supprimer ;
+* [ ] consulter le YAML ;
+* [ ] consulter les Events.
+
+### Configuration
+
+* [ ] voir les ConfigMaps ;
+* [ ] éditer les ConfigMaps ;
+* [ ] voir les Secrets sans révéler les valeurs par défaut ;
+* [ ] révéler explicitement une valeur ;
+* [ ] éditer les ressources via YAML.
+
+### Temps réel
+
+* [ ] utiliser Kubernetes Watch ;
+* [ ] mettre à jour l'interface automatiquement ;
+* [ ] gérer les reconnexions ;
+* [ ] gérer les changements de cluster ;
+* [ ] gérer les erreurs d'API.
+
+---
+
+# 33. Première tâche à effectuer maintenant
+
+Commence par **inspecter l'environnement de développement disponible**.
+
+Vérifie notamment :
+
+```text
+Go
+Node.js
+npm/pnpm
+Wails
+Git
+```
+
+Puis initialise le projet.
+
+Ne développe pas immédiatement toutes les fonctionnalités.
+
+Commence par :
+
+1. créer le projet Wails ;
+2. configurer React + TypeScript ;
+3. configurer Tailwind CSS ;
+4. installer/configurer shadcn/ui ;
+5. créer le backend Go ;
+6. ajouter client-go ;
+7. créer l'architecture initiale ;
+8. créer l'écran principal ;
+9. créer le Cluster Manager ;
+10. implémenter l'import d'un kubeconfig ;
+11. implémenter le test de connexion ;
+12. afficher les clusters et contexts ;
+13. vérifier que tout fonctionne réellement.
+
+À chaque étape :
+
+* compiler ;
+* tester ;
+* corriger les erreurs ;
+* documenter les décisions importantes.
+
+Ne pas générer de faux résultats pour faire croire que Kubernetes fonctionne.
+
+Si une dépendance ou une API Wails a changé dans la version installée, utiliser la documentation correspondant à la version réellement installée plutôt que de supposer une ancienne API.
+
+À la fin de chaque étape, fournir un résumé :
+
+```text
+Implemented
+- ...
+
+Files changed
+- ...
+
+Tests
+- ...
+
+Known limitations
+- ...
+
+Next step
+- ...
+```
+
+Commence maintenant par l'étape 1 et avance progressivement. Ne passe pas à l'étape suivante tant que l'étape actuelle ne compile pas et ne fonctionne pas correctement.
