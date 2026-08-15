@@ -10,9 +10,9 @@ App desktop **local-first** (alternative à Lens) pour administrer plusieurs clu
 
 ## État
 
-MVP **étapes 1 à 8** implémentées : connexion kubeconfig (collé + détection `~/.kube/config`/`$KUBECONFIG`), multi-cluster, exploration (nodes, namespaces manuels RBAC, workloads, pods, services, ingress, configmaps, secrets, events), expérience pod (détail, logs streaming, terminal, port-forward, events, YAML), détail deployment (scale + logs agrégés), **métriques CPU/mémoire** (Metrics Server, dégradation gracieuse), **ConfigMaps/Secrets** (liste, détail, édition YAML + apply/delete, valeurs Secrets masquées), **watch temps réel** (list + re-list débouncée, `WatchProvider` → cache Query), **recherche globale** (Ctrl+K).
+MVP **terminé** — version **bêta `0.2.0-beta.1`**. Étapes 1 à 8 implémentées : connexion kubeconfig (collé + détection `~/.kube/config`/`$KUBECONFIG`), multi-cluster, exploration (nodes, namespaces manuels RBAC, workloads, pods, services, ingress, configmaps, secrets, events), expérience pod (détail, logs streaming, terminal, port-forward, events, YAML), détail deployment (scale + logs agrégés), métriques CPU/mémoire (Metrics Server, dégradation gracieuse + fallback namespace), ConfigMaps/Secrets (édition YAML + apply/delete, valeurs Secrets masquées), watch temps réel (`WatchProvider` → cache Query), recherche globale (Ctrl+K).
 
-**Reste pour finaliser le MVP** : polish UX (états vides/loading, erreurs, packaging). Voir `.prompts/master-prompt` §8 (polish) et §32 (critères).
+**Prochaine étape : release bêta + installers** (Linux `.deb`/`.tar.gz`, macOS `.dmg`, Windows NSIS) via `.github/workflows/release.yml` (tag `v*`). Voir `docs/development.md` §Release et `.prompts/master-prompt` §32.
 
 ## Commandes
 
@@ -22,6 +22,7 @@ wails build               # build (binaire dans build/bin/)
 wails generate module     # régénérer les bindings TS après modif des méthodes bindées
 go test ./...             # tests backend
 cd frontend && pnpm build # typecheck + build frontend
+./scripts/package-linux.sh  # build + packaging Linux (.tar.gz + .deb)
 ```
 
 ## Points d'attention (pièges connus)
@@ -35,7 +36,7 @@ cd frontend && pnpm build # typecheck + build frontend
 
 ## Conventions
 
-- **Go** : DTOs dédiés (jamais de types client-go bruts dans les bindings), DI, `context.Context`, tests `k8s.io/client-go/kubernetes/fake`. Packages `internal/{cluster,k8s,exec,logs,portforward,storage}`.
+- **Go** : DTOs dédiés (jamais de types client-go bruts dans les bindings), DI, `context.Context`, tests `k8s.io/client-go/kubernetes/fake`. Packages `internal/{cluster,k8s,exec,logs,portforward,watch,storage}`.
 - **Frontend** : feature-based (`src/features/…`), TanStack Query (état serveur, hooks dans `hooks/use-k8s.ts`) + Zustand minimal (`activeCluster`, `activeNamespace`), shadcn/ui, i18n en/fr. Code-splitting (routes + composants lourds en `React.lazy`).
 - **Streaming** : bindings `Start*` → id de session + événements `EventsEmit` (logs/terminal/port-forward).
 - **Erreurs** : mutations → toast global ; queries → état inline (`ResourcePage`) ; crash → `ErrorBoundary`.

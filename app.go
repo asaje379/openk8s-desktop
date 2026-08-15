@@ -18,6 +18,9 @@ import (
 	"openk8s-desktop/internal/watch"
 )
 
+// version is the application version. Bumped per release (semver + pre-release).
+const version = "0.2.0-beta.1"
+
 // App struct
 type App struct {
 	ctx         context.Context
@@ -51,7 +54,7 @@ func (a *App) startup(ctx context.Context) {
 func (a *App) GetVersion() map[string]string {
 	info := map[string]string{
 		"name":    "openk8s-desktop",
-		"version": "0.1.0",
+		"version": version,
 	}
 	if build, ok := debug.ReadBuildInfo(); ok {
 		info["go"] = build.GoVersion

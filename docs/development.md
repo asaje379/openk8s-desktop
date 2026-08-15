@@ -16,7 +16,39 @@ wails build               # build de prod (binaire dans build/bin/)
 wails generate module     # régénérer frontend/wailsjs/go/* après modif des méthodes bindées
 go test ./...             # tests backend
 cd frontend && pnpm build # typecheck + build frontend
+./scripts/package-linux.sh # build + packaging Linux (.tar.gz + .deb)
 ```
+
+## Release & installers
+
+La version est définie à **deux endroits** à synchroniser lors d'une release :
+
+1. `app.go` → `const version = "x.y.z[-prerelease]"` (affiché dans l'app via `GetVersion`).
+2. `wails.json` → `info.productVersion` (métadonnées des installers Windows/macOS).
+
+### Build par plateforme
+
+| Cible | Commande | Notes |
+|---|---|---|
+| Linux | `wails build -platform linux/amd64` | puis `scripts/package-linux.sh` (`.tar.gz` + `.deb`) |
+| Windows | `wails build -platform windows/amd64 -nsis` | nécessite `makensis` (NSIS) ; cross-compile depuis Linux OK |
+| macOS | `wails build -platform darwin/universal` | **sur macOS uniquement** (pas de cross-compile) ; produit un `.app` (universel), créer le `.dmg` avec `hdiutil` |
+
+**Wails v2.14 ne package pas Linux nativement** (AppImage/deb/rpm sont natifs de Wails v3). Le `.deb` est assemblé par `scripts/package-linux.sh` via `dpkg-deb`.
+
+### Release automatisée (GitHub Actions)
+
+Le workflow `.github/workflows/release.yml` déclenche un build sur les 3 OS lors du push d'un tag `v*`, crée les artefacts (Linux `.deb`/`.tar.gz`, macOS `.dmg`, Windows `.exe` NSIS) et publie la release.
+
+```bash
+git tag v0.2.0-beta.1 && git push origin v0.2.0-beta.1
+```
+
+### Étapes d'une release beta
+
+1. Mettre à jour `version` (app.go) + `info.productVersion` (wails.json) + `CHANGELOG.md`.
+2. `go test ./... && (cd frontend && pnpm build) && wails build`.
+3. Commit, puis tag `v0.2.0-beta.1`, push → le workflow construit et publie les installers.
 
 ## Points d'attention (pièges connus)
 

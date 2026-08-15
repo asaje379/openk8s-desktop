@@ -167,3 +167,11 @@
 - **Décision** : binding `SearchResources` (recherche sous-chaîne insensible à la casse sur les ressources accessibles, en réutilisant les `List*` existants, les ressources interdites sont ignorées) + palette de commandes frontend (raccourci `Ctrl/Cmd+K`, état `searchOpen` en Zustand, query débouncée par TanStack Query avec `staleTime: 0`). Page Events = `DataTable` réutilisée, alimentée par `useEvents` + watch `events`.
 - **Justification** : recherche réutilisant les DTOs existants (pas de nouveau parcours d'API), palette légère sans dépendance externe, page Events réutilise le pattern `ResourcePage`/`DataTable`.
 - **Conséquences** : `SearchResources` fait ~10 `List` à chaque frappe (acceptable car activé uniquement palette ouverte, ≥ 2 caractères) ; navigation des résultats vers les pages détail existantes (services/ingress/nodes → liste).
+
+## ADR-021 — Versioning bêta + installers multi-OS
+
+- **Date** : 2026-08-15
+- **Contexte** : MVP terminé → passage en bêta (`0.2.0-beta.1`) ; préparation des installers Linux/macOS/Windows.
+- **Décision** : version unique déclarée en deux points synchronisés (`const version` dans `app.go` + `info.productVersion` dans `wails.json`) ; packaging automatisé via **GitHub Actions** (workflow `release` sur tag `v*`) sur les runners natifs de chaque OS — Linux `.deb`/`.tar.gz` (assemblage `dpkg-deb` via `scripts/package-linux.sh`), Windows `.exe` NSIS (`-nsis`, makensis), macOS `.app`/`.dmg` (build natif macOS uniquement).
+- **Justification** : Wails v2.14 ne package pas Linux nativement et ne cross-compile pas vers macOS ; les runners CI natifs sont la façon standard de produire les trois installers.
+- **Conséquences** : la release est déclenchée par un tag `v*` ; `CHANGELOG.md` maintenu ; l'AppImage (nécessite `linuxdeploy`/`appimagetool`) est reporté.
