@@ -55,12 +55,12 @@ jobs:
           version: '11.14.0'
       - name: Install Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.14.0
-      - name: Build & package DMG
+      - name: Build & package
         run: |
           wails build -platform darwin/universal -trimpath
-          hdiutil create -volname openk8s-desktop \
-            -srcfolder "build/bin/openk8s-desktop.app" \
-            -ov -format UDZO "build/bin/openk8s-desktop.dmg"
+          ditto -c -k --sequesterRsrc --keepParent \
+            "build/bin/openk8s-desktop.app" \
+            "build/bin/openk8s-desktop-macos.zip"
       - uses: actions/upload-artifact@v4
         with:
           name: openk8s-desktop-macos

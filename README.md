@@ -48,7 +48,7 @@ Voir [`docs/architecture.md`](docs/architecture.md), [`docs/decisions.md`](docs/
 Les binaires et installers officiels seront publiés sur la [page Releases GitHub](https://github.com/asaje379/openk8s-desktop/releases) :
 
 - **Linux** : `.deb`, `.tar.gz` (AppImage à venir).
-- **macOS** : `.app` / `.dmg` (universel Intel + Apple Silicon).
+- **macOS** : `.app` (universel Intel + Apple Silicon, distribué en `.zip`).
 - **Windows** : installeur NSIS `.exe`.
 
 ### Build depuis les sources
@@ -89,7 +89,7 @@ cd frontend && pnpm build      # build frontend (tsc + vite)
 Voir [`docs/development.md`](docs/development.md#release--installers) et `.github/workflows/release.yml`. En résumé :
 
 - **Windows** (depuis Linux/Windows) : `wails build -platform windows/amd64 -nsis` (nécessite `makensis`).
-- **macOS** (sur macOS uniquement) : `wails build -platform darwin/universal` puis création du `.dmg`.
+- **macOS** (sur macOS uniquement) : `wails build -platform darwin/universal` puis `zip` du `.app` (`ditto -c -k …`).
 - **Linux** (sur Linux) : `wails build -platform linux/amd64` puis `scripts/package-linux.sh` (produit `.tar.gz` + `.deb`).
 
 La release est automatisée par **GitHub Actions** (workflow `release` sur tag `v*`), qui construit et publie les artefacts sur les trois OS.

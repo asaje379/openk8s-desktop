@@ -172,6 +172,6 @@
 
 - **Date** : 2026-08-15
 - **Contexte** : MVP terminé → passage en bêta (`0.2.0-beta.1`) ; préparation des installers Linux/macOS/Windows.
-- **Décision** : version unique déclarée en deux points synchronisés (`const version` dans `app.go` + `info.productVersion` dans `wails.json`) ; packaging automatisé via **GitHub Actions** (workflow `release` sur tag `v*`) sur les runners natifs de chaque OS — Linux `.deb`/`.tar.gz` (assemblage `dpkg-deb` via `scripts/package-linux.sh`), Windows `.exe` NSIS (`-nsis`, makensis), macOS `.app`/`.dmg` (build natif macOS uniquement).
+- **Décision** : version unique déclarée en deux points synchronisés (`const version` dans `app.go` + `info.productVersion` dans `wails.json`) ; packaging automatisé via **GitHub Actions** (workflow `release` sur tag `v*`) sur les runners natifs de chaque OS — Linux `.deb`/`.tar.gz` (assemblage `dpkg-deb` via `scripts/package-linux.sh`), Windows `.exe` NSIS (`-nsis`, makensis), macOS `.app` distribué en `.zip` (`ditto`, le `.dmg` échoue sur le runner CI par manque d'espace disque).
 - **Justification** : Wails v2.14 ne package pas Linux nativement et ne cross-compile pas vers macOS ; les runners CI natifs sont la façon standard de produire les trois installers.
 - **Conséquences** : la release est déclenchée par un tag `v*` ; `CHANGELOG.md` maintenu ; l'AppImage (nécessite `linuxdeploy`/`appimagetool`) est reporté.
