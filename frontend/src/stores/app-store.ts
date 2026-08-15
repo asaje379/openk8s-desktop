@@ -1,4 +1,5 @@
 import {create} from 'zustand'
+import {persist} from 'zustand/middleware'
 
 export interface ActiveCluster {
     id: string
@@ -13,9 +14,20 @@ interface AppState {
     setActiveNamespace: (ns: string | null) => void
 }
 
-export const useAppStore = create<AppState>((set) => ({
-    activeCluster: null,
-    activeNamespace: null,
-    setActiveCluster: (cluster) => set({activeCluster: cluster, activeNamespace: null}),
-    setActiveNamespace: (ns) => set({activeNamespace: ns}),
-}))
+export const useAppStore = create<AppState>()(
+    persist(
+        (set) => ({
+            activeCluster: null,
+            activeNamespace: null,
+            setActiveCluster: (cluster) => set({activeCluster: cluster, activeNamespace: null}),
+            setActiveNamespace: (ns) => set({activeNamespace: ns}),
+        }),
+        {
+            name: 'openk8s-app-store',
+            partialize: (state) => ({
+                activeCluster: state.activeCluster,
+                activeNamespace: state.activeNamespace,
+            }),
+        }
+    )
+)

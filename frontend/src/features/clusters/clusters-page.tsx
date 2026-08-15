@@ -4,6 +4,7 @@ import {Download, Plus} from 'lucide-react'
 import {Button} from '@/components/ui/button'
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
 import {Badge} from '@/components/ui/badge'
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select'
 import {TestConnection} from '@/lib/wails'
 import type {Cluster, ConnectionStatus} from '@/lib/wails'
 import {useAppStore} from '@/stores/app-store'
@@ -16,9 +17,6 @@ import {
 } from './use-clusters'
 import {AddClusterDialog} from './add-cluster-dialog'
 import {ImportLocalClustersDialog, type LocalContextItem} from './import-local-clusters-dialog'
-
-const selectClassName =
-    'flex h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
 
 function ClusterCard({cluster}: {cluster: Cluster}) {
     const {t} = useTranslation()
@@ -52,11 +50,11 @@ function ClusterCard({cluster}: {cluster: Cluster}) {
     }
 
     return (
-        <Card>
+        <Card className="min-w-0">
             <CardHeader>
                 <div className="flex items-center justify-between gap-2">
                     <CardTitle className="truncate">{cluster.name}</CardTitle>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex shrink-0 items-center gap-1.5">
                         {isActive && <Badge variant="success">{t('clusters.active')}</Badge>}
                         {status &&
                             (status.connected ? (
@@ -70,30 +68,34 @@ function ClusterCard({cluster}: {cluster: Cluster}) {
             <CardContent className="space-y-2 text-sm">
                 <div className="text-muted-foreground">
                     {t('clusters.server')}:{' '}
-                    <span className="text-foreground">{cluster.server}</span>
+                    <span className="break-all text-foreground">{cluster.server}</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                    <span>{t('clusters.context')}:</span>
+                    <span className="shrink-0">{t('clusters.context')}:</span>
                     {contexts.length > 0 ? (
-                        <select
-                            className={selectClassName}
+                        <Select
                             value={cluster.currentContext}
-                            onChange={(e) =>
-                                switchContext.mutate({id: cluster.id, context: e.target.value})
+                            onValueChange={(v) =>
+                                switchContext.mutate({id: cluster.id, context: v})
                             }
                         >
-                            {contexts.map((c) => (
-                                <option key={c.name} value={c.name}>
-                                    {c.name}
-                                </option>
-                            ))}
-                        </select>
+                            <SelectTrigger className="h-7 min-w-0 flex-1 text-xs">
+                                <SelectValue/>
+                            </SelectTrigger>
+                            <SelectContent>
+                                {contexts.map((c) => (
+                                    <SelectItem key={c.name} value={c.name}>
+                                        {c.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     ) : (
-                        <span className="text-foreground">{cluster.currentContext}</span>
+                        <span className="truncate text-foreground">{cluster.currentContext}</span>
                     )}
                 </div>
                 {status && !status.connected && (
-                    <p className="text-xs text-destructive">{status.message}</p>
+                    <p className="break-words text-xs text-destructive">{status.message}</p>
                 )}
                 {status?.connected && (
                     <p className="text-xs text-success">
@@ -101,7 +103,7 @@ function ClusterCard({cluster}: {cluster: Cluster}) {
                     </p>
                 )}
             </CardContent>
-            <CardFooter className="gap-2">
+            <CardFooter className="flex flex-wrap gap-2">
                 <Button
                     size="sm"
                     variant={isActive ? 'secondary' : 'default'}
@@ -149,8 +151,8 @@ export function ClustersPage() {
     }, [localKubeconfigs, clusters])
 
     return (
-        <div className="flex h-full flex-col gap-6 p-8">
-            <div className="flex items-center justify-between">
+        <div className="flex min-h-full flex-col gap-6 p-8">
+            <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight">{t('clusters.title')}</h1>
                     <p className="text-sm text-muted-foreground">{t('clusters.subtitle')}</p>
@@ -162,9 +164,9 @@ export function ClustersPage() {
             </div>
 
             {newContexts.length > 0 && (
-                <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3">
                     <div className="flex items-center gap-2 text-sm">
-                        <Download className="size-4 text-muted-foreground"/>
+                        <Download className="size-4 shrink-0 text-muted-foreground"/>
                         {t('clusters.localFound', {count: newContexts.length})}
                     </div>
                     <Button size="sm" variant="outline" onClick={() => setImportOpen(true)}>
@@ -196,7 +198,7 @@ export function ClustersPage() {
                     </Button>
                 </div>
             ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {list.map((cluster) => (
                         <ClusterCard key={cluster.id} cluster={cluster}/>
                     ))}

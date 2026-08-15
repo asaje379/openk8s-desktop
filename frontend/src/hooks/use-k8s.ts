@@ -1,4 +1,3 @@
-import {useEffect, useState} from 'react'
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {
     AddNamespace,
@@ -132,23 +131,4 @@ export function useRemoveNamespace() {
         onSuccess: (_data, {clusterId}) =>
             queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'saved-namespaces']}),
     })
-}
-
-// useNamespaceFilter manages the selected namespace for a cluster, defaulting to
-// the first saved namespace when available and resetting on cluster change.
-export function useNamespaceFilter(clusterId: string | null) {
-    const {data: saved = []} = useSavedNamespaces(clusterId)
-    const [namespace, setNamespace] = useState('')
-
-    useEffect(() => {
-        setNamespace('')
-    }, [clusterId])
-
-    useEffect(() => {
-        if (namespace === '' && (saved ?? []).length > 0) {
-            setNamespace(saved[0])
-        }
-    }, [saved, namespace])
-
-    return [namespace, setNamespace] as const
 }

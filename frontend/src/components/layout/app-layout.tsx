@@ -4,11 +4,11 @@ import {Topbar} from './topbar'
 
 export function AppLayout() {
     return (
-        <div className="flex h-screen flex-col">
+        <div className="flex h-dvh flex-col overflow-hidden">
             <Topbar/>
-            <div className="flex flex-1 overflow-hidden">
+            <div className="flex min-h-0 flex-1">
                 <Sidebar/>
-                <main className="flex-1 overflow-y-auto">
+                <main className="min-w-0 flex-1 overflow-y-auto">
                     <Outlet/>
                 </main>
             </div>

@@ -5,12 +5,10 @@ import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {Textarea} from '@/components/ui/textarea'
 import {Label} from '@/components/ui/label'
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select'
 import {TestKubeconfig, ValidateKubeconfig} from '@/lib/wails'
 import type {ConnectionStatus, KubeconfigInfo} from '@/lib/wails'
 import {useAddCluster} from './use-clusters'
-
-const selectClassName =
-    'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
 
 interface AddClusterDialogProps {
     open: boolean
@@ -117,19 +115,19 @@ export function AddClusterDialog({open, onOpenChange}: AddClusterDialogProps) {
 
                     {info && (
                         <div className="space-y-2">
-                            <Label htmlFor="context">{t('clusters.context')}</Label>
-                            <select
-                                id="context"
-                                className={selectClassName}
-                                value={context}
-                                onChange={(e) => setContext(e.target.value)}
-                            >
-                                {info.contexts.map((c) => (
-                                    <option key={c.name} value={c.name}>
-                                        {c.name}
-                                    </option>
-                                ))}
-                            </select>
+                            <Label>{t('clusters.context')}</Label>
+                            <Select value={context} onValueChange={setContext}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder={t('clusters.context')}/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {info.contexts.map((c) => (
+                                        <SelectItem key={c.name} value={c.name}>
+                                            {c.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                             <p className="text-xs text-muted-foreground">
                                 {t('clusters.contextsFound', {count: info.contexts.length})}
                             </p>

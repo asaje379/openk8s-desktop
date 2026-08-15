@@ -5,9 +5,7 @@ import type {ColumnDef} from '@tanstack/react-table'
 import {DataTable} from '@/components/tables/data-table'
 import {ResourcePage} from '@/components/resource-page'
 import {NoCluster} from '@/components/no-cluster'
-import {NamespaceSelect} from '@/components/namespace-select'
 import {useAppStore} from '@/stores/app-store'
-import {useNamespaceFilter} from '@/hooks/use-k8s'
 import {
     ListCronJobs,
     ListDaemonSets,
@@ -52,10 +50,11 @@ async function fetchWorkloads(
 export function WorkloadsPage() {
     const {t} = useTranslation()
     const activeCluster = useAppStore((s) => s.activeCluster)
+    const activeNamespace = useAppStore((s) => s.activeNamespace)
     const [kind, setKind] = useState<WorkloadKind>('deployments')
-    const [namespace, setNamespace] = useNamespaceFilter(activeCluster?.id ?? null)
 
     const clusterId = activeCluster?.id ?? null
+    const namespace = activeNamespace ?? ''
     const {data, isLoading, error, refetch} = useQuery({
         queryKey: ['k8s', clusterId, 'workloads', kind, namespace],
         queryFn: () => fetchWorkloads(kind, clusterId as string, namespace),
@@ -66,7 +65,13 @@ export function WorkloadsPage() {
     const workloadColumns = useMemo<ColumnDef<WorkloadInfo>[]>(
         () => [
             {accessorKey: 'kind', header: t('resources.kind')},
-            {accessorKey: 'name', header: t('resources.name')},
+            {
+                accessorKey: 'name',
+                header: t('resources.name'),
+                cell: ({row}) => (
+                    <span className="font-mono text-[13px]">{row.original.name}</span>
+                ),
+            },
             {accessorKey: 'namespace', header: t('resources.namespace')},
             {accessorKey: 'desired', header: t('resources.desired')},
             {accessorKey: 'ready', header: t('resources.ready')},
@@ -79,7 +84,13 @@ export function WorkloadsPage() {
 
     const jobColumns = useMemo<ColumnDef<JobInfo>[]>(
         () => [
-            {accessorKey: 'name', header: t('resources.name')},
+            {
+                accessorKey: 'name',
+                header: t('resources.name'),
+                cell: ({row}) => (
+                    <span className="font-mono text-[13px]">{row.original.name}</span>
+                ),
+            },
             {accessorKey: 'namespace', header: t('resources.namespace')},
             {accessorKey: 'completions', header: t('resources.completions')},
             {accessorKey: 'duration', header: t('resources.duration')},
@@ -90,7 +101,13 @@ export function WorkloadsPage() {
 
     const cronJobColumns = useMemo<ColumnDef<CronJobInfo>[]>(
         () => [
-            {accessorKey: 'name', header: t('resources.name')},
+            {
+                accessorKey: 'name',
+                header: t('resources.name'),
+                cell: ({row}) => (
+                    <span className="font-mono text-[13px]">{row.original.name}</span>
+                ),
+            },
             {accessorKey: 'namespace', header: t('resources.namespace')},
             {accessorKey: 'schedule', header: t('resources.schedule')},
             {
@@ -114,25 +131,22 @@ export function WorkloadsPage() {
             error={error}
             onRetry={() => void refetch()}
             actions={
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1 rounded-md border border-border p-1">
-                        {KINDS.map((k) => (
-                            <button
-                                key={k.value}
-                                type="button"
-                                onClick={() => setKind(k.value)}
-                                className={cn(
-                                    'rounded px-2.5 py-1 text-sm transition-colors',
-                                    kind === k.value
-                                        ? 'bg-accent text-accent-foreground'
-                                        : 'text-muted-foreground hover:text-foreground'
-                                )}
-                            >
-                                {t(k.labelKey)}
-                            </button>
-                        ))}
-                    </div>
-                    <NamespaceSelect value={namespace} onChange={setNamespace}/>
+                <div className="flex flex-wrap items-center gap-1 rounded-md border border-border p-1">
+                    {KINDS.map((k) => (
+                        <button
+                            key={k.value}
+                            type="button"
+                            onClick={() => setKind(k.value)}
+                            className={cn(
+                                'rounded px-2.5 py-1 text-sm transition-colors',
+                                kind === k.value
+                                    ? 'bg-primary/10 text-primary'
+                                    : 'text-muted-foreground hover:text-foreground'
+                            )}
+                        >
+                            {t(k.labelKey)}
+                        </button>
+                    ))}
                 </div>
             }
         >
