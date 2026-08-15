@@ -1,5 +1,6 @@
 import {createHashRouter} from 'react-router'
 import {AppLayout} from '@/components/layout/app-layout'
+import {ErrorBoundary} from '@/components/error-boundary'
 import {PlaceholderPage} from '@/components/placeholder-page'
 import {DashboardPage} from '@/features/dashboard/dashboard-page'
 import {ClustersPage} from '@/features/clusters/clusters-page'
@@ -7,7 +8,11 @@ import {ClustersPage} from '@/features/clusters/clusters-page'
 export const router = createHashRouter([
     {
         path: '/',
-        element: <AppLayout/>,
+        element: (
+            <ErrorBoundary>
+                <AppLayout/>
+            </ErrorBoundary>
+        ),
         children: [
             {index: true, element: <DashboardPage/>},
             {path: 'clusters', element: <ClustersPage/>},

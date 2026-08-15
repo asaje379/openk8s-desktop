@@ -64,6 +64,13 @@ export const fr: Translation = {
         addError: "Échec de l'ajout du cluster",
         removeError: "Échec de la suppression du cluster",
     },
+    error: {
+        title: "Une erreur est survenue",
+        description: "Une erreur inattendue s'est produite. Vous pouvez revenir à l'accueil.",
+        returnHome: "Retour à l'accueil",
+        retry: "Réessayer",
+        details: "Détails de l'erreur",
+    },
     placeholder: {
         description: "Cette section sera implémentée dans une étape ultérieure du MVP.",
     },

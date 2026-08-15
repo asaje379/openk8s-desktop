@@ -100,7 +100,8 @@ function ClusterCard({cluster}: {cluster: Cluster}) {
 
 export function ClustersPage() {
     const {t} = useTranslation()
-    const {data: clusters = [], isLoading} = useClusters()
+    const {data: clusters, isLoading, isError, refetch} = useClusters()
+    const list = clusters ?? []
     const [open, setOpen] = useState(false)
 
     return (
@@ -122,7 +123,14 @@ export function ClustersPage() {
                         <div key={i} className="h-40 animate-pulse rounded-xl border border-border bg-muted"/>
                     ))}
                 </div>
-            ) : clusters.length === 0 ? (
+            ) : isError ? (
+                <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
+                    <h2 className="text-lg font-semibold">{t('error.title')}</h2>
+                    <Button variant="outline" onClick={() => void refetch()}>
+                        {t('error.retry')}
+                    </Button>
+                </div>
+            ) : list.length === 0 ? (
                 <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
                     <h2 className="text-lg font-semibold">{t('clusters.empty')}</h2>
                     <p className="text-sm text-muted-foreground">{t('clusters.emptyDescription')}</p>
@@ -133,7 +141,7 @@ export function ClustersPage() {
                 </div>
             ) : (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {clusters.map((cluster) => (
+                    {list.map((cluster) => (
                         <ClusterCard key={cluster.id} cluster={cluster}/>
                     ))}
                 </div>

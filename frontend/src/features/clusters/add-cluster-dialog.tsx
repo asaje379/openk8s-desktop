@@ -151,12 +151,6 @@ export function AddClusterDialog({open, onOpenChange}: AddClusterDialogProps) {
                             </p>
                         ))}
 
-                    {addCluster.error && (
-                        <p className="text-sm text-destructive">
-                            {t('clusters.addError')}: {String(addCluster.error)}
-                        </p>
-                    )}
-
                     <div className="flex justify-end gap-2">
                         <Button
                             variant="outline"

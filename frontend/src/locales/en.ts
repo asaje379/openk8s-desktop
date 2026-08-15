@@ -62,6 +62,13 @@ export const en = {
         addError: 'Failed to add cluster',
         removeError: 'Failed to remove cluster',
     },
+    error: {
+        title: 'Something went wrong',
+        description: 'An unexpected error occurred. You can return to the home page.',
+        returnHome: 'Return to home',
+        retry: 'Retry',
+        details: 'Error details',
+    },
     placeholder: {
         description: 'This section will be implemented in a later step of the MVP.',
     },

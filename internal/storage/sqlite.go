@@ -68,7 +68,7 @@ func (s *SQLiteStore) ListClusters() ([]cluster.Cluster, error) {
 	}
 	defer rows.Close()
 
-	var clusters []cluster.Cluster
+	clusters := make([]cluster.Cluster, 0)
 	for rows.Next() {
 		var c cluster.Cluster
 		var createdAt, updatedAt string

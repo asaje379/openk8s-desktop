@@ -11,6 +11,7 @@
     "frontend/src/components/ui/badge.tsx",
     "frontend/src/components/ui/card.tsx",
     "frontend/src/components/placeholder-page.tsx",
+    "frontend/src/components/error-boundary.tsx",
     "frontend/src/components/providers/theme-provider.tsx",
     "frontend/src/components/theme-toggle.tsx",
     "frontend/src/components/language-toggle.tsx",
