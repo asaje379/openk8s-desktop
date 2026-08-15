@@ -2,5 +2,6 @@ build/bin
 build/release
 node_modules
 frontend/dist
+.playwright-mcp/
 frontend/package.json.md5
 openk8s-desktop
