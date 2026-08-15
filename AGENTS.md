@@ -10,7 +10,7 @@ App desktop **local-first** (alternative à Lens) pour administrer plusieurs clu
 
 ## État
 
-MVP **terminé** — version **bêta `0.2.0-beta.1`**. Étapes 1 à 8 implémentées : connexion kubeconfig (collé + détection `~/.kube/config`/`$KUBECONFIG`), multi-cluster, exploration (nodes, namespaces manuels RBAC, workloads, pods, services, ingress, configmaps, secrets, events), expérience pod (détail, logs streaming, terminal, port-forward, events, YAML), détail deployment (scale + logs agrégés), métriques CPU/mémoire (Metrics Server, dégradation gracieuse + fallback namespace), ConfigMaps/Secrets (édition YAML + apply/delete, valeurs Secrets masquées), watch temps réel (`WatchProvider` → cache Query), recherche globale (Ctrl+K).
+MVP **terminé** — version **bêta `0.2.0-beta.2`**. Étapes 1 à 8 implémentées : connexion kubeconfig (collé + détection `~/.kube/config`/`$KUBECONFIG`), multi-cluster, exploration (nodes, namespaces manuels RBAC, workloads, pods, services, ingress, configmaps, secrets, events), expérience pod (détail, logs streaming, terminal, port-forward, events, YAML), détail deployment (scale + logs agrégés), métriques CPU/mémoire (Metrics Server, dégradation gracieuse + fallback namespace), ConfigMaps/Secrets (édition YAML + apply/delete, valeurs Secrets masquées), watch temps réel (`WatchProvider` → cache Query), recherche globale (Ctrl+K).
 
 **Prochaine étape : release bêta + installers** (Linux `.deb`/`.tar.gz`, macOS `.dmg`, Windows NSIS) via `.github/workflows/release.yml` (tag `v*`). Voir `docs/development.md` §Release et `.prompts/master-prompt` §32.
 
