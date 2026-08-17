@@ -3,6 +3,11 @@
 Toutes les modifications notables du projet sont documentées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et du [Semantic Versioning](https://semver.org/).
 
+## [0.2.0-beta.6] — 2026-08-17
+
+### Correctifs
+- **Installer NSIS (Windows)** : les versions semver pré-release (`0.2.0-beta.5`) cassaient le build NSIS (`Error: invalid VIFileVersion format, should be X.X.X.X`). Le job Windows patche `project.nsi` avec une version numérique dérivée du tag (`v0.2.0-beta.5` → `0.2.0.5`) avant `wails build -nsis`.
+
 ## [0.2.0-beta.5] — 2026-08-17
 
 ### Correctifs

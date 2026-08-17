@@ -103,7 +103,30 @@ jobs:
       - name: Install Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.14.0
       - name: Build NSIS installer
-        run: wails build -platform windows/amd64 -nsis -trimpath
+        shell: pwsh
+        run: |
+          # NSIS VIProductVersion/VIFileVersion require a numeric X.X.X.X value,
+          # which semver pre-releases (e.g. 0.2.0-beta.5) break. Map the tag to a
+          # numeric version: v0.2.0-beta.5 -> 0.2.0.5, v0.2.0 -> 0.2.0.0.
+          $v = $env:GITHUB_REF_NAME.TrimStart('v')
+          $parts = $v -split '-'
+          if ($parts.Count -gt 1) {
+              $build = (($parts[1] -split '\.')[-1])
+              if ($build -notmatch '^\d+$') { $build = '0' }
+              $nsisVersion = "$($parts[0]).$build"
+          } else {
+              $nsisVersion = "$($parts[0]).0"
+          }
+          $path = 'build/windows/installer/project.nsi'
+          $content = Get-Content $path -Raw
+          $content = $content.Replace(
+              'VIProductVersion "${INFO_PRODUCTVERSION}.0"',
+              "VIProductVersion `"$nsisVersion`"")
+          $content = $content.Replace(
+              'VIFileVersion    "${INFO_PRODUCTVERSION}.0"',
+              "VIFileVersion    `"$nsisVersion`"")
+          Set-Content $path $content
+          wails build -platform windows/amd64 -nsis -trimpath
       - uses: actions/upload-artifact@v4
         with:
           name: openk8s-desktop-windows
