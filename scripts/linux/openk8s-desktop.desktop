@@ -2,6 +2,7 @@
 Name=openk8s-desktop
 Comment=Desktop Kubernetes admin
 Exec=openk8s-desktop
+Icon=openk8s-desktop
 Terminal=false
 Type=Application
 Categories=Development;System;

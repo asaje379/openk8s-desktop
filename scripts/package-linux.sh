@@ -29,6 +29,7 @@ TARBALL_DIR="${OUT}/${APP}-${VERSION}"
 mkdir -p "$TARBALL_DIR"
 cp "$BIN" "$TARBALL_DIR/${APP}"
 cp scripts/linux/openk8s-desktop.desktop "$TARBALL_DIR/"
+cp scripts/linux/openk8s-desktop.png "$TARBALL_DIR/"
 tar -C "$OUT" -czf "${OUT}/${APP}-${VERSION}-linux-amd64.tar.gz" "${APP}-${VERSION}"
 rm -rf "$TARBALL_DIR"
 
@@ -36,9 +37,12 @@ if command -v dpkg-deb >/dev/null 2>&1; then
     echo "==> Packaging .deb"
     DEB_ROOT="${OUT}/deb"
     PREFIX="${DEB_ROOT}/usr/local"
-    mkdir -p "${PREFIX}/bin" "${PREFIX}/share/applications" "${DEB_ROOT}/DEBIAN"
+    mkdir -p "${PREFIX}/bin" "${PREFIX}/share/applications" \
+        "${PREFIX}/share/icons/hicolor/256x256/apps" "${DEB_ROOT}/DEBIAN"
     cp "$BIN" "${PREFIX}/bin/${APP}"
     cp scripts/linux/openk8s-desktop.desktop "${PREFIX}/share/applications/"
+    cp scripts/linux/openk8s-desktop.png \
+        "${PREFIX}/share/icons/hicolor/256x256/apps/${APP}.png"
 
     cat > "${DEB_ROOT}/DEBIAN/control" <<EOF
 Package: ${APP}
