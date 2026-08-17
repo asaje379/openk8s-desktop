@@ -92,7 +92,7 @@ func TestCheckUpToDate(t *testing.T) {
 	srv := testServer(t, releasesJSON, http.StatusOK)
 	defer srv.Close()
 
-	c := NewChecker("0.2.0-beta.7", "linux")
+	c := NewChecker("0.2.0-beta.8", "linux")
 	c.releasesURL = srv.URL
 
 	if info := c.Check(context.Background()); info.HasUpdate {

@@ -14,12 +14,10 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	"golang.org/x/mod/semver"
@@ -316,120 +314,6 @@ func (c *Checker) fetchSHA256(ctx context.Context, url string, filename string) 
 		}
 	}
 	return "", fmt.Errorf("SHA256SUMS: no entry for %s", filename)
-}
-
-func applyLinux(downloaded string) error {
-	exe, err := os.Executable()
-	if err != nil {
-		return err
-	}
-	exe, err = filepath.EvalSymlinks(exe)
-	if err != nil {
-		return err
-	}
-	if err := requireWritable(filepath.Dir(exe)); err != nil {
-		return fmt.Errorf("no write permission in %s: %w", filepath.Dir(exe), err)
-	}
-
-	tmpDir, err := os.MkdirTemp("", "openk8s-extract-*")
-	if err != nil {
-		return err
-	}
-	if err := extractTarGz(downloaded, tmpDir); err != nil {
-		os.RemoveAll(tmpDir)
-		return err
-	}
-	newBin, err := findBinary(tmpDir)
-	if err != nil {
-		os.RemoveAll(tmpDir)
-		return err
-	}
-
-	script, err := os.CreateTemp("", "openk8s-swap-*.sh")
-	if err != nil {
-		os.RemoveAll(tmpDir)
-		return err
-	}
-	scriptPath := script.Name()
-	cleanup := func() {
-		os.Remove(scriptPath)
-		os.RemoveAll(tmpDir)
-	}
-	if _, err := script.WriteString(linuxSwapScript(exe, newBin, tmpDir, scriptPath)); err != nil {
-		script.Close()
-		cleanup()
-		return err
-	}
-	if err := script.Chmod(0o700); err != nil {
-		script.Close()
-		cleanup()
-		return err
-	}
-	if err := script.Close(); err != nil {
-		cleanup()
-		return err
-	}
-
-	cmd := exec.Command("sh", scriptPath)
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
-	if err := cmd.Start(); err != nil {
-		cleanup()
-		return err
-	}
-	scheduleExit()
-	return nil
-}
-
-// linuxSwapScript swaps the running binary, cleans up and relaunches. It runs
-// in a detached process after this one has exited, so the running binary can
-// be replaced.
-func linuxSwapScript(exe, newBin, tmpDir, scriptPath string) string {
-	return fmt.Sprintf(`#!/bin/sh
-sleep 1
-mv -f -- %q %q
-mv -f -- %q %q
-chmod +x -- %q
-rm -rf -- %q
-rm -f -- %q
-exec %q
-`, exe, exe+".old", newBin, exe, exe, tmpDir, scriptPath, exe)
-}
-
-func applyWindows(downloaded string) error {
-	exe, err := os.Executable()
-	if err != nil {
-		return err
-	}
-	dir := filepath.Dir(exe)
-	if err := requireWritable(dir); err != nil {
-		return fmt.Errorf("no write permission in %s (reinstall as user scope or run as admin): %w", dir, err)
-	}
-
-	newFile := filepath.Join(dir, "openk8s-desktop.exe.new")
-	if err := copyFile(downloaded, newFile); err != nil {
-		return err
-	}
-	old := exe + ".old"
-	if err := os.Rename(exe, old); err != nil {
-		os.Remove(newFile)
-		return err
-	}
-	if err := os.Rename(newFile, exe); err != nil {
-		os.Rename(old, exe)
-		os.Remove(newFile)
-		return err
-	}
-
-	// Windows allows renaming a running exe but not overwriting it: the new
-	// binary is in place, spawn it detached and exit.
-	cmd := exec.Command("cmd", "/c", fmt.Sprintf("start \"\" \"%s\"", exe))
-	if err := cmd.Start(); err != nil {
-		os.Remove(exe)
-		os.Rename(old, exe)
-		return err
-	}
-	scheduleExit()
-	return nil
 }
 
 // scheduleExit terminates the current process shortly after, letting the
