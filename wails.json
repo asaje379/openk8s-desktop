@@ -13,7 +13,7 @@
   },
   "info": {
     "productName": "openk8s-desktop",
-    "productVersion": "0.2.0-beta.6",
+    "productVersion": "0.2.0-beta.7",
     "copyright": "Copyright © 2026 asaje379",
     "comments": "Desktop Kubernetes admin (Lens alternative)",
     "companyName": "asaje379"

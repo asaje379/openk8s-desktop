@@ -6,7 +6,7 @@
 #
 # Détecte l'OS et l'architecture, télécharge la dernière release depuis GitHub
 # et installe l'app. POSIX-sh compatible (fonctionne aussi via `sh`).
-# Usage avancé : INSTALL_DIR=/opt ./scripts/install.sh [v0.2.0-beta.6]
+# Usage avancé : INSTALL_DIR=/opt ./scripts/install.sh [v0.2.0-beta.7]
 set -eu
 
 REPO="asaje379/openk8s-desktop"
