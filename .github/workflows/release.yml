@@ -141,6 +141,16 @@ jobs:
         with:
           path: artifacts
           merge-multiple: true
+      - name: Generate SHA256SUMS
+        run: |
+          cd artifacts
+          # Checksum only regular files (the macos .app is uploaded as a
+          # directory) and strip the leading ./ from the filenames.
+          find . -maxdepth 1 -type f -not -name SHA256SUMS -print0 \
+            | xargs -0 sha256sum \
+            | sed 's|  \./|  |' \
+            | sort -k2 > SHA256SUMS
+          cat SHA256SUMS
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:

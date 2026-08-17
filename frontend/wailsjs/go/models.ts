@@ -634,3 +634,38 @@ export namespace k8s {
 
 }
 
+export namespace update {
+	
+	export class Info {
+	    currentVersion: string;
+	    latestVersion: string;
+	    tagName: string;
+	    htmlUrl: string;
+	    downloadUrl: string;
+	    autoUpdateUrl: string;
+	    sha256SumsUrl: string;
+	    supportsAutoUpdate: boolean;
+	    hasUpdate: boolean;
+	    publishedAt: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Info(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.currentVersion = source["currentVersion"];
+	        this.latestVersion = source["latestVersion"];
+	        this.tagName = source["tagName"];
+	        this.htmlUrl = source["htmlUrl"];
+	        this.downloadUrl = source["downloadUrl"];
+	        this.autoUpdateUrl = source["autoUpdateUrl"];
+	        this.sha256SumsUrl = source["sha256SumsUrl"];
+	        this.supportsAutoUpdate = source["supportsAutoUpdate"];
+	        this.hasUpdate = source["hasUpdate"];
+	        this.publishedAt = source["publishedAt"];
+	    }
+	}
+
+}
+

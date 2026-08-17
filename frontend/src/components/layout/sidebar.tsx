@@ -12,10 +12,12 @@ import {
     Server,
     type LucideIcon,
 } from 'lucide-react'
+import {useState} from 'react'
 import {useQuery} from '@tanstack/react-query'
 import {NavLink} from 'react-router'
 import {useTranslation} from 'react-i18next'
 import {BrandLogo} from '@/components/brand-logo'
+import {UpdateDialog} from './update-dialog'
 import {GetVersion} from '@/lib/wails'
 import {cn} from '@/lib/utils'
 
@@ -46,6 +48,7 @@ export function Sidebar() {
         queryFn: () => GetVersion(),
         retry: false,
     })
+    const [updateOpen, setUpdateOpen] = useState(false)
 
     return (
         <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-card">
@@ -76,10 +79,16 @@ export function Sidebar() {
                 ))}
             </nav>
             <div className="border-t border-border px-4 py-2">
-                <p className="text-[11px] text-muted-foreground">
+                <button
+                    type="button"
+                    title={t('update.title')}
+                    onClick={() => setUpdateOpen(true)}
+                    className="text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+                >
                     {version?.version ? `v${version.version}` : ''}
-                </p>
+                </button>
             </div>
+            <UpdateDialog open={updateOpen} onOpenChange={setUpdateOpen}/>
         </aside>
     )
 }

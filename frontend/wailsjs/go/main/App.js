@@ -34,6 +34,14 @@ export function ApplyStatefulSet(arg1, arg2, arg3, arg4) {
   return window['go']['main']['App']['ApplyStatefulSet'](arg1, arg2, arg3, arg4);
 }
 
+export function ApplyUpdate() {
+  return window['go']['main']['App']['ApplyUpdate']();
+}
+
+export function CheckForUpdate() {
+  return window['go']['main']['App']['CheckForUpdate']();
+}
+
 export function CloseExec(arg1) {
   return window['go']['main']['App']['CloseExec'](arg1);
 }
@@ -60,6 +68,10 @@ export function DeleteSecret(arg1, arg2, arg3) {
 
 export function DeleteStatefulSet(arg1, arg2, arg3) {
   return window['go']['main']['App']['DeleteStatefulSet'](arg1, arg2, arg3);
+}
+
+export function DownloadUpdate() {
+  return window['go']['main']['App']['DownloadUpdate']();
 }
 
 export function GetClusterMetrics(arg1) {

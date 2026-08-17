@@ -7,6 +7,8 @@ export {
     ApplyPod,
     ApplySecret,
     ApplyStatefulSet,
+    ApplyUpdate,
+    CheckForUpdate,
     CloseExec,
     DeleteConfigMap,
     DeleteDaemonSet,
@@ -14,6 +16,7 @@ export {
     DeletePod,
     DeleteSecret,
     DeleteStatefulSet,
+    DownloadUpdate,
     GetClusterMetrics,
     GetConfigMap,
     GetConfigMapYAML,
@@ -72,6 +75,7 @@ export {
 
 import type {cluster} from '../../wailsjs/go/models'
 import type {k8s} from '../../wailsjs/go/models'
+import type {update} from '../../wailsjs/go/models'
 
 export type Cluster = cluster.Cluster
 export type KubeContext = cluster.KubeContext
@@ -100,5 +104,6 @@ export type ConfigMapDetail = k8s.ConfigMapDetail
 export type SecretInfo = k8s.SecretInfo
 export type SecretDetail = k8s.SecretDetail
 export type SearchResult = k8s.SearchResult
+export type UpdateInfo = update.Info
 
 export {EventsOff, EventsOn} from '../../wailsjs/runtime/runtime'

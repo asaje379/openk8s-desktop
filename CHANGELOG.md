@@ -3,6 +3,18 @@
 Toutes les modifications notables du projet sont documentées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et du [Semantic Versioning](https://semver.org/).
 
+## [0.2.0-beta.7] — 2026-08-17
+
+### Ajouts
+- **Mises à jour automatiques** : l'app vérifie GitHub Releases (`CheckForUpdate`, comparaison semver avec gestion des pré-releases), avec bannière dans la topbar quand une version est disponible.
+- **Téléchargement + installation en arrière-plan** (Linux/Windows) : le bouton **Download** de la bannière télécharge l'artefact (barre de progression), le **vérifie contre l'asset `SHA256SUMS`** publié par la CI, puis **remplace atomiquement le binaire et relance l'app** sur confirmation. Sur macOS (app non signée), la bannière affiche la notification sans bouton d'auto-update ; le dialogue « Vérifier les mises à jour » (clic sur la version en sidebar) reste disponible.
+- **Asset `SHA256SUMS`** : le job `release` de la CI publie le fichier de checksums pour tous les artefacts.
+
+### Technique
+- Backend : `internal/update` (check, download streamé avec progress, vérification SHA256, swap atomique Linux via script `setsid` / Windows via rename du binaire en cours + relaunch détaché), méthodes bindées `DownloadUpdate`/`ApplyUpdate`/`CheckForUpdate`, événements `update:progress`.
+- Frontend : `stores/update-store.ts` (machine à états), bannière conditionnelle par OS (`supportsAutoUpdate`), i18n en/fr.
+- Tests : 16 tests dans `internal/update` (assets par OS, semver, cache, download+vérif, checksum mismatch, extraction tar.gz, script de swap).
+
 ## [0.2.0-beta.6] — 2026-08-17
 
 ### Correctifs

@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	goruntime "runtime"
 	"runtime/debug"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -15,6 +17,7 @@ import (
 	"openk8s-desktop/internal/logs"
 	"openk8s-desktop/internal/portforward"
 	"openk8s-desktop/internal/storage"
+	"openk8s-desktop/internal/update"
 	"openk8s-desktop/internal/watch"
 )
 
@@ -29,6 +32,7 @@ type App struct {
 	exec        *exec.Manager
 	portforward *portforward.Manager
 	watch       *watch.Manager
+	updates     *update.Checker
 }
 
 // NewApp creates a new App application struct
@@ -41,6 +45,7 @@ func NewApp() *App {
 		exec:        exec.NewManager(),
 		portforward: portforward.NewManager(),
 		watch:       watch.NewManager(),
+		updates:     update.NewChecker(version, goruntime.GOOS),
 	}
 }
 
@@ -65,6 +70,38 @@ func (a *App) GetVersion() map[string]string {
 // Health reports the backend health status.
 func (a *App) Health() string {
 	return "ok"
+}
+
+// CheckForUpdate returns whether a newer version is available. It never
+// fails: network errors fall back to the last known result or "no update".
+func (a *App) CheckForUpdate() *update.Info {
+	return a.updates.Check(a.ctxOrDefault())
+}
+
+// DownloadUpdate starts downloading the latest version in the background.
+// Progress is emitted as update:progress events.
+func (a *App) DownloadUpdate() error {
+	info := a.updates.LastInfo()
+	if info == nil || !info.HasUpdate {
+		return errors.New("no update available")
+	}
+	if !info.SupportsAutoUpdate {
+		return errors.New("auto-update is not supported on this platform")
+	}
+	go func() {
+		err := a.updates.StartDownload(a.ctxOrDefault(), func(p update.Progress) {
+			runtime.EventsEmit(a.ctx, "update:progress", p)
+		})
+		if err != nil {
+			runtime.EventsEmit(a.ctx, "update:progress", update.Progress{Phase: "error", Error: err.Error()})
+		}
+	}()
+	return nil
+}
+
+// ApplyUpdate replaces the running binary and relaunches the app.
+func (a *App) ApplyUpdate() error {
+	return a.updates.Apply()
 }
 
 // ListClusters returns all registered clusters.
