@@ -2,13 +2,13 @@
 set -euo pipefail
 
 # Build and package the Linux release (.tar.gz + .deb).
-# Usage: ./scripts/package-linux.sh [version]   (default: 0.2.0-beta.4)
+# Usage: ./scripts/package-linux.sh [version]   (default: 0.2.0-beta.5)
 # Keep the version in sync with app.go and wails.json info.productVersion.
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-VERSION="${1:-0.2.0-beta.4}"
+VERSION="${1:-0.2.0-beta.5}"
 APP="openk8s-desktop"
 
 echo "==> Building ${APP} ${VERSION} (linux/amd64)"

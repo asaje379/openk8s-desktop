@@ -19,7 +19,7 @@ import (
 )
 
 // version is the application version. Bumped per release (semver + pre-release).
-const version = "0.2.0-beta.4"
+const version = "0.2.0-beta.5"
 
 // App struct
 type App struct {

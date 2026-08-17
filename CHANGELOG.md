@@ -3,6 +3,11 @@
 Toutes les modifications notables du projet sont documentées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et du [Semantic Versioning](https://semver.org/).
 
+## [0.2.0-beta.5] — 2026-08-17
+
+### Correctifs
+- **Icône Linux (lancer d'applications)** : l'entrée `.desktop` n'avait pas de clé `Icon=` et le `.deb`/`.tar.gz` n'installaient aucune icône → icône générique au menu. Ajout d'`Icon=openk8s-desktop`, icône `scripts/linux/openk8s-desktop.png` (256px) installée dans `share/icons/hicolor/256x256/apps/`.
+
 ## [0.2.0-beta.4] — 2026-08-17
 
 ### Correctifs
