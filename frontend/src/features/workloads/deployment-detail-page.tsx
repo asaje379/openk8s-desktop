@@ -1,7 +1,8 @@
 import {lazy, Suspense, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Link, useParams} from 'react-router'
+import {Link, useNavigate, useParams} from 'react-router'
 import {toast} from 'sonner'
+import {RefreshCw, Trash2} from 'lucide-react'
 import type {ColumnDef} from '@tanstack/react-table'
 import {DataTable} from '@/components/tables/data-table'
 import {NoCluster} from '@/components/no-cluster'
@@ -10,13 +11,22 @@ import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {LogViewer} from '@/components/logs/log-viewer'
 import {useAppStore} from '@/stores/app-store'
-import {useDeployment, useDeploymentPods, useDeploymentYAML, useEvents, useScaleDeployment} from '@/hooks/use-k8s'
+import {
+    useApplyDeployment,
+    useDeleteDeployment,
+    useDeployment,
+    useDeploymentPods,
+    useDeploymentYAML,
+    useEvents,
+    useRestartDeployment,
+    useScaleDeployment,
+} from '@/hooks/use-k8s'
 import {podStatusVariant} from '@/lib/status'
 import {cn} from '@/lib/utils'
 import type {DeploymentDetail, EventInfo, PodInfo} from '@/lib/wails'
 
-const YamlViewer = lazy(() =>
-    import('@/components/yaml/yaml-viewer').then((m) => ({default: m.YamlViewer}))
+const YamlEditor = lazy(() =>
+    import('@/components/yaml/yaml-editor').then((m) => ({default: m.YamlEditor}))
 )
 
 type Tab = 'overview' | 'pods' | 'logs' | 'events' | 'yaml'
@@ -159,11 +169,24 @@ function EventsTab({clusterId, namespace, name}: {clusterId: string; namespace: 
 }
 
 function YamlTab({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) {
+    const {t} = useTranslation()
     const {data, isLoading} = useDeploymentYAML(clusterId, namespace, name)
+    const apply = useApplyDeployment()
+
     if (isLoading) return <div className="h-40 animate-pulse rounded-md bg-muted"/>
+
     return (
         <Suspense fallback={<div className="h-64 animate-pulse rounded-md bg-muted"/>}>
-            <YamlViewer value={data ?? ''}/>
+            <YamlEditor
+                initialValue={data ?? ''}
+                isApplying={apply.isPending}
+                onApply={(yaml) =>
+                    apply.mutate(
+                        {clusterId, namespace, name, yaml},
+                        {onSuccess: () => toast.success(t('deployment.applied'))}
+                    )
+                }
+            />
         </Suspense>
     )
 }
@@ -171,15 +194,43 @@ function YamlTab({clusterId, namespace, name}: {clusterId: string; namespace: st
 export function DeploymentDetailPage() {
     const {t} = useTranslation()
     const {namespace = '', name = ''} = useParams()
+    const navigate = useNavigate()
     const activeCluster = useAppStore((s) => s.activeCluster)
     const clusterId = activeCluster?.id ?? null
     const {data: deployment, isLoading, error} = useDeployment(clusterId, namespace, name)
     const {data: pods = []} = useDeploymentPods(clusterId, namespace, name)
+    const restart = useRestartDeployment()
+    const deleteDeployment = useDeleteDeployment()
     const [tab, setTab] = useState<Tab>('overview')
 
     if (!activeCluster) return <NoCluster/>
 
     const containers = deployment?.containers ?? []
+
+    const handleRestart = () => {
+        if (!clusterId) return
+        if (window.confirm(t('deployment.restartConfirm'))) {
+            restart.mutate(
+                {clusterId, namespace, name},
+                {onSuccess: () => toast.success(t('deployment.restarted'))}
+            )
+        }
+    }
+
+    const handleDelete = () => {
+        if (!clusterId) return
+        if (window.confirm(t('deployment.deleteConfirm'))) {
+            deleteDeployment.mutate(
+                {clusterId, namespace, name},
+                {
+                    onSuccess: () => {
+                        toast.success(t('deployment.deleted'))
+                        void navigate('/workloads')
+                    },
+                }
+            )
+        }
+    }
 
     return (
         <div className="flex min-h-full flex-col gap-4 p-8">
@@ -197,23 +248,44 @@ export function DeploymentDetailPage() {
                 </div>
                 <p className="text-sm text-muted-foreground">{namespace}</p>
             </div>
-
-            <div className="flex flex-wrap items-center gap-1 rounded-md border border-border p-1">
-                {TABS.map((tb) => (
-                    <button
-                        key={tb.value}
-                        type="button"
-                        onClick={() => setTab(tb.value)}
-                        className={cn(
-                            'rounded px-2.5 py-1 text-sm transition-colors',
-                            tab === tb.value
-                                ? 'bg-primary/10 text-primary'
-                                : 'text-muted-foreground hover:text-foreground'
-                        )}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-1 rounded-md border border-border p-1">
+                    {TABS.map((tb) => (
+                        <button
+                            key={tb.value}
+                            type="button"
+                            onClick={() => setTab(tb.value)}
+                            className={cn(
+                                'rounded px-2.5 py-1 text-sm transition-colors',
+                                tab === tb.value
+                                    ? 'bg-primary/10 text-primary'
+                                    : 'text-muted-foreground hover:text-foreground'
+                            )}
+                        >
+                            {t(tb.labelKey)}
+                        </button>
+                    ))}
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleRestart}
+                        disabled={restart.isPending}
                     >
-                        {t(tb.labelKey)}
-                    </button>
-                ))}
+                        <RefreshCw className="size-4"/>
+                        {t('deployment.restart')}
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={handleDelete}
+                        disabled={deleteDeployment.isPending}
+                    >
+                        <Trash2 className="size-4"/>
+                        {t('deployment.delete')}
+                    </Button>
+                </div>
             </div>
 
             {isLoading ? (

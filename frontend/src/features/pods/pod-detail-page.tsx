@@ -1,14 +1,16 @@
 import {lazy, Suspense, useState} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Link, useParams} from 'react-router'
+import {Link, useNavigate, useParams} from 'react-router'
+import {toast} from 'sonner'
 import type {ColumnDef} from '@tanstack/react-table'
 import {DataTable} from '@/components/tables/data-table'
 import {NoCluster} from '@/components/no-cluster'
 import {Badge} from '@/components/ui/badge'
+import {Button} from '@/components/ui/button'
 import {LogViewer} from '@/components/logs/log-viewer'
 import {PortForward} from '@/components/portforward/port-forward'
 import {useAppStore} from '@/stores/app-store'
-import {useEvents, usePod, usePodMetrics, usePodYAML} from '@/hooks/use-k8s'
+import {useApplyPod, useDeletePod, useEvents, usePod, usePodMetrics, usePodYAML} from '@/hooks/use-k8s'
 import {podStatusVariant} from '@/lib/status'
 import {cn} from '@/lib/utils'
 import {MetricsUnavailable} from '@/features/metrics/metrics-unavailable'
@@ -18,8 +20,8 @@ import type {ContainerInfo, EventInfo, PodDetail} from '@/lib/wails'
 const TerminalView = lazy(() =>
     import('@/components/terminal/terminal-view').then((m) => ({default: m.TerminalView}))
 )
-const YamlViewer = lazy(() =>
-    import('@/components/yaml/yaml-viewer').then((m) => ({default: m.YamlViewer}))
+const YamlEditor = lazy(() =>
+    import('@/components/yaml/yaml-editor').then((m) => ({default: m.YamlEditor}))
 )
 
 type Tab = 'overview' | 'containers' | 'logs' | 'terminal' | 'events' | 'yaml' | 'portforward' | 'metrics'
@@ -114,11 +116,24 @@ function EventsTab({clusterId, namespace, podName}: {clusterId: string; namespac
 }
 
 function YamlTab({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) {
+    const {t} = useTranslation()
     const {data, isLoading} = usePodYAML(clusterId, namespace, name)
+    const apply = useApplyPod()
+
     if (isLoading) return <div className="h-40 animate-pulse rounded-md bg-muted"/>
+
     return (
         <Suspense fallback={<div className="h-64 animate-pulse rounded-md bg-muted"/>}>
-            <YamlViewer value={data ?? ''}/>
+            <YamlEditor
+                initialValue={data ?? ''}
+                isApplying={apply.isPending}
+                onApply={(yaml) =>
+                    apply.mutate(
+                        {clusterId, namespace, name, yaml},
+                        {onSuccess: () => toast.success(t('pod.applied'))}
+                    )
+                }
+            />
         </Suspense>
     )
 }
@@ -153,14 +168,31 @@ function MetricsTab({clusterId, namespace, podName}: {clusterId: string; namespa
 export function PodDetailPage() {
     const {t} = useTranslation()
     const {namespace = '', name = ''} = useParams()
+    const navigate = useNavigate()
     const activeCluster = useAppStore((s) => s.activeCluster)
     const clusterId = activeCluster?.id ?? null
     const {data: pod, isLoading, error} = usePod(clusterId, namespace, name)
+    const deletePod = useDeletePod()
     const [tab, setTab] = useState<Tab>('overview')
 
     if (!activeCluster) return <NoCluster/>
 
     const containers = (pod?.containers ?? []).map((c) => c.name)
+
+    const handleDelete = () => {
+        if (!clusterId) return
+        if (window.confirm(t('pod.deleteConfirm'))) {
+            deletePod.mutate(
+                {clusterId, namespace, name},
+                {
+                    onSuccess: () => {
+                        toast.success(t('pod.deleted'))
+                        void navigate('/pods')
+                    },
+                }
+            )
+        }
+    }
 
     return (
         <div className="flex min-h-full flex-col gap-4 p-8">
@@ -175,6 +207,9 @@ export function PodDetailPage() {
                     </div>
                     <p className="text-sm text-muted-foreground">{namespace}</p>
                 </div>
+                <Button size="sm" variant="destructive" onClick={handleDelete} disabled={deletePod.isPending}>
+                    {t('pod.delete')}
+                </Button>
             </div>
 
             <div className="flex flex-wrap items-center gap-1 rounded-md border border-border p-1">

@@ -180,7 +180,7 @@ tailwind.config = {
 
         <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary mb-8 animate-fade-in-up">
             <span class="material-symbols-outlined fill text-[16px]">stars</span>
-            <span class="text-label-caps uppercase tracking-wider">v0.2.0-beta.2 is now available</span>
+            <span class="text-label-caps uppercase tracking-wider">v0.2.0-beta.3 is now available</span>
         </div>
 
         <h1 class="text-headline-lg md:text-[56px] md:leading-[64px] font-extrabold text-on-surface max-w-4xl mx-auto mb-6 tracking-tight text-balance animate-fade-in-up" style="animation-delay:120ms">
@@ -397,13 +397,13 @@ tailwind.config = {
                 </div>
                 <div class="flex items-start gap-2 mt-4 text-body-md text-on-surface-variant">
                     <span class="material-symbols-outlined text-tertiary text-[18px]">info</span>
-                    <p class="max-w-3xl">Prefer manual installs? Every artifact is also published on <a class="text-primary hover:underline" href="https://github.com/asaje379/openk8s-desktop/releases" rel="noopener noreferrer" target="_blank">GitHub Releases</a>. Review the installer source any time: <code class="bg-surface px-1.5 py-0.5 rounded font-mono text-code-sm text-primary">scripts/install.sh</code>.</p>
+                    <p class="max-w-3xl">The one-command installer targets Linux and macOS (POSIX shell). On Windows, download the <a class="text-primary hover:underline" href="https://github.com/asaje379/openk8s-desktop/releases/latest/download/openk8s-desktop.exe" rel="noopener noreferrer" target="_blank">.exe installer</a> directly. Every artifact is also published on <a class="text-primary hover:underline" href="https://github.com/asaje379/openk8s-desktop/releases" rel="noopener noreferrer" target="_blank">GitHub Releases</a>. Review the installer source any time: <code class="bg-surface px-1.5 py-0.5 rounded font-mono text-code-sm text-primary">scripts/install.sh</code>.</p>
                 </div>
             </div>
 
             <!-- Platform cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <a href="https://github.com/asaje379/openk8s-desktop/releases" rel="noopener noreferrer" target="_blank" class="group bg-surface-container-low rounded-2xl border border-outline-variant p-8 flex flex-col hover:border-primary/50 hover:-translate-y-1 transition-all reveal">
+                <a href="https://github.com/asaje379/openk8s-desktop/releases" data-download="deb" rel="noopener noreferrer" target="_blank" class="group bg-surface-container-low rounded-2xl border border-outline-variant p-8 flex flex-col hover:border-primary/50 hover:-translate-y-1 transition-all reveal">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                             <span class="material-symbols-outlined text-primary text-[24px]">terminal</span>
@@ -415,29 +415,31 @@ tailwind.config = {
                     </div>
                     <p class="text-body-md text-on-surface-variant mb-6">Debian/Ubuntu packages and portable tarballs for x64.</p>
                     <div class="mt-auto flex items-center gap-2 text-body-md font-semibold text-primary">
-                        Get Linux build
+                        <span class="material-symbols-outlined text-[18px]">download</span>
+                        Download .deb
                         <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
                     </div>
                 </a>
 
-                <a href="https://github.com/asaje379/openk8s-desktop/releases" rel="noopener noreferrer" target="_blank" class="group bg-surface-container-low rounded-2xl border border-outline-variant p-8 flex flex-col hover:border-primary/50 hover:-translate-y-1 transition-all reveal" style="--reveal-delay:100ms">
+                <a href="https://github.com/asaje379/openk8s-desktop/releases/latest/download/openk8s-desktop-macos.zip" data-download="zip" rel="noopener noreferrer" target="_blank" class="group bg-surface-container-low rounded-2xl border border-outline-variant p-8 flex flex-col hover:border-secondary/50 hover:-translate-y-1 transition-all reveal" style="--reveal-delay:100ms">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="w-11 h-11 rounded-lg bg-secondary/10 flex items-center justify-center border border-secondary/20">
                             <span class="material-symbols-outlined text-secondary text-[24px]">laptop_mac</span>
                         </div>
                         <div>
                             <h3 class="text-headline-sm font-bold text-on-surface">macOS</h3>
-                            <span class="text-code-sm font-mono text-outline">universal .zip</span>
+                            <span class="text-code-sm font-mono text-outline">universal .dmg</span>
                         </div>
                     </div>
                     <p class="text-body-md text-on-surface-variant mb-6">One build for Intel and Apple Silicon. Native feel, minimal footprint.</p>
-                    <div class="mt-auto flex items-center gap-2 text-body-md font-semibold text-primary">
-                        Get macOS build
+                    <div class="mt-auto flex items-center gap-2 text-body-md font-semibold text-secondary">
+                        <span class="material-symbols-outlined text-[18px]">download</span>
+                        Download .dmg
                         <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
                     </div>
                 </a>
 
-                <a href="https://github.com/asaje379/openk8s-desktop/releases" rel="noopener noreferrer" target="_blank" class="group bg-surface-container-low rounded-2xl border border-outline-variant p-8 flex flex-col hover:border-primary/50 hover:-translate-y-1 transition-all reveal" style="--reveal-delay:200ms">
+                <a href="https://github.com/asaje379/openk8s-desktop/releases/latest/download/openk8s-desktop.exe" data-download="exe" rel="noopener noreferrer" target="_blank" class="group bg-surface-container-low rounded-2xl border border-outline-variant p-8 flex flex-col hover:border-tertiary/50 hover:-translate-y-1 transition-all reveal" style="--reveal-delay:200ms">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="w-11 h-11 rounded-lg bg-tertiary/10 flex items-center justify-center border border-tertiary/20">
                             <span class="material-symbols-outlined text-tertiary text-[24px]">desktop_windows</span>
@@ -447,9 +449,10 @@ tailwind.config = {
                             <span class="text-code-sm font-mono text-outline">NSIS .exe</span>
                         </div>
                     </div>
-                    <p class="text-body-md text-on-surface-variant mb-6">A clean NSIS installer for x64, straight from the source.</p>
-                    <div class="mt-auto flex items-center gap-2 text-body-md font-semibold text-primary">
-                        Get Windows build
+                    <p class="text-body-md text-on-surface-variant mb-6">A clean NSIS installer for x64, straight from the source. No shell required — download and run.</p>
+                    <div class="mt-auto flex items-center gap-2 text-body-md font-semibold text-tertiary">
+                        <span class="material-symbols-outlined text-[18px]">download</span>
+                        Download .exe
                         <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
                     </div>
                 </a>
@@ -497,7 +500,7 @@ tailwind.config = {
         <div class="flex items-center gap-3">
             <img alt="OpenK8s Desktop Logo" class="h-6 w-auto object-contain opacity-90" src="../logos/icon_only_dark.png"/>
             <span class="text-body-md font-bold text-on-surface-variant">OpenK8s Desktop</span>
-            <span class="text-code-sm font-mono text-outline">v0.2.0-beta.2</span>
+            <span class="text-code-sm font-mono text-outline">v0.2.0-beta.3</span>
         </div>
         <div class="flex items-center gap-6">
             <a class="text-body-md text-on-surface-variant hover:text-primary transition-colors" href="https://github.com/asaje379/openk8s-desktop" rel="noopener noreferrer" target="_blank">Documentation</a>
@@ -572,6 +575,35 @@ tailwind.config = {
         );
         revealEls.forEach((el) => observer.observe(el));
     }
+
+    // Point the platform cards at the exact assets of the latest release.
+    // The .deb name embeds the version, so it cannot be a static URL — resolve
+    // it from the GitHub API and fall back to the static links on failure.
+    (async () => {
+        const card = (kind) => document.querySelector(`[data-download="${kind}"]`);
+        const deb = card('deb');
+        const zip = card('zip');
+        const exe = card('exe');
+        if (!deb && !zip && !exe) return;
+        try {
+            const res = await fetch('https://api.github.com/repos/asaje379/openk8s-desktop/releases/latest');
+            if (!res.ok) throw new Error('latest release not found');
+            const release = await res.json();
+            const assets = release.assets || [];
+            const urlFor = (pattern) => {
+                const asset = assets.find((a) => pattern.test(a.name));
+                return asset ? asset.browser_download_url : null;
+            };
+            const debUrl = urlFor(/\.deb$/) || urlFor(/linux-amd64\.tar\.gz$/);
+            const zipUrl = urlFor(/\.dmg$/) || urlFor(/\.zip$/);
+            const exeUrl = urlFor(/\.exe$/);
+            if (debUrl && deb) deb.href = debUrl;
+            if (zipUrl && zip) zip.href = zipUrl;
+            if (exeUrl && exe) exe.href = exeUrl;
+        } catch (e) {
+            // Keep the static fallback URLs.
+        }
+    })();
 </script>
 </body>
 </html>

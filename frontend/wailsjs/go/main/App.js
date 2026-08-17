@@ -14,8 +14,24 @@ export function ApplyConfigMap(arg1, arg2, arg3, arg4) {
   return window['go']['main']['App']['ApplyConfigMap'](arg1, arg2, arg3, arg4);
 }
 
+export function ApplyDaemonSet(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['ApplyDaemonSet'](arg1, arg2, arg3, arg4);
+}
+
+export function ApplyDeployment(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['ApplyDeployment'](arg1, arg2, arg3, arg4);
+}
+
+export function ApplyPod(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['ApplyPod'](arg1, arg2, arg3, arg4);
+}
+
 export function ApplySecret(arg1, arg2, arg3, arg4) {
   return window['go']['main']['App']['ApplySecret'](arg1, arg2, arg3, arg4);
+}
+
+export function ApplyStatefulSet(arg1, arg2, arg3, arg4) {
+  return window['go']['main']['App']['ApplyStatefulSet'](arg1, arg2, arg3, arg4);
 }
 
 export function CloseExec(arg1) {
@@ -26,8 +42,24 @@ export function DeleteConfigMap(arg1, arg2, arg3) {
   return window['go']['main']['App']['DeleteConfigMap'](arg1, arg2, arg3);
 }
 
+export function DeleteDaemonSet(arg1, arg2, arg3) {
+  return window['go']['main']['App']['DeleteDaemonSet'](arg1, arg2, arg3);
+}
+
+export function DeleteDeployment(arg1, arg2, arg3) {
+  return window['go']['main']['App']['DeleteDeployment'](arg1, arg2, arg3);
+}
+
+export function DeletePod(arg1, arg2, arg3) {
+  return window['go']['main']['App']['DeletePod'](arg1, arg2, arg3);
+}
+
 export function DeleteSecret(arg1, arg2, arg3) {
   return window['go']['main']['App']['DeleteSecret'](arg1, arg2, arg3);
+}
+
+export function DeleteStatefulSet(arg1, arg2, arg3) {
+  return window['go']['main']['App']['DeleteStatefulSet'](arg1, arg2, arg3);
 }
 
 export function GetClusterMetrics(arg1) {
@@ -172,6 +204,18 @@ export function RemoveNamespace(arg1, arg2) {
 
 export function ResizeExec(arg1, arg2, arg3) {
   return window['go']['main']['App']['ResizeExec'](arg1, arg2, arg3);
+}
+
+export function RestartDaemonSet(arg1, arg2, arg3) {
+  return window['go']['main']['App']['RestartDaemonSet'](arg1, arg2, arg3);
+}
+
+export function RestartDeployment(arg1, arg2, arg3) {
+  return window['go']['main']['App']['RestartDeployment'](arg1, arg2, arg3);
+}
+
+export function RestartStatefulSet(arg1, arg2, arg3) {
+  return window['go']['main']['App']['RestartStatefulSet'](arg1, arg2, arg3);
 }
 
 export function ScaleDeployment(arg1, arg2, arg3, arg4) {

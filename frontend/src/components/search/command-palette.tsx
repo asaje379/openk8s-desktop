@@ -60,7 +60,7 @@ export function CommandPalette() {
     const {data = []} = useQuery({
         queryKey: ['search', activeCluster?.id ?? null, activeNamespace ?? '', query],
         queryFn: () => SearchResources(activeCluster?.id ?? '', activeNamespace ?? '', query),
-        enabled: searchOpen && !!activeCluster && query.trim().length >= 2,
+        enabled: searchOpen && !!activeCluster && query.trim().length >= 1,
         retry: false,
         staleTime: 0,
     })
@@ -97,7 +97,7 @@ export function CommandPalette() {
                         <p className="px-2 py-6 text-center text-sm text-muted-foreground">
                             {t('search.noCluster')}
                         </p>
-                    ) : query.trim().length < 2 ? (
+                    ) : query.trim().length < 1 ? (
                         <p className="px-2 py-6 text-center text-sm text-muted-foreground">
                             {t('search.hint')}
                         </p>

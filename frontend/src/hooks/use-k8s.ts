@@ -2,9 +2,17 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {
     AddNamespace,
     ApplyConfigMap,
+    ApplyDaemonSet,
+    ApplyDeployment,
+    ApplyPod,
     ApplySecret,
+    ApplyStatefulSet,
     DeleteConfigMap,
+    DeleteDaemonSet,
+    DeleteDeployment,
+    DeletePod,
     DeleteSecret,
+    DeleteStatefulSet,
     GetClusterMetrics,
     GetConfigMap,
     GetConfigMapYAML,
@@ -32,6 +40,9 @@ import {
     ListServices,
     ListStatefulSets,
     RemoveNamespace,
+    RestartDaemonSet,
+    RestartDeployment,
+    RestartStatefulSet,
     ScaleDeployment,
 } from '@/lib/wails'
 
@@ -198,6 +209,39 @@ export function usePodYAML(clusterId: string | null, namespace: string, name: st
     })
 }
 
+export function useApplyPod() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({
+            clusterId,
+            namespace,
+            name,
+            yaml,
+        }: {
+            clusterId: string
+            namespace: string
+            name: string
+            yaml: string
+        }) => ApplyPod(clusterId, namespace, name, yaml),
+        onSuccess: (_data, {clusterId, namespace, name}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'pod', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'pod-yaml', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'pods']})
+        },
+    })
+}
+
+export function useDeletePod() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) =>
+            DeletePod(clusterId, namespace, name),
+        onSuccess: (_data, {clusterId}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'pods']})
+        },
+    })
+}
+
 export function useEvents(clusterId: string | null, namespace: string) {
     return useQuery({
         queryKey: ['k8s', clusterId, 'events', namespace],
@@ -250,6 +294,136 @@ export function useScaleDeployment() {
         }) => ScaleDeployment(clusterId, namespace, name, replicas),
         onSuccess: (_data, {clusterId, namespace, name}) => {
             queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'deployment', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
+        },
+    })
+}
+
+export function useApplyDeployment() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({
+            clusterId,
+            namespace,
+            name,
+            yaml,
+        }: {
+            clusterId: string
+            namespace: string
+            name: string
+            yaml: string
+        }) => ApplyDeployment(clusterId, namespace, name, yaml),
+        onSuccess: (_data, {clusterId, namespace, name}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'deployment', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'deployment-yaml', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
+        },
+    })
+}
+
+export function useDeleteDeployment() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) =>
+            DeleteDeployment(clusterId, namespace, name),
+        onSuccess: (_data, {clusterId}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
+        },
+    })
+}
+
+export function useRestartDeployment() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) =>
+            RestartDeployment(clusterId, namespace, name),
+        onSuccess: (_data, {clusterId, namespace, name}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'deployment', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'deployment-yaml', namespace, name]})
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
+        },
+    })
+}
+
+export function useApplyStatefulSet() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({
+            clusterId,
+            namespace,
+            name,
+            yaml,
+        }: {
+            clusterId: string
+            namespace: string
+            name: string
+            yaml: string
+        }) => ApplyStatefulSet(clusterId, namespace, name, yaml),
+        onSuccess: (_data, {clusterId}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
+        },
+    })
+}
+
+export function useDeleteStatefulSet() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) =>
+            DeleteStatefulSet(clusterId, namespace, name),
+        onSuccess: (_data, {clusterId}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
+        },
+    })
+}
+
+export function useRestartStatefulSet() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) =>
+            RestartStatefulSet(clusterId, namespace, name),
+        onSuccess: (_data, {clusterId}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
+        },
+    })
+}
+
+export function useApplyDaemonSet() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({
+            clusterId,
+            namespace,
+            name,
+            yaml,
+        }: {
+            clusterId: string
+            namespace: string
+            name: string
+            yaml: string
+        }) => ApplyDaemonSet(clusterId, namespace, name, yaml),
+        onSuccess: (_data, {clusterId}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
+        },
+    })
+}
+
+export function useDeleteDaemonSet() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) =>
+            DeleteDaemonSet(clusterId, namespace, name),
+        onSuccess: (_data, {clusterId}) => {
+            queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
+        },
+    })
+}
+
+export function useRestartDaemonSet() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: ({clusterId, namespace, name}: {clusterId: string; namespace: string; name: string}) =>
+            RestartDaemonSet(clusterId, namespace, name),
+        onSuccess: (_data, {clusterId}) => {
             queryClient.invalidateQueries({queryKey: ['k8s', clusterId, 'workloads']})
         },
     })

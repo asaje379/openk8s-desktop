@@ -1356,7 +1356,9 @@ Le MVP sera considéré comme réussi si, depuis l'application desktop, je peux 
 * [ ] voir CPU ;
 * [ ] voir mémoire ;
 * [ ] voir ses événements ;
-* [ ] voir son YAML.
+* [ ] voir son YAML ;
+* [ ] éditer son YAML ;
+* [ ] supprimer le Pod.
 
 ### Workloads
 
@@ -1365,6 +1367,7 @@ Le MVP sera considéré comme réussi si, depuis l'application desktop, je peux 
 * [ ] scale ;
 * [ ] restart ;
 * [ ] supprimer ;
+* [ ] éditer via YAML ;
 * [ ] consulter le YAML ;
 * [ ] consulter les Events.
 

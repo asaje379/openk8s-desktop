@@ -9,13 +9,29 @@ export function AddNamespace(arg1:string,arg2:string):Promise<Array<string>>;
 
 export function ApplyConfigMap(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
 
+export function ApplyDaemonSet(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+
+export function ApplyDeployment(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+
+export function ApplyPod(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+
 export function ApplySecret(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+
+export function ApplyStatefulSet(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
 
 export function CloseExec(arg1:string):Promise<void>;
 
 export function DeleteConfigMap(arg1:string,arg2:string,arg3:string):Promise<void>;
 
+export function DeleteDaemonSet(arg1:string,arg2:string,arg3:string):Promise<void>;
+
+export function DeleteDeployment(arg1:string,arg2:string,arg3:string):Promise<void>;
+
+export function DeletePod(arg1:string,arg2:string,arg3:string):Promise<void>;
+
 export function DeleteSecret(arg1:string,arg2:string,arg3:string):Promise<void>;
+
+export function DeleteStatefulSet(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function GetClusterMetrics(arg1:string):Promise<k8s.ClusterMetrics>;
 
@@ -88,6 +104,12 @@ export function RemoveCluster(arg1:string):Promise<void>;
 export function RemoveNamespace(arg1:string,arg2:string):Promise<Array<string>>;
 
 export function ResizeExec(arg1:string,arg2:number,arg3:number):Promise<void>;
+
+export function RestartDaemonSet(arg1:string,arg2:string,arg3:string):Promise<void>;
+
+export function RestartDeployment(arg1:string,arg2:string,arg3:string):Promise<void>;
+
+export function RestartStatefulSet(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function ScaleDeployment(arg1:string,arg2:string,arg3:string,arg4:number):Promise<void>;
 

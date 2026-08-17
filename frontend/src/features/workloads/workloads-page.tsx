@@ -1,11 +1,15 @@
 import {useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Link} from 'react-router'
+import {toast} from 'sonner'
+import {RefreshCw, Trash2} from 'lucide-react'
 import {useQuery} from '@tanstack/react-query'
 import type {ColumnDef} from '@tanstack/react-table'
 import {DataTable} from '@/components/tables/data-table'
 import {ResourcePage} from '@/components/resource-page'
 import {NoCluster} from '@/components/no-cluster'
+import {Button} from '@/components/ui/button'
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip'
 import {useAppStore} from '@/stores/app-store'
 import {
     ListCronJobs,
@@ -15,6 +19,14 @@ import {
     ListStatefulSets,
 } from '@/lib/wails'
 import type {CronJobInfo, JobInfo, WorkloadInfo} from '@/lib/wails'
+import {
+    useDeleteDaemonSet,
+    useDeleteDeployment,
+    useDeleteStatefulSet,
+    useRestartDaemonSet,
+    useRestartDeployment,
+    useRestartStatefulSet,
+} from '@/hooks/use-k8s'
 import {cn} from '@/lib/utils'
 
 type WorkloadKind = 'deployments' | 'statefulsets' | 'daemonsets' | 'jobs' | 'cronjobs'
@@ -48,6 +60,56 @@ async function fetchWorkloads(
     }
 }
 
+function WorkloadActions({
+    workload,
+    restartPending,
+    deletePending,
+    onRestart,
+    onDelete,
+}: {
+    workload: WorkloadInfo
+    restartPending: boolean
+    deletePending: boolean
+    onRestart: (w: WorkloadInfo) => void
+    onDelete: (w: WorkloadInfo) => void
+}) {
+    const {t} = useTranslation()
+    return (
+        <div className="flex items-center justify-end gap-1">
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="size-7"
+                        disabled={restartPending}
+                        onClick={() => onRestart(workload)}
+                    >
+                        <RefreshCw className="size-3.5"/>
+                        <span className="sr-only">{t('deployment.restart')}</span>
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t('deployment.restart')}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="size-7 text-destructive hover:text-destructive"
+                        disabled={deletePending}
+                        onClick={() => onDelete(workload)}
+                    >
+                        <Trash2 className="size-3.5"/>
+                        <span className="sr-only">{t('deployment.delete')}</span>
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t('deployment.delete')}</TooltipContent>
+            </Tooltip>
+        </div>
+    )
+}
+
 export function WorkloadsPage() {
     const {t} = useTranslation()
     const activeCluster = useAppStore((s) => s.activeCluster)
@@ -56,12 +118,58 @@ export function WorkloadsPage() {
 
     const clusterId = activeCluster?.id ?? null
     const namespace = activeNamespace ?? ''
+    const restartDeployment = useRestartDeployment()
+    const deleteDeployment = useDeleteDeployment()
+    const restartStatefulSet = useRestartStatefulSet()
+    const deleteStatefulSet = useDeleteStatefulSet()
+    const restartDaemonSet = useRestartDaemonSet()
+    const deleteDaemonSet = useDeleteDaemonSet()
     const {data, isLoading, error, refetch} = useQuery({
         queryKey: ['k8s', clusterId, 'workloads', kind, namespace],
         queryFn: () => fetchWorkloads(kind, clusterId as string, namespace),
         enabled: !!clusterId,
         retry: false,
     })
+
+    const handleRestart = (w: WorkloadInfo) => {
+        if (!clusterId) return
+        if (!window.confirm(t('deployment.restartConfirm'))) return
+        const opts = {
+            onSuccess: () => toast.success(t('deployment.restarted')),
+            onError: (e: unknown) => toast.error(String(e)),
+        }
+        switch (w.kind) {
+            case 'Deployment':
+                restartDeployment.mutate({clusterId, namespace: w.namespace, name: w.name}, opts)
+                break
+            case 'StatefulSet':
+                restartStatefulSet.mutate({clusterId, namespace: w.namespace, name: w.name}, opts)
+                break
+            case 'DaemonSet':
+                restartDaemonSet.mutate({clusterId, namespace: w.namespace, name: w.name}, opts)
+                break
+        }
+    }
+
+    const handleDelete = (w: WorkloadInfo) => {
+        if (!clusterId) return
+        if (!window.confirm(t('deployment.deleteConfirm'))) return
+        const opts = {
+            onSuccess: () => toast.success(t('deployment.deleted')),
+            onError: (e: unknown) => toast.error(String(e)),
+        }
+        switch (w.kind) {
+            case 'Deployment':
+                deleteDeployment.mutate({clusterId, namespace: w.namespace, name: w.name}, opts)
+                break
+            case 'StatefulSet':
+                deleteStatefulSet.mutate({clusterId, namespace: w.namespace, name: w.name}, opts)
+                break
+            case 'DaemonSet':
+                deleteDaemonSet.mutate({clusterId, namespace: w.namespace, name: w.name}, opts)
+                break
+        }
+    }
 
     const workloadColumns = useMemo<ColumnDef<WorkloadInfo>[]>(
         () => [
@@ -87,8 +195,29 @@ export function WorkloadsPage() {
             {accessorKey: 'available', header: t('resources.available')},
             {accessorKey: 'image', header: t('resources.image')},
             {accessorKey: 'age', header: t('resources.age')},
+            {
+                accessorKey: 'actions',
+                header: '',
+                cell: ({row}) => (
+                    <WorkloadActions
+                        workload={row.original}
+                        restartPending={
+                            restartDeployment.isPending ||
+                            restartStatefulSet.isPending ||
+                            restartDaemonSet.isPending
+                        }
+                        deletePending={
+                            deleteDeployment.isPending ||
+                            deleteStatefulSet.isPending ||
+                            deleteDaemonSet.isPending
+                        }
+                        onRestart={handleRestart}
+                        onDelete={handleDelete}
+                    />
+                ),
+            },
         ],
-        [t]
+        [t, handleRestart, handleDelete, restartDeployment.isPending, restartStatefulSet.isPending, restartDaemonSet.isPending, deleteDeployment.isPending, deleteStatefulSet.isPending, deleteDaemonSet.isPending]
     )
 
     const jobColumns = useMemo<ColumnDef<JobInfo>[]>(

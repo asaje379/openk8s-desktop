@@ -3,6 +3,19 @@
 Toutes les modifications notables du projet sont documentées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et du [Semantic Versioning](https://semver.org/).
 
+## [0.2.0-beta.3] — 2026-08-17
+
+### Ajouts
+- **Dashboard** : refonte avec statistiques en temps réel des ressources (pods, deployments, statefulsets, daemonsets, services, ingress, nœuds, namespaces), cartes cliquables vers les pages correspondantes ; compteur namespaces avec fallback sur le total stocké en base quand le listing cluster est interdit (RBAC). La version de l'app est désormais affichée subtilement dans le footer de la sidebar.
+- **Édition des ressources** : Pods (édition YAML + apply/delete), Deployments/StatefulSets/DaemonSets (édition YAML + apply/delete + restart via patch `restartedAt`), actions restart/delete sur la liste Workloads.
+- **Recherche globale corrigée** : recherche dans **tous les namespaces** avec fallback RBAC sur le namespace scopé, préfixe minimal réduit à 1 caractère.
+- **Landing page** : boutons de téléchargement directs résolus via l'API GitHub (`.deb` pour Linux, `.zip`/`.dmg` pour macOS, `.exe` pour Windows).
+- **Packaging macOS** : build d'un `.dmg` en étapes dans la CI (contourne l'OOM de `hdiutil create -srcfolder` sur les runners GitHub), en complément du `.zip`.
+
+### Technique
+- Backend : `internal/k8s/mutations.go` (apply/delete/restart génériques par kind) + tests, DTOs, méthodes bindées `app.go`.
+- Workflow `release.yml` : job macos en deux artefacts (`.dmg` + `.zip`), YAML validé.
+
 ## [0.2.0-beta.2] — 2026-08-15
 
 ### Ajouts

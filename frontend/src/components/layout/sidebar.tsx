@@ -12,9 +12,11 @@ import {
     Server,
     type LucideIcon,
 } from 'lucide-react'
+import {useQuery} from '@tanstack/react-query'
 import {NavLink} from 'react-router'
 import {useTranslation} from 'react-i18next'
 import {BrandLogo} from '@/components/brand-logo'
+import {GetVersion} from '@/lib/wails'
 import {cn} from '@/lib/utils'
 
 interface NavItem {
@@ -39,6 +41,11 @@ const navItems: NavItem[] = [
 
 export function Sidebar() {
     const {t} = useTranslation()
+    const {data: version} = useQuery({
+        queryKey: ['version'],
+        queryFn: () => GetVersion(),
+        retry: false,
+    })
 
     return (
         <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-card">
@@ -68,6 +75,11 @@ export function Sidebar() {
                     </NavLink>
                 ))}
             </nav>
+            <div className="border-t border-border px-4 py-2">
+                <p className="text-[11px] text-muted-foreground">
+                    {version?.version ? `v${version.version}` : ''}
+                </p>
+            </div>
         </aside>
     )
 }

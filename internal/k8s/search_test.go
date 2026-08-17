@@ -39,14 +39,44 @@ func TestSearchResources(t *testing.T) {
 	}
 }
 
-func TestSearchResourcesShortQuery(t *testing.T) {
+func TestSearchResourcesEmptyQuery(t *testing.T) {
 	client := fake.NewSimpleClientset()
-	results, err := SearchResources(context.Background(), client, "default", "a")
+	results, err := SearchResources(context.Background(), client, "default", "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(results) != 0 {
-		t.Fatalf("expected no results for short query, got %d", len(results))
+		t.Fatalf("expected no results for empty query, got %d", len(results))
+	}
+}
+
+// Search must not be limited to the given namespace: resources in other
+// namespaces are found too (global search).
+func TestSearchResourcesAcrossNamespaces(t *testing.T) {
+	client := fake.NewSimpleClientset(
+		&corev1.Pod{ObjectMeta: metav1.ObjectMeta{Name: "api-1", Namespace: "default"}},
+		&corev1.Pod{ObjectMeta: metav1.ObjectMeta{Name: "api-2", Namespace: "production"}},
+	)
+	results, err := SearchResources(context.Background(), client, "default", "api")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(results) != 2 {
+		t.Fatalf("expected both namespaces matched, got %d: %+v", len(results), results)
+	}
+}
+
+// Search must match partial names, not only full ones.
+func TestSearchResourcesPartialName(t *testing.T) {
+	client := fake.NewSimpleClientset(
+		&corev1.Pod{ObjectMeta: metav1.ObjectMeta{Name: "myapp-api-7f9b", Namespace: "default"}},
+	)
+	results, err := SearchResources(context.Background(), client, "default", "api")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(results) != 1 || results[0].Name != "myapp-api-7f9b" {
+		t.Fatalf("expected partial match, got %+v", results)
 	}
 }
 

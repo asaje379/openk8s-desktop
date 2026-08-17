@@ -19,7 +19,7 @@ import (
 )
 
 // version is the application version. Bumped per release (semver + pre-release).
-const version = "0.2.0-beta.2"
+const version = "0.2.0-beta.3"
 
 // App struct
 type App struct {
@@ -387,6 +387,24 @@ func (a *App) GetPodYAML(clusterID string, namespace string, name string) (strin
 	return k8s.GetPodYAML(a.ctxOrDefault(), client, namespace, name)
 }
 
+// ApplyPod creates or updates a pod from a YAML manifest.
+func (a *App) ApplyPod(clusterID string, namespace string, name string, yaml string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.ApplyPod(a.ctxOrDefault(), client, namespace, name, yaml)
+}
+
+// DeletePod deletes a pod.
+func (a *App) DeletePod(clusterID string, namespace string, name string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.DeletePod(a.ctxOrDefault(), client, namespace, name)
+}
+
 // ListEvents returns the events of a namespace.
 func (a *App) ListEvents(clusterID string, namespace string) ([]k8s.EventInfo, error) {
 	client, err := a.clusters.Client(clusterID)
@@ -446,6 +464,87 @@ func (a *App) ScaleDeployment(clusterID string, namespace string, name string, r
 		return err
 	}
 	return k8s.ScaleDeployment(a.ctxOrDefault(), client, namespace, name, replicas)
+}
+
+// ApplyDeployment creates or updates a deployment from a YAML manifest.
+func (a *App) ApplyDeployment(clusterID string, namespace string, name string, yaml string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.ApplyDeployment(a.ctxOrDefault(), client, namespace, name, yaml)
+}
+
+// DeleteDeployment deletes a deployment.
+func (a *App) DeleteDeployment(clusterID string, namespace string, name string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.DeleteDeployment(a.ctxOrDefault(), client, namespace, name)
+}
+
+// RestartDeployment triggers a rolling restart of a deployment.
+func (a *App) RestartDeployment(clusterID string, namespace string, name string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.RestartDeployment(a.ctxOrDefault(), client, namespace, name)
+}
+
+// ApplyStatefulSet creates or updates a statefulset from a YAML manifest.
+func (a *App) ApplyStatefulSet(clusterID string, namespace string, name string, yaml string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.ApplyStatefulSet(a.ctxOrDefault(), client, namespace, name, yaml)
+}
+
+// DeleteStatefulSet deletes a statefulset.
+func (a *App) DeleteStatefulSet(clusterID string, namespace string, name string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.DeleteStatefulSet(a.ctxOrDefault(), client, namespace, name)
+}
+
+// RestartStatefulSet triggers a rolling restart of a statefulset.
+func (a *App) RestartStatefulSet(clusterID string, namespace string, name string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.RestartStatefulSet(a.ctxOrDefault(), client, namespace, name)
+}
+
+// ApplyDaemonSet creates or updates a daemonset from a YAML manifest.
+func (a *App) ApplyDaemonSet(clusterID string, namespace string, name string, yaml string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.ApplyDaemonSet(a.ctxOrDefault(), client, namespace, name, yaml)
+}
+
+// DeleteDaemonSet deletes a daemonset.
+func (a *App) DeleteDaemonSet(clusterID string, namespace string, name string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.DeleteDaemonSet(a.ctxOrDefault(), client, namespace, name)
+}
+
+// RestartDaemonSet triggers a rolling restart of a daemonset.
+func (a *App) RestartDaemonSet(clusterID string, namespace string, name string) error {
+	client, err := a.clusters.Client(clusterID)
+	if err != nil {
+		return err
+	}
+	return k8s.RestartDaemonSet(a.ctxOrDefault(), client, namespace, name)
 }
 
 // StartDeploymentLogStream streams aggregated logs for all pods of a deployment.

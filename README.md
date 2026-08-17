@@ -2,9 +2,9 @@
 
 **A fast, local-first Kubernetes desktop client.** OpenK8s Desktop is a free, open-source alternative to Lens for managing multiple Kubernetes clusters from a modern desktop app — with native performance and a tiny resource footprint.
 
-![Version](https://img.shields.io/badge/version-0.2.0--beta.2-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)
+![Version](https://img.shields.io/badge/version-0.2.0--beta.3-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)
 
-> **Status: Beta (`v0.2.0-beta.2`)** — the MVP is complete and functional. Installers are published on [GitHub Releases](https://github.com/asaje379/openk8s-desktop/releases).
+> **Status: Beta (`v0.2.0-beta.3`)** — the MVP is complete and functional. Installers are published on [GitHub Releases](https://github.com/asaje379/openk8s-desktop/releases).
 
 ---
 
@@ -21,7 +21,7 @@ Or grab your platform's installer directly from [GitHub Releases](https://github
 | Platform | Format |
 |---|---|
 | **Linux** | `.deb`, `.tar.gz` |
-| **macOS** | Universal `.zip` (Intel + Apple Silicon) |
+| **macOS** | Universal `.dmg` + `.zip` (Intel + Apple Silicon) |
 | **Windows** | NSIS `.exe` |
 
 > All binaries are built automatically from the source code via GitHub Actions on every release tag. Review the code or report issues on the [repository](https://github.com/asaje379/openk8s-desktop).

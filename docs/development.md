@@ -32,7 +32,7 @@ La version est définie à **deux endroits** à synchroniser lors d'une release 
 |---|---|---|
 | Linux | `wails build -platform linux/amd64` | puis `scripts/package-linux.sh` (`.tar.gz` + `.deb`) |
 | Windows | `wails build -platform windows/amd64 -nsis` | nécessite `makensis` (NSIS) ; cross-compile depuis Linux OK |
-| macOS | `wails build -platform darwin/universal` | **sur macOS uniquement** (pas de cross-compile) ; produit un `.app` (universel), distribuer en `.zip` (`ditto -c -k --sequesterRsrc --keepParent build/bin/*.app build/bin/openk8s-desktop-macos.zip`) |
+| macOS | `wails build -platform darwin/universal` | **sur macOS uniquement** (pas de cross-compile) ; produit un `.app` (universel), distribuer en `.dmg` + `.zip` (`ditto -c -k --sequesterRsrc --keepParent build/bin/*.app build/bin/openk8s-desktop-macos.zip`) |
 
 **Wails v2.14 ne package pas Linux nativement** (AppImage/deb/rpm sont natifs de Wails v3). Le `.deb` est assemblé par `scripts/package-linux.sh` via `dpkg-deb`.
 
@@ -58,6 +58,7 @@ git tag v0.2.0-beta.1 && git push origin v0.2.0-beta.1
 4. **Wails 2.14 `EventsOn`** : retourne une **fonction de désinscription** (pas de `EventsOff` avec callback).
 5. **Slices Go** : toujours `make([]T, 0)` (jamais `nil`) pour que le JSON soit `[]` et non `null`.
 6. **Timeout** : pas de `rest.Config.Timeout` global (casse les flux). Utiliser `k8s.withTimeout` pour les requêtes ponctuelles uniquement.
+7. **DMG sur CI** : `hdiutil create -srcfolder … -format UDZO` OOM sur les runners macOS GitHub Actions (volume tamponné en RAM). Construire le `.dmg` **en étapes** : `hdiutil create -size <SIZE>m` (pré-allocation), `attach`, copie du `.app`, `detach`, puis `hdiutil convert -format UDZO` (streaming). Voir le job `macos` de `release.yml`.
 
 ## Ajouter une méthode bindée (backend → frontend)
 

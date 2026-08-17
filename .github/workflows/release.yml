@@ -58,9 +58,22 @@ jobs:
       - name: Build & package
         run: |
           wails build -platform darwin/universal -trimpath
+          # Universal .app as .zip (kept, Gatekeeper-friendly without signing).
           ditto -c -k --sequesterRsrc --keepParent \
             "build/bin/openk8s-desktop.app" \
             "build/bin/openk8s-desktop-macos.zip"
+          # Staged .dmg build. hdiutil create -srcfolder OOMs on CI runners
+          # (the whole volume is buffered in RAM): pre-allocate the volume,
+          # copy into the mounted image, then convert in streaming mode.
+          SIZE=$(( $(du -sk "build/bin/openk8s-desktop.app" | cut -f1) / 1024 + 64 ))
+          hdiutil create -volname "OpenK8s Desktop" -size "${SIZE}m" \
+            -fs HFS+ -layout SPUD "build/bin/tmp.dmg"
+          hdiutil attach "build/bin/tmp.dmg" -mountpoint /Volumes/OpenK8s\ Desktop
+          cp -R "build/bin/openk8s-desktop.app" /Volumes/OpenK8s\ Desktop/
+          hdiutil detach /Volumes/OpenK8s\ Desktop
+          hdiutil convert "build/bin/tmp.dmg" -format UDZO \
+            -o "build/bin/openk8s-desktop.dmg"
+          rm -f "build/bin/tmp.dmg"
       - uses: actions/upload-artifact@v4
         with:
           name: openk8s-desktop-macos
