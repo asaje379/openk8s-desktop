@@ -59,6 +59,7 @@ git tag v0.2.0-beta.1 && git push origin v0.2.0-beta.1
 5. **Slices Go** : toujours `make([]T, 0)` (jamais `nil`) pour que le JSON soit `[]` et non `null`.
 6. **Timeout** : pas de `rest.Config.Timeout` global (casse les flux). Utiliser `k8s.withTimeout` pour les requêtes ponctuelles uniquement.
 7. **DMG sur CI** : `hdiutil create -srcfolder … -format UDZO` OOM sur les runners macOS GitHub Actions (volume tamponné en RAM). Construire le `.dmg` **en étapes** : `hdiutil create -size <SIZE>m` (pré-allocation), `attach`, copie du `.app`, `detach`, puis `hdiutil convert -format UDZO` (streaming). Voir le job `macos` de `release.yml`.
+8. **NSIS sur Windows CI** : `choco install nsis` n'ajoute **pas** `makensis` au `PATH` des steps suivants → `wails build -nsis` échoue silencieusement (« Cannot create installer: makensis not found ») sans faire échouer le job. Ajouter explicitement `C:\Program Files (x86)\NSIS` au `GITHUB_PATH` après l'install (job `windows` de `release.yml`). L'icône de l'installer/l'app est `build/windows/icon.ico` (référencée par `project.nsi` via `MUI_ICON`).
 
 ## Ajouter une méthode bindée (backend → frontend)
 

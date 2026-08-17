@@ -3,6 +3,13 @@
 Toutes les modifications notables du projet sont documentées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et du [Semantic Versioning](https://semver.org/).
 
+## [0.2.0-beta.4] — 2026-08-17
+
+### Correctifs
+- **Icône Windows** : `build/windows/icon.ico` régénéré depuis le logo OpenK8s (7 tailles). L'app, l'installer et le désinstalleur NSIS affichaient l'icône par défaut de Wails.
+- **Installer NSIS sur Windows** : `wails build -nsis` échouait silencieusement en CI (`makensis not found` — `choco install nsis` n'ajoute pas NSIS au PATH des steps suivants). Ajout du dossier NSIS au `GITHUB_PATH` dans `release.yml` ; la release publie désormais `openk8s-desktop-amd64-installer.exe`.
+- **Landing page** : la carte Windows pointe sur l'installer NSIS (repli sur l'exe brut via l'API GitHub).
+
 ## [0.2.0-beta.3] — 2026-08-17
 
 ### Ajouts
